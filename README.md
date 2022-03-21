@@ -1,19 +1,51 @@
 # ASI-DiscordBot
-The self-improvement Discord bot. The first service of the Adonis Self-improvement project, allowing users to keep track of their self-improvement progress through a Discord bot.
+The self-improvement discord bot. The first service of the Adonis Self-improvement project, allowing users to keep track of their self-improvement progress through a discord bot.
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/CKKshDe8rx)
 ![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/ASI-DiscordBot)
 [![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/ASI-DiscordBot)](https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/stargazers)
 
 ## Tech
-- [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's API
+- [DiscordJS](https://discord.js.org/#/) NodeJs module to interact with Discord's API
 - [Node.js](https://nodejs.org/en/) JavaScript runtime
-- [NPM](https://www.npmjs.com/) Package manager for Node.js
+- [NPM](https://www.npmjs.com/) The package manager for Node.js
 - [Docker](https://www.docker.com/) Containerization platform
-- [guidebot](https://github.com/AnIdiotsGuide/guidebot/) Boilerplate example Discord bot
 
 ### Potential
 - [Mongoose.js](https://mongoosejs.com/) An Object Data Modeling (ODM) library for MongoDB and Node.js
+
+## Installation
+
+ASI-DiscordBot requires [Node.js](https://nodejs.org/) v??+ to run.
+
+Install the dependencies and devDependencies and start the server.
+
+```sh
+cd asi-discordbot
+npm i
+node app
+```
+
+For production environments...
+
+```sh
+npm install --production
+NODE_ENV=production node app
+```
+
+
+
+# Adonis Bot
+
+Adonis Bot has a couple features:
+- A command handler
+- A basic permission system
+- An event handler
+- Basic useful commands
+- Per-server configuration system
+- A logging system
+
+Based off [guidebot](https://github.com/AnIdiotsGuide/guidebot/) 
 
 ## Requirements
 
@@ -21,11 +53,10 @@ The self-improvement Discord bot. The first service of the Adonis Self-improveme
 - `node` [Version 16.x](https://nodejs.org)
 - The node-gyp build tools. This is a pre-requisite for Enmap, but also for a **lot** of other modules. See [The Enmap Guide](https://enmap.evie.dev/install#pre-requisites) for details and requirements for your OS. Just follow what's in the tabbed block only, then come back here!
 
-You also need your bot's token. This is obtained by creating an application
-at [the Discord developer section](https://discord.com/developers/applications). Check the [first section of this page](https://anidiots.guide/getting-started/getting-started-long-version)
+You also need your bot's token. This is obtained by creating an application in
+the Developer section of discord.com. Check the [first section of this page](https://anidiots.guide/getting-started/getting-started-long-version)
 for more info.
-
-## Installation
+## Downloading
 
 Create a folder within your projects directory and run the following inside it:
 
@@ -42,5 +73,9 @@ Once finished:
 To start the bot, in the command prompt, run the following command:
 `node index.js`
 
-### Build the Docker image
+
+
+
+
+### Build the docker image
 _To be written_
