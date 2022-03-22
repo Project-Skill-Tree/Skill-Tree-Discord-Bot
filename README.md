@@ -1,6 +1,9 @@
 # ASI-DiscordBot
 The self-improvement Discord bot. The first service of the Adonis Self-improvement project, allowing users to keep track of their self-improvement progress through a Discord bot.
 
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/CKKshDe8rx)
+![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/ASI-DiscordBot)
+[![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/ASI-DiscordBot)](https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/stargazers)
 
 ## Tech
 - [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's API
