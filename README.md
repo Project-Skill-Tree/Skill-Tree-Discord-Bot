@@ -42,5 +42,14 @@ Once finished:
 To start the bot, in the command prompt, run the following command:
 `node index.js`
 
+## Contributing
+Read up on [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) for instructions on code contribution.
+### Setting up a development environment
+Read [Installation](#installation) to get started.
+
+This project uses Eslint for code formatting. Install it [here](https://eslint.org/) and run it before making a pull request with your changes.<br>
+You can run Eslint via `npx eslint --fix .`.
+
+
 ### Build the Docker image
 _To be written_
