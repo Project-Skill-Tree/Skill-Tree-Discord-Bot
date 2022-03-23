@@ -28,7 +28,8 @@
     "colorette": "^1.3.0",
     "discord.js": "^13.0.1",
     "dotenv": "^10.0.0",
-    "enmap": "^5.8.5"
+    "enmap": "^5.8.5",
+    "ESLint": "npm:eslint@^7.32.0"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
