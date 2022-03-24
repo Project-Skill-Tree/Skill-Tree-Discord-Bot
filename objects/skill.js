@@ -1,5 +1,5 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-
+const badge = require("../objects/badge");
 /**
  * Skill Object
  * @param title - Skill title (READING III)
@@ -9,8 +9,10 @@ const {MessageEmbed, MessageAttachment} = require("discord.js");
  * @param xp - The amount of XP granted upon completion of the skill
  * @returns {exports}
  */
-module.exports = function(title, goal, time, timelimit, xp) {
+module.exports = function(iconPath, title, level, goal, time, timelimit, xp) {
+  this.iconPath = iconPath;
   this.title = title;
+  this.level = level;
   this.goal = goal;
   this.time = time;
   this.timelimit = timelimit;
@@ -21,24 +23,25 @@ module.exports = function(title, goal, time, timelimit, xp) {
    * @param client
    * @param channel
    */
-  this.embedSkill = function(client, channel) {
+  this.sendSkill = async function(client, channel) {
+    //Define message attachment files
     const overseer = new MessageAttachment("./assets/characters/overseer.png", "overseer.png");
-    //TODO: Dynamically load skill badges
-    const badge = new MessageAttachment("./assets/badges/ReadingIII.png", "badge.png");
+    const badgeIcon = await badge(this.iconPath, this.level, "eliteHex.png");
+    const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
+
+    //Create embedded messages
     const embed = new MessageEmbed()
       .setColor("#e38827")
       .setTitle(this.title)
-      .setURL("https://discord.js.org/")
-      //TODO: Implement cloud stored image location
-      .setAuthor(client.user.username, "attachment://overseer.png", "https://discord.js.org")
+      .setAuthor(client.user.username, "attachment://overseer.png")
       .setThumbnail("attachment://badge.png")
       .addFields(
-        { name: "GOAL: ", value: `${this.goal} (${this.time})`},
-        { name: "TIME: ", value: `${this.timelimit}`},
-        { name: "XP: ", value: `${this.xp}`},
+        {name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
+        {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
+        {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"},
       )
       .setTimestamp();
-    channel.send({ embeds: [embed] , files:[overseer, badge]});
+    channel.send({embeds: [embed], files: [overseer, badgeFile]});
   };
 
   return this;
