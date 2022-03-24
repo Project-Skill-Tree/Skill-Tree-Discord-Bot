@@ -3,9 +3,8 @@
 
 
 "@babel/code-frame@7.12.11":
-  "integrity" "sha512-Zt1yodBx1UcyiePMSkWnU4hPqhwq7hGi2nFL1LeA3EUl+q2LQx16MISgJ0+z7dnmgvP9QtIleuETGOiOH1RcIw=="
-  "resolved" "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.11.tgz"
-  "version" "7.12.11"
+  version "7.12.11"
+  resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.11.tgz"
   dependencies:
     "@babel/highlight" "^7.10.4"
 
@@ -15,21 +14,19 @@
   "version" "7.15.7"
 
 "@babel/highlight@^7.10.4":
-  "integrity" "sha512-qf9u2WFWVV0MppaL877j2dBtQIDgmidgjGk5VIMw3OadXvYaXn66U1BFlH2t4+t3i+8PhedppRv+i40ABzd+gg=="
-  "resolved" "https://registry.npmjs.org/@babel/highlight/-/highlight-7.14.5.tgz"
-  "version" "7.14.5"
+  version "7.14.5"
+  resolved "https://registry.npmjs.org/@babel/highlight/-/highlight-7.14.5.tgz"
   dependencies:
     "@babel/helper-validator-identifier" "^7.14.5"
-    "chalk" "^2.0.0"
-    "js-tokens" "^4.0.0"
+    chalk "^2.0.0"
+    js-tokens "^4.0.0"
 
 "@discordjs/builders@^0.2.0":
-  "integrity" "sha512-TVq7NZBCJrrTRc3CfxOr3IdgY5nrtqVxZ7qDUF1mN6LgxIiOldmFxsSwMrQBzLFVmOwqFyNLKCeblley8UpEuw=="
-  "resolved" "https://registry.npmjs.org/@discordjs/builders/-/builders-0.2.0.tgz"
-  "version" "0.2.0"
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@discordjs/builders/-/builders-0.2.0.tgz"
   dependencies:
-    "discord-api-types" "^0.18.1"
-    "tslib" "^2.3.0"
+    discord-api-types "^0.18.1"
+    tslib "^2.3.0"
 
 "@discordjs/builders@^0.5.0":
   "integrity" "sha512-HP5y4Rqw68o61Qv4qM5tVmDbWi4mdTFftqIOGRo33SNPpLJ1Ga3KEIR2ibKofkmsoQhEpLmopD1AZDs3cKpHuw=="
@@ -37,24 +34,22 @@
   "version" "0.5.0"
   dependencies:
     "@sindresorhus/is" "^4.0.1"
-    "discord-api-types" "^0.22.0"
-    "ow" "^0.27.0"
-    "ts-mixer" "^6.0.0"
-    "tslib" "^2.3.0"
+    discord-api-types "^0.22.0"
+    ow "^0.27.0"
+    ts-mixer "^6.0.0"
+    tslib "^2.3.0"
 
 "@discordjs/collection@^0.2.1":
-  "integrity" "sha512-vhxqzzM8gkomw0TYRF3tgx7SwElzUlXT/Aa41O7mOcyN6wIJfj5JmDWaO5XGKsGSsNx7F3i5oIlrucCCWV1Nog=="
-  "resolved" "https://registry.npmjs.org/@discordjs/collection/-/collection-0.2.1.tgz"
-  "version" "0.2.1"
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@discordjs/collection/-/collection-0.2.1.tgz"
 
 "@discordjs/form-data@^3.0.1":
-  "integrity" "sha512-ZfFsbgEXW71Rw/6EtBdrP5VxBJy4dthyC0tpQKGKmYFImlmmrykO14Za+BiIVduwjte0jXEBlhSKf0MWbFp9Eg=="
-  "resolved" "https://registry.npmjs.org/@discordjs/form-data/-/form-data-3.0.1.tgz"
-  "version" "3.0.1"
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/@discordjs/form-data/-/form-data-3.0.1.tgz"
   dependencies:
-    "asynckit" "^0.4.0"
-    "combined-stream" "^1.0.8"
-    "mime-types" "^2.1.12"
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
 
 "@eslint/eslintrc@^0.4.3":
   "integrity" "sha512-J6KFFz5QCYUJq3pf0mjEcCJVERbzv71PUIDczuh9JkwGEzced6CO5ADLHB1rbf/+oPBtoPfMYNOpGDzCANlbXw=="
@@ -72,35 +67,30 @@
     "strip-json-comments" "^3.1.1"
 
 "@humanwhocodes/config-array@^0.5.0":
-  "integrity" "sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg=="
-  "resolved" "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.5.0.tgz"
-  "version" "0.5.0"
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.5.0.tgz"
   dependencies:
     "@humanwhocodes/object-schema" "^1.2.0"
-    "debug" "^4.1.1"
-    "minimatch" "^3.0.4"
+    debug "^4.1.1"
+    minimatch "^3.0.4"
 
 "@humanwhocodes/object-schema@^1.2.0":
-  "integrity" "sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w=="
-  "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz"
-  "version" "1.2.0"
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz"
 
 "@sapphire/async-queue@^1.1.4":
-  "integrity" "sha512-fFrlF/uWpGOX5djw5Mu2Hnnrunao75WGey0sP0J3jnhmrJ5TAPzHYOmytD5iN/+pMxS+f+u/gezqHa9tPhRHEA=="
-  "resolved" "https://registry.npmjs.org/@sapphire/async-queue/-/async-queue-1.1.4.tgz"
-  "version" "1.1.4"
+  version "1.1.4"
+  resolved "https://registry.npmjs.org/@sapphire/async-queue/-/async-queue-1.1.4.tgz"
 
 "@sapphire/time-utilities@^1.3.8":
-  "integrity" "sha512-pmEoy24pW0xENjIGgws0r4TgeY7eemqkgDp35vRk9K4vi+RiEu9WMYfur1EI422mocQJNtfyQUo7mBKkBhSkTw=="
-  "resolved" "https://registry.npmjs.org/@sapphire/time-utilities/-/time-utilities-1.3.8.tgz"
-  "version" "1.3.8"
+  version "1.3.8"
+  resolved "https://registry.npmjs.org/@sapphire/time-utilities/-/time-utilities-1.3.8.tgz"
   dependencies:
     "@sapphire/utilities" "^2.0.1"
 
 "@sapphire/utilities@^2.0.1":
-  "integrity" "sha512-KgJsgQ1cnfVKqscrMX4GH29mIVhVQkF8kSTIRCB+hgCCRfIvUU5peE4g/cegnesPS5eMiQqV+NWk7cNwhjextQ=="
-  "resolved" "https://registry.npmjs.org/@sapphire/utilities/-/utilities-2.0.1.tgz"
-  "version" "2.0.1"
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@sapphire/utilities/-/utilities-2.0.1.tgz"
 
 "@sindresorhus/is@^4.0.1":
   "integrity" "sha512-VkE3KLBmJwcCaVARtQpfuKcKv8gcBmUubrfHGF84dXuuW6jgsRYxPtzcIhPyK9WAPpRt2/xY6zkD9MnRaJzSyw=="
@@ -118,9 +108,8 @@
   "version" "16.10.1"
 
 "@types/ws@^7.4.7":
-  "integrity" "sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww=="
-  "resolved" "https://registry.npmjs.org/@types/ws/-/ws-7.4.7.tgz"
-  "version" "7.4.7"
+  version "7.4.7"
+  resolved "https://registry.npmjs.org/@types/ws/-/ws-7.4.7.tgz"
   dependencies:
     "@types/node" "*"
 
