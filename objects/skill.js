@@ -1,5 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const badge = require("../objects/badge");
+
 /**
  * Skill Object
  * @param title - Skill title (READING III)
@@ -42,7 +43,6 @@ module.exports = function(iconPath, title, level, goal, time, timelimit, xp) {
       )
       .setTimestamp();
     channel.send({embeds: [embed], files: [overseer, badgeFile]});
-  };
 
   return this;
 };
