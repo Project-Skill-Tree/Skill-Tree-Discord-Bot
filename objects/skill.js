@@ -20,21 +20,19 @@ module.exports = function(iconPath, title, level, goal, time, timelimit, xp) {
   this.xp = xp;
 
   /**
-   * Embeds a skill and sends it in the chat
+   * Sends an embedded skill in the chat
    * @param client
    * @param channel
    */
-  this.sendSkill = async function(client, channel) {
+  this.send = async function(client, channel) {
     //Define message attachment files
-    const overseer = new MessageAttachment("./assets/characters/overseer.png", "overseer.png");
     const badgeIcon = await badge(this.iconPath, this.level, "eliteHex.png");
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
     //Create embedded messages
     const embed = new MessageEmbed()
-      .setColor("#e38827")
+      .setColor("#7d005d")
       .setTitle(this.title)
-      .setAuthor(client.user.username, "attachment://overseer.png")
       .setThumbnail("attachment://badge.png")
       .addFields(
         {name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
@@ -42,7 +40,7 @@ module.exports = function(iconPath, title, level, goal, time, timelimit, xp) {
         {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"},
       )
       .setTimestamp();
-    channel.send({embeds: [embed], files: [overseer, badgeFile]});
+    channel.send({embeds: [embed], files: [badgeFile]});
   };
 
   return this;

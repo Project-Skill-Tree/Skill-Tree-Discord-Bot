@@ -1,5 +1,7 @@
 const config = require("../config.js");
 const { settings } = require("../modules/settings.js");
+
+
 exports.run = async (client, message, args, level) => {
   const friendly = config.permLevels.find(l => l.level === level).name;
   const replying = settings.ensure(message.guild.id, config.defaultSettings).commandReply;
@@ -14,7 +16,7 @@ exports.conf = {
 };
 
 exports.help = {
-  name: "mylevel",
+  name: "profile",
   category: "Miscellaneous",
   description: "Tells you your permission level for the current message location.",
   usage: "mylevel"

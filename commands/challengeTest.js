@@ -1,4 +1,4 @@
-const skill = require("../objects/skill");
+const challenge = require("../objects/challenge");
 
 /**
  * Test method to send an embedded skill to the chat
@@ -9,7 +9,7 @@ const skill = require("../objects/skill");
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //TODO: Actually take skills from a database
-  const R3 = new skill("reading.png","READING", 4, "READ 30m", "DAILY", "x1 MONTH", 800);
+  const R3 = new challenge("31 days of mindfulness", 2000, "https://cdn.discordapp.com/attachments/842846102696886282/860054078255923200/31_days_of_mindfulness.pdf");
   R3.send(client, message.channel);
 };
 
@@ -21,8 +21,8 @@ exports.conf = {
 };
 
 exports.help = {
-  name: "skill",
+  name: "challenge",
   category: "Miscellaneous",
-  description: "Tests embedded skill messages",
-  usage: "skill"
+  description: "Tests an embedded challenge message",
+  usage: "challenge"
 };

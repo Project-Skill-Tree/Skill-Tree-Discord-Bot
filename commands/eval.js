@@ -14,7 +14,7 @@ const { codeBlock } = require("@discordjs/builders");
   This is mostly only used by the Eval and Exec commands.
 */
 async function clean(client, text) {
-  if (text && text.constructor.name == "Promise")
+  if (text && text.constructor.name === "Promise")
     text = await text;
   if (typeof text !== "string")
     text = require("util").inspect(text, {depth: 1});

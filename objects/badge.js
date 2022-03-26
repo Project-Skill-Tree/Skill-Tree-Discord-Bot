@@ -1,9 +1,11 @@
 const Canvas = require("canvas");
-const romanise = require("./romanNumeralHelper");
+const romanise = require("../modules/romanNumeralHelper");
 
 module.exports = async function(iconPath, level, backgroundPath) {
   const canvas = Canvas.createCanvas(64, 64);
   const context = canvas.getContext("2d");
+  context.antialias = "none";
+  context.quality = "nearest";
 
   //Add badge background
   const background = await Canvas.loadImage("./assets/badges/"+backgroundPath);
