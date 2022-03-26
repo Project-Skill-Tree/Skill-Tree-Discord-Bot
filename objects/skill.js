@@ -1,5 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const badge = require("../objects/badge");
+
 /**
  * Skill Object
  * @param title - Skill title (READING III)
