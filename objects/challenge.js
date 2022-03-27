@@ -1,4 +1,5 @@
 const {MessageEmbed} = require("discord.js");
+const Swipeable = require("./swipeable");
 
 /**
  * Item Object
@@ -8,28 +9,38 @@ const {MessageEmbed} = require("discord.js");
  * @param link - The link to the item resource
  * @returns {exports}
  */
-module.exports = function(challenge, xp, link=null) {
-  this.challenge = challenge;
-  this.xp = xp;
-  this.link = link;
-
+class Challenge extends Swipeable {
+  constructor(challenge, xp, link=null) {
+    super();
+    this.challenge = challenge;
+    this.xp = xp;
+    this.link = link;
+  }
   /**
    * Sends an embedded challenge to the chat
    * @param client
    * @param channel
    */
-  this.send = function(client, channel) {
-    const embed = new MessageEmbed()
-      .setColor("#bd290b")
-      .setTitle("[CHALLENGE]")
-      .setDescription(`${this.challenge}\n` + "```diff\n"+`+${this.xp}` +"XP```")
-      .setTimestamp();
-
-    //Add link if one exists
-    if (link) embed.setURL(link);
+  send(client, channel) {
+    const embed = this.update(new MessageEmbed());
 
     channel.send({ embeds: [embed]});
-  };
+  }
 
-  return this;
-};
+  /**
+   * Updates properties of embed with values from this class
+   * @param embed
+   */
+  update(embed) {
+    var link = "";
+    //Add link if one exists
+    if (this.link) link = `[[LINK]](${this.link})`;
+    embed.setColor("#bd290b");
+    embed.setTitle("[CHALLENGE]");
+    embed.setDescription(`${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```");
+    embed.setTimestamp();
+    return embed;
+  }
+}
+
+module.exports = Challenge;
