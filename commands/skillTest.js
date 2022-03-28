@@ -1,4 +1,9 @@
-const skill = require("../objects/skill");
+const Skill = require("../objects/skill");
+const createSwipePanel = require("../modules/createSwipePanel");
+
+const skills = [new Skill("reading.png","READING", 4, "READ 30m", "DAILY", "x1 MONTH", 800),
+  new Skill("meditation.png","MEDITATION", 1, "Meditate for 30m", "DAILY", "x1 MONTH", 2000),
+  new Skill("exercise.png","EXERCISE", 3, "Hit PRs in every exercise", "N/A", "x1 MONTH", 100)];
 
 /**
  * Test method to send an embedded skill to the chat
@@ -9,17 +14,10 @@ const skill = require("../objects/skill");
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //TODO: Actually take skills from a database
-  const R3 = new skill("reading.png","READING", 4, "READ 30m", "DAILY", "x1 MONTH", 800);
-  R3.sendSkill(client, message.channel);
-
-  /*const A1 = new skill("meditation.png","MEDITATION", 6, "MEDITATE 30m", "N/A", "x1 WEEK", 200);
-  A1.sendSkill(client, message.channel);
-
-  const A2 = new skill("exercise.png","EXERCISE", 1, "Exercise 30m", "DAILY", "x1 MONTH", 800);
-  A2.sendSkill(client, message.channel);
-
-  const A3 = new skill("brain.png","READING", 3, "Discipline 100m", "DAILY", "x1 YEAR", 1500);
-  A3.sendSkill(client, message.channel);*/
+  skills[0].send(message.channel).then(msg => {
+    //Create swipable menu
+    createSwipePanel(client, message.author, msg, skills);
+  });
 };
 
 exports.conf = {
@@ -33,5 +31,5 @@ exports.help = {
   name: "skill",
   category: "Miscellaneous",
   description: "Tests embedded skill messages",
-  usage: "stats"
+  usage: "skill"
 };

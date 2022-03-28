@@ -1,8 +1,10 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const badge = require("../objects/badge");
+const Swipeable = require("./swipeable");
 
 /**
  * Skill Object
+ * @param iconPath - image path for the icon to be displayed, relative to "/icons/" folder
  * @param title - Skill title (READING III)
  * @param goal - The success condition for the skill to be complete
  * @param time - The time frequency of which to perform the skill
@@ -10,39 +12,49 @@ const badge = require("../objects/badge");
  * @param xp - The amount of XP granted upon completion of the skill
  * @returns {exports}
  */
-module.exports = function(iconPath, title, level, goal, time, timelimit, xp) {
-  this.iconPath = iconPath;
-  this.title = title;
-  this.level = level;
-  this.goal = goal;
-  this.time = time;
-  this.timelimit = timelimit;
-  this.xp = xp;
+class Skill extends Swipeable {
+  constructor(iconPath, title, level, goal, time, timelimit, xp) {
+    super();
+    this.iconPath = iconPath;
+    this.title = title;
+    this.level = level;
+    this.goal = goal;
+    this.time = time;
+    this.timelimit = timelimit;
+    this.xp = xp;
+  }
 
   /**
-   * Embeds a skill and sends it in the chat
-   * @param client
-   * @param channel
+     * Sends an embedded skill in the chat
+     * @param channel
+     */
+  async send(channel) {
+    //Create embedded messages
+    const data = await this.update(new MessageEmbed());
+
+    return channel.send({embeds: data[0], files: data[1]});
+  }
+
+  /**
+   * Updates properties of embed with values from this class
+   * @param embed
    */
-  this.sendSkill = async function(client, channel) {
-    //Define message attachment files
-    const overseer = new MessageAttachment("./assets/characters/overseer.png", "overseer.png");
-    const badgeIcon = await badge(this.iconPath, this.level, "eliteHex.png");
+  async update(embed) {
+    const badgeIcon = await badge(this.iconPath, this.level, "advanced.png");
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
-    //Create embedded messages
-    const embed = new MessageEmbed()
-      .setColor("#e38827")
-      .setTitle(this.title)
-      .setAuthor(client.user.username, "attachment://overseer.png")
-      .setThumbnail("attachment://badge.png")
-      .addFields(
-        {name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
-        {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
-        {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"},
-      )
-      .setTimestamp();
-    channel.send({embeds: [embed], files: [overseer, badgeFile]});
+    await embed.setColor("#7d005d");
+    embed.setTitle(this.title);
+    embed.setThumbnail("attachment://badge.png");
+    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
+      {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
+      {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"});
+    embed.setTimestamp();
 
-  return this;
-};
+    const embeds = [embed];
+    const files = [badgeFile];
+    return [embeds, files];
+  }
+}
+
+module.exports = Skill;
