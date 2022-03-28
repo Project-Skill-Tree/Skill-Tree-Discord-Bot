@@ -1,7 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const badge = require("../objects/badge");
 const Swipeable = require("./swipeable");
-const logging = require("../modules/logger");
 
 /**
  * Skill Object
@@ -30,59 +29,31 @@ class Skill extends Swipeable {
      * @param channel
      */
   async send(channel) {
-    //Define message attachment files
-    const badgeIcon = await badge(this.iconPath, this.level, "advanced.png");
-    const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
-    const files = [badgeFile];
-
     //Create embedded messages
-    const embed = this.update(new MessageEmbed());
+    const data = await this.update(new MessageEmbed());
 
-    //Create message button
-    /*const row = new MessageActionRow()
-      .addComponents(
-        new MessageButton()
-          .setCustomId("left")
-          .setLabel("<")
-          .setStyle("PRIMARY")
-          .setDisabled(true),
-        new MessageButton()
-          .setCustomId("right")
-          .setLabel(">")
-          .setStyle("PRIMARY")
-          .setDisabled(true),
-      );
-
-    client.on('interactionCreate', interaction => {
-      if (!interaction.isButton()) return;
-      const filter = i => i.customId === "left" && i.user.id === msg.author.id;
-      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
-      collector.on('collect', async i => {
-        if (i.customId === 'primary') {
-          await i.deferUpdate();
-          await wait(4000);
-          await i.editReply({ content: 'A button was clicked!', components: [] });
-        }
-      });
-    });*/
-    //components: [row]
-    return channel.send({embeds: [embed], files: files});
+    return channel.send({embeds: data[0], files: data[1]});
   }
 
   /**
    * Updates properties of embed with values from this class
    * @param embed
    */
-  update(embed) {
-    logging.log("update");
-    embed.setColor("#7d005d");
+  async update(embed) {
+    const badgeIcon = await badge(this.iconPath, this.level, "advanced.png");
+    const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
+
+    await embed.setColor("#7d005d");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
-    embed.addFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
+    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
       {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
       {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"});
     embed.setTimestamp();
-    return embed;
+
+    const embeds = [embed];
+    const files = [badgeFile];
+    return [embeds, files];
   }
 }
 

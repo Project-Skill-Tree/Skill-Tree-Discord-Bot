@@ -16,7 +16,7 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
   //TODO: Actually take skills from a database
   skills[0].send(message.channel).then(msg => {
     //Create swipable menu
-    createSwipePanel(message, msg, skills);
+    createSwipePanel(client, message.author, msg, skills);
   });
 };
 

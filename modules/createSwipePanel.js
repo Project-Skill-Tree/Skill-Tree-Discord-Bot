@@ -1,38 +1,41 @@
-const {MessageEmbed} = require("discord.js");
+const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
 
-module.exports = function(command, msg, list) {
+module.exports = function(client, user, msg, list) {
   var currentPage = 0;
-  msg.react("⬅️").then(() => {
-    msg.react("➡️");
 
-    // Filters
-    const backwardsFilter = (reaction, user) => reaction.emoji.name === "⬅️" && user.id === msg.author.id;
-    const forwardsFilter = (reaction, user) => reaction.emoji.name === "➡️" && user.id === msg.author.id;
+  //Add left/right messageButton to message
+  const row = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("left")
+        .setLabel("<")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("right")
+        .setLabel(">")
+        .setStyle("PRIMARY"),
+    );
+  msg.edit({components: [row]});
 
-    const backwards = msg.createReactionCollector(backwardsFilter, {timer: 6000});
-    const forwards = msg.createReactionCollector(forwardsFilter, {timer: 6000});
-
-    //add reaction listener
-    backwards.on("collect", () => {
-      currentPage--;
-      if (currentPage === -1) currentPage = list.length - 1;
-      //update embed
-      const embed = list[currentPage].update(msg.embeds[0]);
-      msg.edit(embed);
-      //remove reaction
-      //r.users.remove(command.author.id);
-    });
-
-    //add reaction listener
-    forwards.on("collect", () => {
-      currentPage++;
-      if (currentPage === list.length) currentPage = 0;
-      //update embed
-      const embed = new MessageEmbed() //For discord v11 Change to new Discord.RichEmbed()
-        .setDescription("TEST");
-      msg.edit(embed);
-      //remove reaction
-      //r.users.remove(command.author.id);
-    });
+  //Create listener for button events
+  const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === user.id;
+  const collector = msg.createMessageComponentCollector({ filter, time: 30000 });
+  collector.on("collect", async i => {
+    await i.deferUpdate();
+    switch (i.customId) {
+      case "left":
+        currentPage--;
+        if (currentPage === -1) currentPage = list.length - 1;
+        break;
+      case "right":
+        currentPage++;
+        if (currentPage === list.length) currentPage = 0;
+        break;
+      default: break;
+    }
+    //update embed
+    const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
+    await msg.removeAttachments();
+    msg.edit({embeds: data[0], files: data[1]});
   });
 };
