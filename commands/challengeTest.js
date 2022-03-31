@@ -22,7 +22,7 @@ exports.conf = {
 
 exports.help = {
   name: "challenge",
-  category: "Miscellaneous",
+  category: "Skill Tree",
   description: "Tests an embedded challenge message",
   usage: "challenge"
 };

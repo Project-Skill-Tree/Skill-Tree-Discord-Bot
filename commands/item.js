@@ -22,7 +22,7 @@ exports.conf = {
 
 exports.help = {
   name: "item",
-  category: "Miscellaneous",
+  category: "Skill Tree",
   description: "Tests embedded item messages",
   usage: "item"
 };

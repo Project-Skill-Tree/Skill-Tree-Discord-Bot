@@ -9,9 +9,10 @@ const Swipeable = require("./swipeable");
  * @returns {exports}
  */
 class Item extends Swipeable {
-  constructor(name, link) {
+  constructor(name, emoji, link) {
     super();
     this.name = name;
+    this.emoji = emoji;
     this.link = link;
   }
 
@@ -21,7 +22,7 @@ class Item extends Swipeable {
    * @param channel
    */
   async send(client, channel) {
-    const badgeIcon = await badge("chest.png", -1, "elite.png");
+    const badgeIcon = await badge("chest.png", "elite.png");
     const badgeFile = new MessageAttachment(badgeIcon, "icon.png");
 
     const embed = this.update(new MessageEmbed());
@@ -41,6 +42,5 @@ class Item extends Swipeable {
     return embed;
   }
 }
-
 
 module.exports = Item;

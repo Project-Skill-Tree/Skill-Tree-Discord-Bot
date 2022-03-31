@@ -1,5 +1,5 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-const badge = require("../objects/badge");
+const {getBadgeIcon} = require("../objects/badge");
 const Swipeable = require("./swipeable");
 
 /**
@@ -8,9 +8,8 @@ const Swipeable = require("./swipeable");
  * @param title - Skill title (READING III)
  * @param goal - The success condition for the skill to be complete
  * @param time - The time frequency of which to perform the skill
- * @param timelimit - The time limit of which you need to maintain the skill before aquiring it
+ * @param timelimit - The time limit for which you need to maintain the skill before acquiring it
  * @param xp - The amount of XP granted upon completion of the skill
- * @returns {exports}
  */
 class Skill extends Swipeable {
   constructor(iconPath, title, level, goal, time, timelimit, xp) {
@@ -40,7 +39,7 @@ class Skill extends Swipeable {
    * @param embed
    */
   async update(embed) {
-    const badgeIcon = await badge(this.iconPath, this.level, "advanced.png");
+    const badgeIcon = await getBadgeIcon(this.iconPath,"advanced.png",  this.level);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
     await embed.setColor("#7d005d");
