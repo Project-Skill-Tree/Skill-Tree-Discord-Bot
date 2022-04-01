@@ -1,9 +1,8 @@
-const {MessageEmbed} = require("discord.js");
+const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-
+const {addGlow} = require("./badge");
 /**
- * Item Object
- * @param name - Item name (e.g. GUIDE TO SELF IMPROVEMENT)
+ * Challenge Object
  * @param challenge - The challenge description
  * @param xp - The xp to be awarded on completion
  * @param link - The link to the item resource
@@ -21,10 +20,12 @@ class Challenge extends Swipeable {
    * @param client
    * @param channel
    */
-  send(client, channel) {
+  async send(client, channel) {
+    //TODO: Dynamically load characters for challenges
+    const icon = new MessageAttachment(await addGlow("characters/spartan.png", 100), "icon.png");
     const embed = this.update(new MessageEmbed());
 
-    channel.send({ embeds: [embed]});
+    channel.send({ embeds: [embed], files: [icon]});
   }
 
   /**
@@ -37,6 +38,7 @@ class Challenge extends Swipeable {
     if (this.link) link = `[[LINK]](${this.link})`;
     embed.setColor("#bd290b");
     embed.setTitle("[CHALLENGE]");
+    embed.setThumbnail("attachment://icon.png");
     embed.setDescription(`${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```");
     embed.setTimestamp();
     return embed;

@@ -9,8 +9,8 @@ const Item = require("../objects/item");
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   // TODO: Actually take skills from a database
-  const R3 = new Item("SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk");
-  R3.send(client, message.channel);
+  const item = new Item("SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
+  item.send(client, message.channel);
 };
 
 exports.conf = {

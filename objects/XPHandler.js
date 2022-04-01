@@ -1,10 +1,23 @@
+const Rank = require("./rank");
+
+const ranks = [
+  new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "acolyte.png"),
+  new Rank("Spartan",5,"rgb(255, 100, 69)", "red_spartan.png"),
+  new Rank("Disciple",8,"rgb(75, 252, 252)", "disciple.png"),
+  new Rank("Warrior",14,"rgb(255,207,40)", "spartan.png"),
+  new Rank("Adonis",20,"rgb(161, 105, 231)", "purple_adonis.png"),
+  new Rank("Maximus",28,"rgb(33,255,177)", "maximus.png"),
+  new Rank("Gold Adonis",35,"rgb(255,198,7)", "gold_adonis.png"),
+  new Rank("Overseer",50,"rgb(253,84, 191)", "overseer.png"),
+];
+
 /**
  * Calculate the required XP to level up given the user's level
  * @param level - Current level of the user
  * @returns {number} - XP required to level up
  */
 exports.calcXP = function(level) {
-  return 100 * (1.05^level);
+  return 50 * (1.02^level);
 };
 
 /**
@@ -22,29 +35,24 @@ exports.calcTotalXP = function(level, xp) {
   return sum;
 };
 
+exports.getRank = function(level) {
+  for (let i = ranks.length-1; i > 0; i--) {
+    if (level >= ranks[i].minLevel) {
+      return ranks[i];
+    }
+  }
+  return ranks[0];
+};
+
+exports.getColor = function(level) {
+  return exports.getRank(level).color;
+};
+
 /**
  * Get the character icon path for a given user level
  * @param level - Current level of the user
- * @returns {String} - Character path, relative to the character folder (e.g "Overseer.png")
+ * @returns {String} - Character path for the given rank
  */
 exports.getCharacter = function(level) {
-  //TODO: Dynamically get profile for each level;
-  if (level < 2) {
-    return "acolyte.png";
-  } else if (level < 5) {
-    return "disciple.png";
-  } else if (level < 8) {
-    return "red_spartan.png";
-  } else if (level < 14) {
-    return "spartan.png";
-  } else if (level < 20) {
-    return "purple_adonis.png";
-  } else if (level < 28) {
-    return "maximus.png";
-  } else if (level < 35) {
-    return "gold_adonis.png";
-  } else if (level < 50)  {
-    return "overseer.png";
-  }
-  return "acolyte.png";
+  return exports.getRank(level).character;
 };

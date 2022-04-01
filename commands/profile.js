@@ -5,9 +5,9 @@ const skills = [new Skill("reading.png","READING", 3, "READ 30m", "DAILY", "x1 M
   new Skill("meditation.png","MEDITATION", 5, "Meditate for 30m", "DAILY", "x1 MONTH", 2000)];
 
 
-exports.run = async (client, message, args, level) => {
-  const profile = new Profile(message.author.name, level, 350, skills);
-  profile.send(message.channel);
+exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+  const profile = new Profile(message.author.username, args[0], 350, skills);
+  await profile.send(message.channel);
 };
 
 exports.conf = {
