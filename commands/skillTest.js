@@ -29,7 +29,7 @@ exports.conf = {
 
 exports.help = {
   name: "skill",
-  category: "Miscellaneous",
+  category: "Skill Tree",
   description: "Tests embedded skill messages",
   usage: "skill"
 };
