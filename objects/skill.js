@@ -21,6 +21,8 @@ class Skill extends Swipeable {
     this.time = time;
     this.timelimit = timelimit;
     this.xp = xp;
+    this.parent = null;
+    this.children = [];
   }
 
   /**
