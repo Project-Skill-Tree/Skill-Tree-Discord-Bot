@@ -7,18 +7,18 @@ module.exports = function(client, user, msg, root) {
   //add button to go back
   if (root.parent !== undefined && root.parent !== null)
   {
-      row.addComponents(
+    row.addComponents(
       new MessageButton()
-        .setCustomId(root.parent.title)
+        .setCustomId("-1")
         .setLabel("<")
         .setStyle("PRIMARY")
     );
   }
-  root.children.forEach(function (item) {
+  root.children.forEach(function(item) {
     row.addComponents(
       new MessageButton()
         .setCustomId(String(root.children.indexOf(item)))
-        .setLabel(item.title)
+        .setLabel(`${item.title} ${item.level}`)
         .setStyle("PRIMARY")
     );
     // save id to later filter in listener
@@ -27,13 +27,20 @@ module.exports = function(client, user, msg, root) {
   msg.edit({components: [row]});
 
   //Create listener for button events
-  const filter = i => (root.children[i.customId] !== undefined) && i.user.id === user.id;
+  const filter = i => (root.children[i.customId] !== undefined || i === "-1") && i.user.id === user.id;
   const collector = msg.createMessageComponentCollector({ filter, time: 30000 });
   collector.on("collect", async i => {
     await i.deferUpdate();
     //still figuring this out
-    const data = await root.children[i.customId].update(new MessageEmbed(msg.embeds[0]));
-    await msg.removeAttachments();
-    msg.edit({embeds: data[0], files: data[1]});
+    if (i === "-1") {
+      // go to parent
+    }
+    else {
+      //goto child
+      const data = await root.children[i.customId].update(new MessageEmbed(msg.embeds[0]));
+      await msg.removeAttachments();
+      msg.edit({embeds: data[0], files: data[1]});
+    }
+
   });
 };
