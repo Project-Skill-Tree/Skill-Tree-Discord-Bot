@@ -1,19 +1,19 @@
 const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
 
-module.exports = function(client, user, msg, root) {
-
-  var children = [];
+function createChildButtons(root) {
   const row = new MessageActionRow();
   //add button to go back
   if (root.parent !== undefined && root.parent !== null)
   {
     row.addComponents(
       new MessageButton()
-        .setCustomId("-1")
+        .setCustomId("prev")
         .setLabel("<")
         .setStyle("PRIMARY")
     );
   }
+
+  // add a button for every child
   root.children.forEach(function(item) {
     row.addComponents(
       new MessageButton()
@@ -21,26 +21,41 @@ module.exports = function(client, user, msg, root) {
         .setLabel(`${item.title} ${item.level}`)
         .setStyle("PRIMARY")
     );
-    // save id to later filter in listener
-    children.push(root.children.indexOf(item));
   });
+
+  return row;
+}
+
+module.exports = function(client, user, msg, start) {
+
+  //add initial buttons
+  const row = createChildButtons(start);
   msg.edit({components: [row]});
 
+
+  // next skill to be displayed, set to tree root
+  var nextSkill = start;
+
   //Create listener for button events
-  const filter = i => (root.children[i.customId] !== undefined || i === "-1") && i.user.id === user.id;
+  const filter = i => (start.children[i.customId] !== undefined || i.customId == "prev") && i.user.id === user.id;
   const collector = msg.createMessageComponentCollector({ filter, time: 30000 });
   collector.on("collect", async i => {
     await i.deferUpdate();
-    //still figuring this out
-    if (i === "-1") {
-      // go to parent
+    if (i.customId == "prev") {
+      // go back to parent
+      nextSkill = nextSkill.parent;
     }
     else {
-      //goto child
-      const data = await root.children[i.customId].update(new MessageEmbed(msg.embeds[0]));
-      await msg.removeAttachments();
-      msg.edit({embeds: data[0], files: data[1]});
+      // go to child
+      nextSkill = nextSkill.children[i.customId];
     }
 
+    // magic stuff someone else wrote
+    const data = await nextSkill.update(new MessageEmbed(msg.embeds[0]));
+    await msg.removeAttachments();
+
+    // create new buttons for this skill and edit the message
+    const row = createChildButtons(nextSkill);
+    msg.edit({embeds: data[0], files: data[1], components: [row]});
   });
 };

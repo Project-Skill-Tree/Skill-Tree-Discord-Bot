@@ -5,7 +5,8 @@ const Swipeable = require("./swipeable");
 /**
  * Skill Object
  * @param iconPath - image path for the icon to be displayed, relative to "/icons/" folder
- * @param title - Skill title (READING III)
+ * @param title - Skill title (READING)
+ * @param level - Skill level (READING III)
  * @param goal - The success condition for the skill to be complete
  * @param time - The time frequency of which to perform the skill
  * @param timelimit - The time limit for which you need to maintain the skill before acquiring it
@@ -55,6 +56,18 @@ class Skill extends Swipeable {
     const embeds = [embed];
     const files = [badgeFile];
     return [embeds, files];
+  }
+
+  /**
+   * Sets shildren and updates parent to this
+   * @param children
+   */
+  async setChildren(children) {
+    this.children = children;
+    this.children.forEach(item => {
+      item.parent = this;
+    });
+
   }
 }
 
