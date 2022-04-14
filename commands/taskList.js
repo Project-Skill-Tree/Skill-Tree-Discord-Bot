@@ -66,8 +66,8 @@ function buildEmbed() {
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
 
-  const dailyTasks = tasks.filter(task => task.skill.time == "day");
-  const otherTasks = tasks.filter(task => task.skill.time != "day");
+  const dailyTasks = tasks.filter(task => task.skill.interval == "day");
+  const otherTasks = tasks.filter(task => task.skill.interval != "day");
 
   const dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx));
   const otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length));
@@ -84,7 +84,7 @@ function buildEmbed() {
 function formatTask(task, idx) {
   const completedEmoji = task.completed ? ":white_check_mark:": ":x:";
   const levelRoman = romanise(task.skill.level);
-  const frequencyFormat = `${task.skill.frequency} ${task.skill.frequency === 1 ? "time" : "times"}/${task.skill.time}`;
+  const frequencyFormat = `${task.skill.frequency} ${task.skill.frequency === 1 ? "time" : "times"}/${task.skill.interval}`;
 
   return `${completedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
 }
