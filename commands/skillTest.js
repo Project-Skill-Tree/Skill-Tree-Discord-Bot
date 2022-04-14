@@ -1,9 +1,11 @@
 const Skill = require("../objects/skill");
 const createSwipePanel = require("../modules/createSwipePanel");
 
-const skills = [new Skill("reading.png","READING", 4, "READ 30m", "DAILY", "x1 MONTH", 1, 800),
-  new Skill("meditation.png","MEDITATION", 1, "Meditate for 30m", "DAILY", "x1 MONTH", 1, 2000),
-  new Skill("exercise.png","EXERCISE", 3, "Hit PRs in every exercise", "N/A", "x1 MONTH", 5, 100)];
+const skills = [
+  new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
+  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", 30, 3 ,2000),
+  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", 30, 5, 100)
+];
 
 /**
  * Test method to send an embedded skill to the chat

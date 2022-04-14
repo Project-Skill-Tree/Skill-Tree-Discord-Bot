@@ -9,6 +9,7 @@ const Swipeable = require("./swipeable");
  * @param {string} goal - The success condition for the skill to be complete
  * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
  * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
+ * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval. 
  * @param {number} xp - The amount of XP granted upon completion of the skill
  */
 class Skill extends Swipeable {
@@ -46,8 +47,8 @@ class Skill extends Swipeable {
     await embed.setColor("#7d005d");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
-    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.time})` + "```"},
-      {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
+    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.frequency}x/${this.interval})` + "```"},
+      {name: "TIME: ", value: "```" + `${this.timelimit} days` + "```"},
       {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"});
     embed.setTimestamp();
 

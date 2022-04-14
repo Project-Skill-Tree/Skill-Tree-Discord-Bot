@@ -7,9 +7,9 @@ const romanise = require("../modules/romanNumeralHelper");
 // The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
 // as it's just a template for now.
 const tasks = [ //eslint-disable-line no-unused-vars
-  new Skill("reading.png","Reading", 4, "READ 30m", "day", "x1 MONTH",1, 800),
-  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", "x1 MONTH",3 ,2000),
-  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", "x1 MONTH",5,100)
+  new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
+  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", 30, 3 ,2000),
+  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", 30, 5, 100)
 ].map(skill => new Task(skill, Math.random() > 0.5));
 
 /**
