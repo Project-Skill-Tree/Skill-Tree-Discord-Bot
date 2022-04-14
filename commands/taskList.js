@@ -23,21 +23,29 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
   // sends an embed containing all the tasks under two catagories, DAILY and NO DEADLINE
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" }); 
-  const dateString = `${month}, ${date.getDate()}, ${date.getUTCFullYear()}`;
+  const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
   const dailyTasks = tasks.filter(task => task.skill.time == "day");
   const otherTasks = tasks.filter(task => task.skill.time != "day");
-  var i = 1;
-  const dailyString = dailyTasks.map(task => ` ${i++}.${task.completed? ":white_check_mark: ": ":x:"} **${task.skill.title} ${romanise(task.skill.level)} (${task.skill.frequency} ${task.skill.frequency == 1? "time":"times"}/${task.skill.time})** | ${task.skill.goal}`).join("\n"); 
-  const otherString = otherTasks.map(task => `${i++}.${task.completed? ":white_check_mark: ": ":x:"} **${task.skill.title} ${romanise(task.skill.level)} (${task.skill.frequency} ${task.skill.frequency == 1? "time":"times"}/${task.skill.time})** | ${task.skill.goal}`).join("\n");
+
+  const dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx));
+  const otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length));
 
   const embed = new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")
-    .addField("Daily Tasks", dailyString )
-    .addField("No Deadline", otherString);
+    .addField("Daily Tasks", dailyTaskStrings.join("\n"))
+    .addField("No Deadline", otherTaskStrings.join("\n"));
 
   message.channel.send({ embeds: [embed] });
 };
+
+function formatTask(task, idx) {
+  let completedEmoji = task.completed ? ":white_check_mark:": ":x:";
+  let levelRoman = romanise(task.skill.level);
+  let frequencyFormat = `${task.skill.frequency} ${task.skill.frequency === 1 ? "time" : "times"}/${task.skill.time}`;
+  
+  return `${completedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
+}
 
 exports.conf = {
   enabled: true,
