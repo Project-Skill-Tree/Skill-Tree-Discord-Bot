@@ -12,14 +12,15 @@ const Swipeable = require("./swipeable");
  * @param xp - The amount of XP granted upon completion of the skill
  */
 class Skill extends Swipeable {
-  constructor(iconPath, title, level, goal, time, timelimit, xp) {
+  constructor(iconPath, title, level, goal, time,timelimit,frequency, xp) {
     super();
     this.iconPath = iconPath;
     this.title = title;
     this.level = level;
     this.goal = goal;
-    this.time = time;
-    this.timelimit = timelimit;
+    this.time = time; // time scale (day,month,year etc)
+    this.timelimit = timelimit; // xAMPLIFIER TIMEPERIOD (x1 MONTH, 2X YEAR)
+    this.frequency = frequency; // amount of times task done per time
     this.xp = xp;
   }
 
