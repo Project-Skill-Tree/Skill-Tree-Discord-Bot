@@ -75,4 +75,4 @@ exports.addGlow = async function(iconPath, size) {
     icon.width * iconSizeRatio, icon.height * iconSizeRatio);
   context.shadowBlur = 0;
   return canvas.toBuffer();
-}
+};

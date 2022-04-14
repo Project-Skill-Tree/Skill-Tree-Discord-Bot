@@ -13,17 +13,59 @@ const tasks = [ //eslint-disable-line no-unused-vars
 ].map(skill => new Task(skill, Math.random() > 0.5));
 
 /**
- * Test method to send a template task list
+ * Test method to send a template task list - sends an embed containing all the tasks under two categories, DAILY and NO DEADLINE
  * @param client
  * @param message
  * @param args
  * @param level
  */
-exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  // sends an embed containing all the tasks under two catagories, DAILY and NO DEADLINE
+exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+  const embed = buildEmbed();
+
+  const dropDownBox = new MessageActionRow().addComponents(
+    new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Complete/uncomplete a task").addOptions(
+      tasks.map(
+        task => {
+          return {
+            label: task.skill.title,
+            description: task.skill.goal,
+            value: task.skill.title,
+          };
+        }
+      )
+    )
+  );
+
+  const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox] });
+  const collector = msg.createMessageComponentCollector({ time: 30000 });
+
+  collector.on("collect", i => {
+    if (i.user.id !== message.author.id) {
+      i.reply({ content: "You can't edit someone else's task list!", ephemeral: true });
+      return;
+    }
+
+    const skillTitle = i.values[0];
+    const task = tasks.find(task => task.skill.title=== skillTitle);
+    task.completed = !task.completed;
+
+    // Send the same embed, but with the updated values of the tasks array.
+    const embed = buildEmbed();
+
+    msg.edit({ embeds: [embed], components: [dropDownBox] });
+
+    i.deferUpdate();
+  });
+
+};
+
+// Helper function for building an embed in order to reduce repetition in the code.
+function buildEmbed() {
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" }); 
+
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
+
   const dailyTasks = tasks.filter(task => task.skill.time == "day");
   const otherTasks = tasks.filter(task => task.skill.time != "day");
 
@@ -35,21 +77,9 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
     .setColor("#1071E5")
     .addField("Daily Tasks", dailyTaskStrings.join("\n"))
     .addField("No Deadline", otherTaskStrings.join("\n"));
-  const dropDownBox = new MessageActionRow().addComponents(
-    new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Select a task").addOptions(
-      tasks.map(
-        tasks => {
-          return {
-            label: tasks.skill.title,
-            description: tasks.skill.goal,
-            value: tasks.skill.title
-          };
-        }
-      )
-    )
-  );
-  message.channel.send({ embeds: [embed], components: [dropDownBox] });
-};
+
+  return embed;
+}
 
 function formatTask(task, idx) {
   const completedEmoji = task.completed ? ":white_check_mark:": ":x:";
