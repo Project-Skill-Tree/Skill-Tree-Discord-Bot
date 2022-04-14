@@ -7,7 +7,7 @@ const Swipeable = require("./swipeable");
  * @param iconPath - image path for the icon to be displayed, relative to "/icons/" folder
  * @param title - Skill title (READING III)
  * @param goal - The success condition for the skill to be complete
- * @param time - The time frequency of which to perform the skill
+ * @param time - The time scale of the skill. If a skill was to be done x times weekly, weekly would be the time scale. Valid values would be "day", "week", "month", "year", etc.
  * @param timelimit - The time limit for which you need to maintain the skill before acquiring it
  * @param xp - The amount of XP granted upon completion of the skill
  */
