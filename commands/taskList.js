@@ -76,7 +76,7 @@ function buildEmbed() {
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")
     .addField("Daily Tasks", dailyTaskStrings.join("\n"))
-    .addField("No Deadline", otherTaskStrings.join("\n"));
+    .addField("Ongoing", otherTaskStrings.join("\n"));
 
   return embed;
 }
