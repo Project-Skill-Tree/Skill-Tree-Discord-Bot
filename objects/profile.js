@@ -92,13 +92,8 @@ class Profile {
     const context = canvas.getContext("2d");
     const maxXP = XPHandler.calcXP(this.level);
 
-    var grd = context.createLinearGradient(x, 0, x+w, 0);
-    grd.addColorStop(0, XPHandler.getColor(this.level));
-    grd.addColorStop(0.8, XPHandler.getColor(this.level));
-    grd.addColorStop(1, XPHandler.getColor(this.level+1));
-
     // Fill with gradient
-    context.fillStyle = grd;
+    context.fillStyle = XPHandler.getColor(this.level);
     context.fillRect(x,y,w*Math.min(this.xp, maxXP)/maxXP,h);
 
     //Draw XP bar outline
