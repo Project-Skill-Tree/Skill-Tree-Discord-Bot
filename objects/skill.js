@@ -1,6 +1,7 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
+const formatFrequency = require("../modules/frequencyFormatter.js");
 
 /**
  * Skill Object used for storing templates for skills in the tree.
@@ -51,18 +52,34 @@ class Skill extends Swipeable {
     const badgeIcon = await getBadgeIcon(this.iconPath,"advanced.png",  this.level);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
-    await embed.setColor("#7d005d");
+    embed.setColor("#7d005d");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
-    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.frequency}x/${this.interval})` + "```"},
-      {name: "TIME: ", value: "```" + `${this.timelimit} days` + "```"},
-      {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"});
+    embed.setFields(
+      {
+        name: "GOAL: ",
+        value: codeBlock(`${this.goal} (${formatFrequency(this.frequency, this.interval)})`),
+      },
+      {
+        name: "TIME: ",
+        value: codeBlock(`${this.timelimit} days`),
+      },
+      {
+        name: "XP: ",
+        value: codeBlock("diff\n" + `+ ${this.xp}XP`),
+      }
+    );
+
     embed.setTimestamp();
 
     const embeds = [embed];
     const files = [badgeFile];
     return [embeds, files];
   }
+}
+
+function codeBlock(str) {
+  return "```" + str + "```";
 }
 
 module.exports = Skill;

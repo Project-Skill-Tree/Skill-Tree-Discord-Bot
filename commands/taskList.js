@@ -2,6 +2,7 @@ const Skill = require("../objects/skill.js");
 const Task = require("../objects/task.js");
 const {MessageActionRow, MessageSelectMenu,MessageEmbed} = require("discord.js");
 const romanise = require("../modules/romanNumeralHelper");
+const formatFrequency = require("../modules/frequencyFormatter.js");
 
 // Initialize task objects from skill objects.
 // The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
@@ -84,7 +85,7 @@ function buildEmbed() {
 function formatTask(task, idx) {
   const completedEmoji = task.completed ? ":white_check_mark:": ":x:";
   const levelRoman = romanise(task.skill.level);
-  const frequencyFormat = `${task.skill.frequency} ${task.skill.frequency === 1 ? "time" : "times"}/${task.skill.interval}`;
+  const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
 
   return `${completedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
 }
