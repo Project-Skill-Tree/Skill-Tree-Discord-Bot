@@ -72,6 +72,7 @@ typings/
 .env
 .env.test
 
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
@@ -105,3 +106,5 @@ dist
 
 # Data folder
 data/
+
+/docs/out/

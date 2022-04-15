@@ -1,5 +1,5 @@
 const Skill = require("../objects/skill");
-const createSwipePanel = require("../modules/createSwipePanel");
+const {createSwipePanel} = require("../modules/createSwipePanel");
 
 const skills = [
   new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),

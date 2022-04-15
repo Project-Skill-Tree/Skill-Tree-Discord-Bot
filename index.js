@@ -10,6 +10,9 @@ const { Client, Collection } = require("discord.js");
 const { readdirSync } = require("fs");
 const { intents, partials, permLevels } = require("./config.js");
 const logger = require("./modules/logger.js");
+const {registerFont} = require("canvas");
+
+registerFont("./assets/fonts/Akira.otf", { family: "Akira"});
 
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
