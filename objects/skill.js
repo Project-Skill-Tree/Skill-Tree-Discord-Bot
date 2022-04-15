@@ -1,25 +1,27 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-const {getBadgeIcon} = require("../objects/badge");
+const badge = require("../objects/badge");
 const Swipeable = require("./swipeable");
 
 /**
  * Skill Object
- * @param iconPath - image path for the icon to be displayed, relative to "/icons/" folder
- * @param title - Skill title (READING III)
- * @param goal - The success condition for the skill to be complete
- * @param frequency - The time frequency of which to perform the skill (DAILY/WEEKLY etc)
- * @param timelimit - The time limit for which you need to maintain the skill before acquiring it (x5 WEEK(S))
- * @param xp - The amount of XP granted upon completion of the skill
+ * @param {string} iconPath - image path for the icon to be displayed, relative to "/icons/" folder
+ * @param {string} title - Skill title (READING III)
+ * @param {string} goal - The success condition for the skill to be complete
+ * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
+ * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
+ * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
+ * @param {number} xp - The amount of XP granted upon completion of the skill
  */
 class Skill extends Swipeable {
-  constructor(iconPath, title, level, goal, frequency, timelimit, xp) {
+  constructor(iconPath, title, level, goal, interval, timelimit, frequency, xp) {
     super();
     this.iconPath = iconPath;
     this.title = title;
     this.level = level;
     this.goal = goal;
-    this.frequency = frequency;
+    this.interval = interval;
     this.timelimit = timelimit;
+    this.frequency = frequency;
     this.xp = xp;
   }
 
@@ -45,8 +47,8 @@ class Skill extends Swipeable {
     await embed.setColor("#7d005d");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
-    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.frequency})` + "```"},
-      {name: "TIME: ", value: "```" + `${this.timelimit}` + "```"},
+    embed.setFields({name: "GOAL: ", value: "```" + `${this.goal} (${this.frequency}x/${this.interval})` + "```"},
+      {name: "TIME: ", value: "```" + `${this.timelimit} days` + "```"},
       {name: "XP: ", value: "```diff\n" + `+ ${this.xp}XP` + "```"});
     embed.setTimestamp();
 

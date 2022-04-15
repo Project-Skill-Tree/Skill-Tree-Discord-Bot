@@ -14,7 +14,7 @@ const {registerFont} = require("canvas");
 class Profile {
   constructor(name, level, xp, skills) {
     this.name = name;
-    this.level = level;
+    this.level = level ?? 5;
     this.xp = xp;
     this.skills = skills;
   }
