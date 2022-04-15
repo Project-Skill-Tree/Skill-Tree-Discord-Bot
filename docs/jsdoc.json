@@ -11,13 +11,19 @@
     "plugins/markdown"
   ],
   "opts": {
-    "template": "./template/tui.jsdoc-template",
+    "template": "node_modules/tui-jsdoc-template",
     "encoding": "utf8",
     "destination": "docs/out/",
     "recurse": true
   },
   "templates": {
     "cleverLinks": false,
-    "monospaceLinks": false
+    "monospaceLinks": false,
+    "logo": {
+      "url": "https://cdn.discordapp.com/attachments/939508059758288939/959131935630819388/overseer.png",
+      "width": "100px",
+      "height": "100px",
+      "link": "https://github.com/Adonis-Self-Improvement/ASI-DiscordBot"
+    }
   }
 }
