@@ -20,3 +20,4 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./docs/out
+          external_repository: Adonis-Self-Improvement/skill-tree-docs.github.io
