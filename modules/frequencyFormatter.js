@@ -4,19 +4,19 @@ module.exports = function formatFrequency(frequency, interval) {
   if(frequency > 1) {
     switch(interval) {
       case "day":
-        timesString = `${frequency} times a day`;
+        timesString = `${frequency}x/DAY`;
         break;
       
       case "week":
-        timesString = `${frequency} times a week`;
+        timesString = `${frequency}x/WEEK`;
         break;
 
       case "month":
-        timesString = `${frequency} times a week`;
+        timesString = `${frequency}x/MONTH`;
         break;
 
       case "year":
-        timesString = `${frequency} times a year`;
+        timesString = `${frequency}x/YEAR`;
         break;
     }
   } else {
