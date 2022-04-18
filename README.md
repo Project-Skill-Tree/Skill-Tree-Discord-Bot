@@ -6,7 +6,7 @@ The self-improvement Discord bot. The first service of the Adonis Self-improveme
 [![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/ASI-DiscordBot)](https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/stargazers)
 
 ## Tech
-- [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's API
+- [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's Data
 - [Node.js](https://nodejs.org/en/) JavaScript runtime
 - [NPM](https://www.npmjs.com/) Package manager for Node.js
 - [Docker](https://www.docker.com/) Containerization platform

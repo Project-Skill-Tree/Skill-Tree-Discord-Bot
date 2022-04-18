@@ -2,16 +2,19 @@ const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
 const XPHandler = require("./XPHandler");
 const {drawBadge} = require("./badge");
-const {registerFont} = require("canvas");
 
 /**
  * User object
- * @param name - Username of the player
- * @param level - user of the level
- * @param xp - current XP of the player. XP is not counted continuously, it's reset to 0 when the user levels up
- * @param badges - list of badges the user has
  */
 class Profile {
+  /**
+   * Player profile constructor
+   * @constructor
+   * @param name - Username of the player
+   * @param level - Level of the user
+   * @param xp - current XP of the player. XP is not counted continuously, it's reset to 0 when the user levels up
+   * @param skills - list of skills the user has acquired
+   */
   constructor(name, level, xp, skills) {
     this.name = name;
     this.level = level ?? 5;
@@ -21,7 +24,7 @@ class Profile {
 
   /**
    * Sends an embedded profile summary, including level, character, xp, badges, items, skills, etc.
-   * @param channel
+   * @param channel - the channel to send the message to
    */
   async send(channel) {
     //TODO: add item menu
@@ -34,9 +37,11 @@ class Profile {
     return channel.send({files: [profileImage]});
   }
 
+  /**
+   * Generate the profile card for this user
+   * @return {Promise<Buffer>} buffer -
+   */
   async getProfileImage() {
-    registerFont("./assets/fonts/Akira.otf", { family: "Akira"});
-
     const canvas = Canvas.createCanvas(600, 200);
     const context = canvas.getContext("2d");
     //Canvas settings
@@ -92,13 +97,8 @@ class Profile {
     const context = canvas.getContext("2d");
     const maxXP = XPHandler.calcXP(this.level);
 
-    var grd = context.createLinearGradient(x, 0, x+w, 0);
-    grd.addColorStop(0, XPHandler.getColor(this.level));
-    grd.addColorStop(0.8, XPHandler.getColor(this.level));
-    grd.addColorStop(1, XPHandler.getColor(this.level+1));
-
     // Fill with gradient
-    context.fillStyle = grd;
+    context.fillStyle = XPHandler.getColor(this.level);
     context.fillRect(x,y,w*Math.min(this.xp, maxXP)/maxXP,h);
 
     //Draw XP bar outline

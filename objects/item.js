@@ -4,12 +4,16 @@ const {addGlow} = require("./badge");
 
 /**
  * Item Object
- * @param name - Item name (e.g. GUIDE TO SELF IMPROVEMENT)
- * @param link - The link to the item resource
- * @param emoji - the emoiji to display with the item
- * @returns {exports}
  */
 class Item extends Swipeable {
+  /**
+   * Create Item object
+   * @constructor
+   * @param {string} name - Item name (e.g. GUIDE TO SELF IMPROVEMENT)
+   * @param {string} link - The link to the item resource
+   * @param {?string=} emoji - the emoiji to display with the item
+   * @returns {exports}
+   */
   constructor(name, link, emoji=null) {
     super();
     this.name = name;
