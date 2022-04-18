@@ -1,8 +1,15 @@
+/**
+ * Format the skill tracking frequency in a readable format (e.g. DAILY, WEEKLY, 2x/DAY, 5x/WEEK)
+ * @param {number} frequency - number of times per interval
+ * @param {string} interval - time interval for skills, e.g. day, week, month, year
+ * @return {string}
+ * @module frequencyFormatter
+ */
 module.exports = function formatFrequency(frequency, interval) {
   let timesString;
 
-  if(frequency > 1) {
-    switch(interval) {
+  if (frequency > 1) {
+    switch (interval) {
       case "day":
         timesString = `${frequency}x/DAY`;
         break;
@@ -20,24 +27,23 @@ module.exports = function formatFrequency(frequency, interval) {
         break;
     }
   } else {
-    switch(interval) {
+    switch (interval) {
       case "day":
-        timesString = "daily";
+        timesString = "DAILY";
         break;
       
       case "week":
-        timesString = "weekly";
+        timesString = "WEEKLY";
         break;
 
       case "month":
-        timesString = "monthly";
+        timesString = "MONTHLY";
         break;
 
       case "year":
-        timesString = "yearly";
+        timesString = "YEARLY";
         break;
     }
   }
-
   return timesString;
-}
+};

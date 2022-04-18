@@ -1,6 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
-const XPHandler = require("./XPHandler");
+const XPHandler = require("../modules/XPHandler");
 const {drawBadge} = require("./badge");
 
 /**

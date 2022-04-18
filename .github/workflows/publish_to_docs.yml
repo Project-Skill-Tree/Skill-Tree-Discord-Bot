@@ -7,25 +7,25 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [16.x]
-        
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: package-lock.json
-        
+
       - run: npm ci
       - run: npm run-script generate-docs
-      
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

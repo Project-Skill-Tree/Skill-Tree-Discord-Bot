@@ -1,6 +1,6 @@
 const Profile = require("../objects/profile");
 const Skill = require("../objects/skill");
-const {calcXP} = require("../objects/XPHandler");
+const {calcXP} = require("../modules/XPHandler");
 
 const skills = [
   new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),

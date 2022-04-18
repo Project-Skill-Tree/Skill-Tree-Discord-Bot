@@ -7,7 +7,7 @@ const formatFrequency = require("../modules/frequencyFormatter.js");
 // Initialize task objects from skill objects.
 // The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
 // as it's just a template for now.
-const tasks = [ //eslint-disable-line no-unused-vars
+const tasks = [
   new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
   new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", 30, 3 ,2000),
   new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", 30, 5, 100)
@@ -23,19 +23,7 @@ const tasks = [ //eslint-disable-line no-unused-vars
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   const embed = buildEmbed();
 
-  const dropDownBox = new MessageActionRow().addComponents(
-    new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Complete/uncomplete a task").addOptions(
-      tasks.map(
-        task => {
-          return {
-            label: task.skill.title,
-            description: task.skill.goal,
-            value: task.skill.title,
-          };
-        }
-      )
-    )
-  );
+  const dropDownBox = createDropDownBox(tasks);
 
   const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox] });
   const collector = msg.createMessageComponentCollector({ time: 30000 });
@@ -47,11 +35,12 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
     }
 
     const skillTitle = i.values[0];
-    const task = tasks.find(task => task.skill.title=== skillTitle);
+    const task = tasks.find(task => task.skill.title === skillTitle);
     task.completed = !task.completed;
 
     // Send the same embed, but with the updated values of the tasks array.
     const embed = buildEmbed();
+    const dropDownBox = createDropDownBox(tasks);
 
     msg.edit({ embeds: [embed], components: [dropDownBox] });
 
@@ -60,6 +49,22 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
 
 };
 
+function createDropDownBox() {
+  return new MessageActionRow().addComponents(
+    new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Complete/uncomplete a task").addOptions(
+      tasks.map(
+        task => {
+          return {
+            label: `${task.skill.title} ${romanise(task.skill.level)}`,
+            description: task.skill.goal,
+            value: task.skill.title,
+            emoji: task.completed ? "✅" : "❌",
+          };
+        }
+      )
+    )
+  );
+}
 // Helper function for building an embed in order to reduce repetition in the code.
 function buildEmbed() {
   const date = new Date();
@@ -100,6 +105,6 @@ exports.conf = {
 exports.help = {
   name: "tasks",
   category: "Skill Tree",
-  description: "daily task list [BETA]",
+  description: "daily task list",
   usage: "tasks"
 };
