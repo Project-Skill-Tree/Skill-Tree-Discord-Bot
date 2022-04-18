@@ -1,11 +1,12 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("./badge");
+const {addGlow} = require("../modules/UIHelper");
+
 /**
  * Challenge Object
  * @param challenge - The challenge description
- * @param xp - The xp to be awarded on completion
- * @param link - The link to the item resource
+ * @param {number} xp - The xp to be awarded on completion
+ * @param {?string=} link - The link to the item resource
  * @returns {exports}
  */
 class Challenge extends Swipeable {
@@ -31,6 +32,7 @@ class Challenge extends Swipeable {
   /**
    * Updates properties of embed with values from this class
    * @param embed
+   * @return embed
    */
   update(embed) {
     var link = "";

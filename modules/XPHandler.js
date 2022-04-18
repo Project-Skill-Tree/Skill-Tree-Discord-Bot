@@ -1,4 +1,4 @@
-const Rank = require("./rank");
+const Rank = require("../objects/rank");
 
 const ranks = [
   new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "acolyte.png"),
@@ -13,8 +13,9 @@ const ranks = [
 
 /**
  * Calculate the required XP to level up given the user's level
- * @param level - Current level of the user
+ * @param {number} level - Current level of the user
  * @returns {number} - XP required to level up
+ * @module XPHandler
  */
 exports.calcXP = function(level) {
   return 50 * (1.02^level);
@@ -22,9 +23,10 @@ exports.calcXP = function(level) {
 
 /**
  * Calculate the total XP of a player given their level and current XP
- * @param level - Current level of the user
- * @param xp - Current xp
+ * @param {number} level - Current level of the user
+ * @param {number} xp - Current xp
  * @returns {number} - Total XP from level 0
+ * @module XPHandler
  */
 exports.calcTotalXP = function(level, xp) {
   let sum = 0;
@@ -35,6 +37,12 @@ exports.calcTotalXP = function(level, xp) {
   return sum;
 };
 
+/**
+ * Return the rank object with all the rank data for a user of a given level
+ * @param {number} level - Current level of the user
+ * @return {Rank} Rank object for this level
+ * @module XPHandler
+ */
 exports.getRank = function(level) {
   for (let i = ranks.length-1; i > 0; i--) {
     if (level >= ranks[i].minLevel) {
@@ -44,14 +52,21 @@ exports.getRank = function(level) {
   return ranks[0];
 };
 
+/**
+ * Get the rank colour from a user's level
+ * @param {number} level - Current level of the user
+ * @return {string} - Colour of the given rank
+ * @module XPHandler
+ */
 exports.getColor = function(level) {
   return exports.getRank(level).color;
 };
 
 /**
  * Get the character icon path for a given user level
- * @param level - Current level of the user
- * @returns {String} - Character path for the given rank
+ * @param {number} level - Current level of the user
+ * @returns {String} - Character image paht for the given rank
+ * @module XPHandler
  */
 exports.getCharacter = function(level) {
   return exports.getRank(level).character;
