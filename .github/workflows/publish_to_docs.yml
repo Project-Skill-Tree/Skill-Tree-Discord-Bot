@@ -1,25 +1,38 @@
-name: GitHub pages
+name: Publish docs to GitHub pages
 
 on:
   push:
     branches:
-      - master
-
+      - 'main'
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Build
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
-        run: npm run-script generate-docs
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      - run: npm run-script generate-docs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./docs/out
+<<<<<<< HEAD
+=======
+          external_repository: Adonis-Self-Improvement/skill-tree-docs.github.io
+          publish_branch: main
+>>>>>>> origin/main
