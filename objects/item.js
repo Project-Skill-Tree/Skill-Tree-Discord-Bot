@@ -1,7 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("./badge");
-
+const {addGlow} = require("../modules/UIHelper");
 /**
  * Item Object
  */

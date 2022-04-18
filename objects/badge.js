@@ -1,6 +1,14 @@
 const Canvas = require("canvas");
 const romanise = require("../modules/romanNumeralHelper");
 
+/**
+ * Get the badge image
+ * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
+ * @param {?string} backgroundPath - Path to the badge background, relative to the /badges/ folder
+ * @param {?number} level - Level of the badge as a number
+ * @return {Promise<Buffer>} - returns ImageBuffer of the badge
+ * @module badge
+ */
 exports.getBadgeIcon = async function(iconPath, backgroundPath, level=null) {
   const canvas = Canvas.createCanvas(64, 64);
   const context = canvas.getContext("2d");
@@ -12,6 +20,17 @@ exports.getBadgeIcon = async function(iconPath, backgroundPath, level=null) {
   return canvas.toBuffer();
 };
 
+/**
+ * Draw the badge onto a canvas at a given location
+ * @param canvas - Canvas to draw the badge onto
+ * @param x - X coordinate of the centre of the badge
+ * @param y - Y coordinate of the centre of the badge
+ * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
+ * @param {?string} backgroundPath - Path to the badge background, relative to the /badges/ folder
+ * @param {?number} level - Level of the badge as a number
+ * @return {Promise<void>}
+ * @module badge
+ */
 exports.drawBadge = async function(canvas, x, y, iconPath, backgroundPath, level=null) {
   const context = canvas.getContext("2d");
   context.shadowColor = "white";
@@ -50,29 +69,3 @@ exports.drawBadge = async function(canvas, x, y, iconPath, backgroundPath, level
       leveIcon.height * levelSizeRatio);
   }
 };
-
-/**
- * Adds glow effect to icon (for items/challenges)
- * @param iconPath - relative path from /assets/
- * @param size - max width/height of the image
- * @returns {Promise<Buffer>}
- */
-exports.addGlow = async function(iconPath, size) {
-  const canvas = Canvas.createCanvas(size, size);
-  const context = canvas.getContext("2d");
-  context.antialias = "default";
-  context.quality = "nearest";
-  context.imageSmoothingEnabled = false;
-  context.shadowColor = "white";
-  context.shadowBlur = 10;
-
-  const icon = await Canvas.loadImage("./assets/" + iconPath);
-  //Centre icon in the canvas (+ additional buffer because the badge is isometric
-  //and we want to centre it on the top face
-  const iconSizeRatio = Math.min(size / icon.width, size / icon.height);
-  context.drawImage(icon, canvas.width/2 - icon.width * iconSizeRatio * 0.5,
-    canvas.height/2 - icon.height * iconSizeRatio * 0.5,
-    icon.width * iconSizeRatio, icon.height * iconSizeRatio);
-  context.shadowBlur = 0;
-  return canvas.toBuffer();
-}
