@@ -1,5 +1,5 @@
 const axios = require("axios");
-
+/** @module APIHelper */
 
 function getKey() {
   return process.env.API_KEY;
@@ -8,9 +8,8 @@ function getKey() {
 /**
  * Get JSON object containing skills from database
  * @return {Promise<AxiosResponse<any>>}
- * @module APIHelper
  */
-module.exports = function getSkills() {
+exports.getSkills = function() {
   return axios
     .get(process.env.API_URL + "/v1/skills/", {
       headers: {
@@ -23,9 +22,8 @@ module.exports = function getSkills() {
  * Get the JSON object for a skill with a given id from the database
  * @param {string} id - The ObjectID of the skill to be requested
  * @return {Promise<AxiosResponse<any>>}
- * @module APIHelper
  */
-module.exports = function getSkill(id) {
+exports.getSkill = function(id) {
   return axios
     .get(process.env.API_URL + "/v1/skills/?id="+id)
     .then(res => {

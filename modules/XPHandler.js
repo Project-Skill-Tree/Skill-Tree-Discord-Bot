@@ -1,4 +1,5 @@
 const Rank = require("../objects/rank");
+/** @module XPHandler */
 
 const ranks = [
   new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "acolyte.png"),
@@ -15,7 +16,6 @@ const ranks = [
  * Calculate the required XP to level up given the user's level
  * @param {number} level - Current level of the user
  * @returns {number} - XP required to level up
- * @module XPHandler
  */
 exports.calcXP = function(level) {
   return 50 * (1.02^level);
@@ -26,7 +26,6 @@ exports.calcXP = function(level) {
  * @param {number} level - Current level of the user
  * @param {number} xp - Current xp
  * @returns {number} - Total XP from level 0
- * @module XPHandler
  */
 exports.calcTotalXP = function(level, xp) {
   let sum = 0;
@@ -41,7 +40,6 @@ exports.calcTotalXP = function(level, xp) {
  * Return the rank object with all the rank data for a user of a given level
  * @param {number} level - Current level of the user
  * @return {Rank} Rank object for this level
- * @module XPHandler
  */
 exports.getRank = function(level) {
   for (let i = ranks.length-1; i > 0; i--) {
@@ -56,7 +54,6 @@ exports.getRank = function(level) {
  * Get the rank colour from a user's level
  * @param {number} level - Current level of the user
  * @return {string} - Colour of the given rank
- * @module XPHandler
  */
 exports.getColor = function(level) {
   return exports.getRank(level).color;
@@ -66,7 +63,6 @@ exports.getColor = function(level) {
  * Get the character icon path for a given user level
  * @param {number} level - Current level of the user
  * @returns {String} - Character image paht for the given rank
- * @module XPHandler
  */
 exports.getCharacter = function(level) {
   return exports.getRank(level).character;

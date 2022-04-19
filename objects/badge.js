@@ -1,13 +1,14 @@
 const Canvas = require("canvas");
 const romanise = require("../modules/romanNumeralHelper");
 
+/** @module badge */
+
 /**
  * Get the badge image
  * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
  * @param {?string} backgroundPath - Path to the badge background, relative to the /badges/ folder
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
- * @module badge
  */
 exports.getBadgeIcon = async function(iconPath, backgroundPath, level=null) {
   const canvas = Canvas.createCanvas(64, 64);
@@ -29,7 +30,6 @@ exports.getBadgeIcon = async function(iconPath, backgroundPath, level=null) {
  * @param {?string} backgroundPath - Path to the badge background, relative to the /badges/ folder
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<void>}
- * @module badge
  */
 exports.drawBadge = async function(canvas, x, y, iconPath, backgroundPath, level=null) {
   const context = canvas.getContext("2d");
