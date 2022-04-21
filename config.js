@@ -14,7 +14,7 @@ const config = {
   * For join messages to work you need Guild Members, which is privileged and requires extra setup.
   * For more info about intents see the README.
   */
-  intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES ],
+  intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
   // Partials your bot may need should go here, CHANNEL is required for DM's
   partials: ["CHANNEL"],
 
