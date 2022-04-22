@@ -1,12 +1,13 @@
 const Canvas = require("canvas");
 
+/** @module UIHelper */
+
 /**
  * Adds glow effect to a given asset
  * @param {string} iconPath - relative path from /assets/
  * @param {number} size - max width/height of the image
  * @param {string=} color - Color of the glow effect to add
  * @returns {Promise<Buffer>} - canvas buffer
- * @module UIHelper
  */
 exports.addGlow = async function(iconPath, size, color="white") {
   const canvas = Canvas.createCanvas(size, size);
@@ -26,4 +27,4 @@ exports.addGlow = async function(iconPath, size, color="white") {
     icon.width * iconSizeRatio, icon.height * iconSizeRatio);
   context.shadowBlur = 0;
   return canvas.toBuffer();
-}
+};
