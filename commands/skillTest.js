@@ -1,5 +1,6 @@
 const Skill = require("../objects/skill");
-const {createSwipePanel} = require("../modules/createSwipePanel");
+const {createLargeSwipePanel} = require("../modules/createSwipePanel");
+const {startSkill} = require("../modules/APIHelper");
 
 const skills = [
   new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
@@ -18,7 +19,9 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
   //TODO: Actually take skills from a database
   skills[0].send(message.channel).then(msg => {
     //Create swipable menu
-    createSwipePanel(client, message.author, msg, skills);
+    createLargeSwipePanel(client, message.author, msg, skills, "START", skill => {
+      startSkill(message.author, skill.title, skill.level);
+    });
   });
 };
 

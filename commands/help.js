@@ -7,10 +7,12 @@ help command, its extended help is shown.
 */
 const { codeBlock } = require("@discordjs/builders");
 const { toProperCase } = require("../modules/functions.js");
+const {MessageActionRow, MessageButton} = require("discord.js");
 
 exports.run = (client, message, args, level) => {
   // Grab the container from the client to reduce line length.
   const { container } = client;
+
   // If no specific command is called, show all filtered commands.
   if (!args[0]) {
     // Load guild settings (for prefixes and eventually per-guild tweaks)
@@ -42,7 +44,20 @@ exports.run = (client, message, args, level) => {
       }
       output += `${settings.prefix}${c.help.name}${" ".repeat(longest - c.help.name.length)} :: ${c.help.description}\n`;
     });
-    message.channel.send(codeBlock("asciidoc", output));
+
+    const buttons = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setLabel("SKILL TREE DISCORD")
+          .setEmoji("968197066784395274")
+          .setStyle("LINK")
+          .setURL("https://discord.gg/qTvJTTyr2F"),
+        new MessageButton()
+          .setLabel("FEEDBACK")
+          .setStyle("LINK")
+          .setURL("https://forms.gle/dF1vcGV3NEMcd5Zm6"));
+
+    message.channel.send({content: `${codeBlock("asciidoc", output)}`, components: [buttons]});
 
   } else {
     // Show individual command's help.

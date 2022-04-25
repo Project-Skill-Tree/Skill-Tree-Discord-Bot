@@ -1,7 +1,7 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
-const formatFrequency = require("../modules/frequencyFormatter.js");
+const {formatFrequency} = require("../modules/frequencyFormatter.js");
 
 /**
  * Skill Object used for storing templates for skills in the tree.

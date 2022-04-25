@@ -1,17 +1,19 @@
-const Skill = require("../objects/skill.js");
-const Task = require("../objects/task.js");
-const {MessageActionRow, MessageSelectMenu,MessageEmbed} = require("discord.js");
-const romanise = require("../modules/romanNumeralHelper");
-const formatFrequency = require("../modules/frequencyFormatter.js");
+const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
+const {romanise} = require("../modules/romanNumeralHelper");
+const {formatFrequency} = require("../modules/frequencyFormatter.js");
+const {trackSkill} = require("../modules/APIHelper");
+const Skill = require("../objects/skill");
+const Task = require("../objects/task");
 
-// Initialize task objects from skill objects.
-// The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
-// as it's just a template for now.
 const tasks = [
   new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
   new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", 30, 3 ,2000),
   new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", 30, 5, 100)
 ].map(skill => new Task(skill, Math.random() > 0.5));
+
+// Initialize task objects from skill objects.
+// The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
+// as it's just a template for now.
 
 /**
  * Test method to send a template task list - sends an embed containing all the tasks under two categories, DAILY and NO DEADLINE
@@ -21,12 +23,30 @@ const tasks = [
  * @param level
  */
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+  //let tasksToday = getTasks(message.author.id, new Date());
+  //let tasksToday = getTasks(message.author.id, new Date());
+
   const embed = buildEmbed();
 
+  var date = "today";
   const dropDownBox = createDropDownBox(tasks);
 
-  const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox] });
-  const collector = msg.createMessageComponentCollector({ time: 30000 });
+  const row = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("yesterday")
+        .setLabel("YESTERDAY")
+        .setStyle("PRIMARY")
+        .setDisabled(false),
+      new MessageButton()
+        .setCustomId("today")
+        .setLabel("TODAY")
+        .setStyle("SECONDARY")
+        .setDisabled(true));
+
+  const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox, row] });
+
+  const collector = msg.createMessageComponentCollector({time: 30000 });
 
   collector.on("collect", i => {
     if (i.user.id !== message.author.id) {
@@ -34,19 +54,36 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
       return;
     }
 
-    const skillTitle = i.values[0];
-    const task = tasks.find(task => task.skill.title === skillTitle);
-    task.completed = !task.completed;
+    if (i.isButton()) {
+      if (i.customId === "today") {
+        date = "today";
+        row.components[0].setStyle("PRIMARY").setDisabled(false);
+        row.components[1].setStyle("SECONDARY").setDisabled(true);
+      } else if (i.customId === "yesterday") {
+        date = "yesterday";
+        row.components[0].setStyle("SECONDARY").setDisabled(true);
+        row.components[1].setStyle("PRIMARY").setDisabled(false);
+      }
 
-    // Send the same embed, but with the updated values of the tasks array.
-    const embed = buildEmbed();
-    const dropDownBox = createDropDownBox(tasks);
+      const embed = buildEmbed(date);
+      msg.edit({embeds: [embed], components: [dropDownBox, row]});
+    }
 
-    msg.edit({ embeds: [embed], components: [dropDownBox] });
+    if (i.isSelectMenu()) {
+      const skillTitle = i.values[0];
+      const task = tasks.find(task => task.skill.title === skillTitle);
+      task.completed = !task.completed;
+
+      trackSkill(message.author.id, task, date);
+
+      // Send the same embed, but with the updated values of the tasks array.
+      const embed = buildEmbed(date);
+      const dropDownBox = createDropDownBox(tasks);
+      msg.edit({ embeds: [embed], components: [dropDownBox, row] });
+    }
 
     i.deferUpdate();
   });
-
 };
 
 function createDropDownBox() {
@@ -66,9 +103,12 @@ function createDropDownBox() {
   );
 }
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed() {
-  const date = new Date();
-  const month = date.toLocaleString("default", { month: "long" }); 
+function buildEmbed(day) {
+  let date = new Date();
+  if (day === "yesterday") {
+    date = new Date(new Date().getTime() - 24*60*60*1000);
+  }
+  const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
 

@@ -1,5 +1,5 @@
 const Canvas = require("canvas");
-const romanise = require("../modules/romanNumeralHelper");
+const {romanise} = require("../modules/romanNumeralHelper");
 
 /** @module badge */
 
