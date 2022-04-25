@@ -24,7 +24,7 @@ const tasks = [
  */
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //let tasksToday = getTasks(message.author.id, new Date());
-  //let tasksToday = getTasks(message.author.id, new Date());
+  //let tasksYesterday = getTasks(message.author.id, new Date(new Date() - 24*60*60*1000));
 
   const embed = buildEmbed();
 
