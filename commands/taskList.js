@@ -1,7 +1,7 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../modules/romanNumeralHelper");
 const {formatFrequency} = require("../modules/frequencyFormatter.js");
-const {trackSkill} = require("../modules/APIHelper");
+const {updateTask} = require("../modules/APIHelper");
 const Skill = require("../objects/skill");
 const Task = require("../objects/task");
 
@@ -74,7 +74,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
       const task = tasks.find(task => task.skill.title === skillTitle);
       task.completed = !task.completed;
 
-      trackSkill(message.author.id, task, date);
+      updateTask(message.author.id, task, date);
 
       // Send the same embed, but with the updated values of the tasks array.
       const embed = buildEmbed(date);

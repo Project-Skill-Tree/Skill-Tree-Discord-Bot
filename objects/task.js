@@ -5,7 +5,8 @@
  * @returns {exports}
  */
 module.exports = class Task {
-  constructor(skill, completed) {
+  constructor(id, skill, completed) {
+    this.id = id;
     this.skill = skill;
     this.completed = completed;
   }
