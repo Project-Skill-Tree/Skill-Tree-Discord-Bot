@@ -6,10 +6,10 @@ const Skill = require("../objects/skill");
 const Task = require("../objects/task");
 
 const tasks = [
-  new Skill("reading.png","Reading", 4, "READ 30m", "day", 30, 1, 800),
-  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", "day", 30, 3 ,2000),
-  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", "week", 30, 5, 100)
-].map(skill => new Task(skill, Math.random() > 0.5));
+  new Skill("reading.png","Reading", 4, "READ 30m", 1, "day", 30, 800),
+  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", 3, "day", 30, 2000),
+  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", 5, "week", 30, 100)
+].map(skill => new Task(0, skill, Math.random() > 0.5));
 
 // Initialize task objects from skill objects.
 // The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
@@ -114,7 +114,7 @@ function buildEmbed(day) {
 
   const dailyTasks = tasks.filter(task => task.skill.interval == "day");
   const otherTasks = tasks.filter(task => task.skill.interval != "day");
-
+  console.log(dailyTasks);
   const dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx));
   const otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length));
 

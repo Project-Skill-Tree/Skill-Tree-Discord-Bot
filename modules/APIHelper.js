@@ -9,16 +9,32 @@ function getKey() {
 /**
  * Get JSON object containing skills from database
  * @param {String} discordid - discordid of the user
- * @return {Promise<AxiosResponse<any>>}
+ * @return UserID
  * @exports getSkills
  */
 exports.createAccount = function(discordid) {
   return axios
-    .post(process.env.API_URL + "users/register", {
+    .post(process.env.API_URL + "users/registerDiscord/", {
+      discordid: discordid,
+    },{
       headers: {
-        discordid: discordid,
         api_key: getKey()
       }
+    });
+};
+
+exports.authUser = function(discordid) {
+  axios
+    .get(process.env.API_URL + "users/loginDiscord/", {
+      discordid: discordid,
+    },{
+      headers: {
+        api_key: getKey()
+      }
+    }).then(res => {
+      return res.data._id !== undefined;
+    }).catch(() => {
+      return false;
     });
 };
 
@@ -30,6 +46,25 @@ exports.createAccount = function(discordid) {
 exports.getSkills = function(callback) {
   axios.get(process.env.API_URL + "skills", {
     headers: {
+      api_key: getKey()
+    }
+  }).then(res => {
+    const skills = res.data.map(data => Skill.create(data));
+    callback(skills);
+  }).catch(res => {
+    console.log(`Error fetching skills: ${res.status}`);
+  });
+};
+
+/**
+ * Get JSON object containing skills available to a given user from database
+ * @return {Promise<AxiosResponse<any>>}
+ * @exports getSkills
+ */
+exports.getAvailableSkills = function(discordid, callback) {
+  axios.get(process.env.API_URL + "skills/available", {
+    headers: {
+      discordid: discordid,
       api_key: getKey()
     }
   }).then(res => {
@@ -68,7 +103,7 @@ exports.getSkill = function(id) {
  */
 exports.startSkill = function(id, title, level) {
   return axios
-    .post(process.env.API_URL + "startSkill", {
+    .post(process.env.API_URL + "skills/startSkill", {
       discordid: id,
       title: title,
       level: level,

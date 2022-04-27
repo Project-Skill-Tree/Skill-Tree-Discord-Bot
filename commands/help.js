@@ -49,13 +49,13 @@ exports.run = (client, message, args, level) => {
       .addComponents(
         new MessageButton()
           .setLabel("SKILL TREE DISCORD")
-          .setEmoji("968197066784395274")
+          .setEmoji("968869023913754634")
           .setStyle("LINK")
           .setURL("https://discord.gg/qTvJTTyr2F"),
         new MessageButton()
           .setLabel("FEEDBACK")
           .setStyle("LINK")
-          .setEmoji("968214775970533436")
+          .setEmoji("968868932486303794")
           .setURL("https://forms.gle/dF1vcGV3NEMcd5Zm6"));
 
     message.channel.send({content: `${codeBlock("asciidoc", output)}`, components: [buttons]});

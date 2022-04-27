@@ -2,8 +2,9 @@ const API = require("../modules/APIHelper.js");
 
 // eslint-disable-next-line no-unused-vars
 exports.run = async (client, message, args, _level) => {
-  const skill = await API.getSkills();
-  message.channel.send(JSON.stringify(skill.data[0]));
+  await API.getSkills(skills => {
+    message.channel.send(skills);
+  });
 };
 
 exports.conf = {
