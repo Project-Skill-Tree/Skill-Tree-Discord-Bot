@@ -13,11 +13,11 @@ class Profile {
    * @param name - Username of the player
    * @param level - Level of the user
    * @param xp - current XP of the player. XP is not counted continuously, it's reset to 0 when the user levels up
-   * @param skills - list of skills the user has acquired
+   * @param skills - list of skills the user has completed
    */
   constructor(name, level, xp, skills) {
     this.name = name;
-    this.level = level ?? 5;
+    this.level = level;
     this.xp = xp;
     this.skills = skills;
   }
@@ -44,16 +44,23 @@ class Profile {
   async getProfileImage() {
     const canvas = Canvas.createCanvas(600, 200);
     const context = canvas.getContext("2d");
+
     //Canvas settings
     context.antialias = "default";
     context.quality = "nearest";
     context.imageSmoothingEnabled = false;
     context.font = "30px \"Akira\"";
-    context.shadowColor = XPHandler.getColor(this.level);
+
+    const color = XPHandler.getColor(this.level);
+    context.shadowColor = color;
 
     //TODO: Dynamically update background based on level
-    const background = await Canvas.loadImage("./assets/backgrounds/bg.png");
+    const background = await Canvas.loadImage("./assets/backgrounds/bg2.png");
     context.drawImage(background, 0, 0, background.width, background.height);
+
+    const [red, green, blue, opacity] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
+    context.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.1)`;
+    context.fillRect(0, 0, 600, 200);
 
     context.shadowBlur = 10;
     context.fillStyle = "rgba(255,255,255,1)";
@@ -71,7 +78,7 @@ class Profile {
   async drawProfile(canvas, profileX, profileWidth) {
     const context = canvas.getContext("2d");
 
-    context.fillStyle = "rgba(0, 0, 0, 0.8)";
+    context.fillStyle = "rgba(0, 0, 0, 0.6)";
     context.fillRect(0, 0, profileX, 200);
 
     //Draw character
