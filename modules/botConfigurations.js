@@ -1,4 +1,3 @@
-
 const configurations =  {
   website: "<UNRELEASED>",
   invite_link: "https://discord.gg/skilltree",
