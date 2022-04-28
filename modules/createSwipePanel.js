@@ -1,7 +1,17 @@
 const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
+/** @module createSwipePanel */
 
-module.exports = function(client, user, msg, list) {
-  var currentPage = 0;
+/**
+ * Create swipeable panel
+ * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
+ * List is cyclic and cycles back to the start
+ * @param {Client} client - Discord bot client
+ * @param {User} user - User who sent the message
+ * @param {MessageEmbed} msg - Discord embedded message object
+ * @param {Swipeable[]} list - List of swipeable objects
+ */
+exports.createSwipePanel = function(client, user, msg, list) {
+  let currentPage = 0;
 
   //Add left/right messageButton to message
   const row = new MessageActionRow()

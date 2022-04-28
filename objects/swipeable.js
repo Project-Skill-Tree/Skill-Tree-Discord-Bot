@@ -1,4 +1,13 @@
-module.exports = class Swipeable {
+/**
+ * Swipeable interface used to allow objects to be cycled left/right in an embedded discord message.
+ * @interface
+ * @type {Swipeable}
+ */
+class Swipeable {
+  /**
+   * Must define the *Uppdate* Method to update the discord embed
+   * @constructor
+   */
   constructor() {
     //Cannot instantiate abstract class
     if (new.target === Swipeable) {
@@ -9,4 +18,6 @@ module.exports = class Swipeable {
       throw new TypeError("Must override update method");
     }
   }
-};
+}
+
+module.exports = Swipeable;

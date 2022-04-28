@@ -6,13 +6,10 @@ The self-improvement Discord bot. The first service of the Adonis Self-improveme
 [![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/ASI-DiscordBot)](https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/stargazers)
 
 ## Tech
-- [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's API
+- [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's Data
 - [Node.js](https://nodejs.org/en/) JavaScript runtime
 - [NPM](https://www.npmjs.com/) Package manager for Node.js
-- [Docker](https://www.docker.com/) Containerization platform
 - [guidebot](https://github.com/AnIdiotsGuide/guidebot/) Boilerplate example Discord bot
-
-### Potential
 - [Mongoose.js](https://mongoosejs.com/) An Object Data Modeling (ODM) library for MongoDB and Node.js
 
 ## Requirements
@@ -44,12 +41,9 @@ To start the bot, in the command prompt, run the following command:
 
 ## Contributing
 Read up on [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) for instructions on code contribution.
+Read the [documentation wiki](https://adonis-self-improvement.github.io/skill-tree-docs.github.io/)
 ### Setting up a development environment
 Read [Installation](#installation) to get started.
 
 This project uses Eslint for code formatting. Install it [here](https://eslint.org/) and run it before making a pull request with your changes.<br>
 You can run Eslint via `npx eslint --fix .`.
-
-
-### Build the Docker image
-_To be written_
