@@ -47,6 +47,7 @@ exports.run = async (client,message) => {
       scope = message.member;
       const instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
       setTimeout(() => instructions_message.delete(),10000);
+      message.delete();
     }
   }
   catch (error) {
@@ -81,6 +82,7 @@ exports.run = async (client,message) => {
         dmMessage.delete();
         enabledDMs = i.component.label;
         finalMessage = await scope.send({embeds: [finalEmbed]});
+        scope.send(`Join the discord server for help,feedback and access to all the latest features and updates: ${Configurations().invite_link}`);
         break;
     }
   });

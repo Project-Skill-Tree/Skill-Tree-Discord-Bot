@@ -14,6 +14,11 @@ module.exports = (client,member) => {
     **How do i use the bot?**\n
     You can set up your skill tree account using the \`~setup\` command, which can also be used in the Skill Tree app (not released yet!)\n
     look through the \`~help\` menu to learn more about my features.\n\n
+    **Channels**\n
+    <#968766665305231450> : Check out our frequently asked questions \n
+    <#953924789494501376> : Want to contribute? Add a role that suits your interests and help develop this project!  \n
+    <#954747309143490591> : Have a look at the roadmap and scope of this project \n
+    <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n\n
     **resources**\n
     Invite a friend using the invite link: ${configurations().invite_link} \n
     Website: ${configurations().website}`)
