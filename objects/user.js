@@ -6,11 +6,11 @@ const {drawBadge} = require("./badge");
 /**
  * User object
  */
-class Profile {
+class User {
   /**
-   * Player profile constructor
+   * User constructor
    * @constructor
-   * @param name - Username of the player
+   * @param name - Username
    * @param level - Level of the user
    * @param xp - current XP of the player. XP is not counted continuously, it's reset to 0 when the user levels up
    * @param skills - list of skills the user has completed
@@ -20,6 +20,10 @@ class Profile {
     this.level = level;
     this.xp = xp;
     this.skills = skills;
+  }
+
+  static create(data) {
+    return new User(data.username, data.level, data.xp, data.skillscompleted);
   }
 
   /**
@@ -58,7 +62,7 @@ class Profile {
     const background = await Canvas.loadImage("./assets/backgrounds/bg2.png");
     context.drawImage(background, 0, 0, background.width, background.height);
 
-    const [red, green, blue, opacity] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
+    const [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
     context.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.1)`;
     context.fillRect(0, 0, 600, 200);
 
@@ -67,7 +71,7 @@ class Profile {
     context.fillText(this.name, 180, 40, 300);
     context.shadowBlur = 0;
 
-    await this.drawProfile(canvas, 100, 130);
+    await this.drawProfile(canvas, 80, 130);
     await this.drawXP(canvas, 165 + 25,160, 365 - 64, 30);
     await this.drawProfileInfo(canvas);
 
@@ -79,7 +83,7 @@ class Profile {
     const context = canvas.getContext("2d");
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
-    context.fillRect(0, 0, profileX, 200);
+    context.fillRect(0, 0, profileX*2, 200);
 
     //Draw character
     const characterPath = XPHandler.getCharacter(this.level);
@@ -158,15 +162,15 @@ class Profile {
     }
 
     //draw INFO
-    const totalXP = XPHandler.calcTotalXP(this.level,this.xp);
+    const totalXP = XPHandler.calcTotalXP(this.level, this.xp);
     const INFO = `Total XP: ${totalXP}XP\n` +
                   `Completed Skills: ${this.skills.length}\n`+
-                  `Current Skills: ${3}\n` +
-                  `Days Tracked: ${52}`;
+                  `Current Skills: ${0}\n` +
+                  `Days Tracked: ${0}`;
     context.font = "20px \"Tahoma\"";
     context.fillStyle = "rgba(255, 255, 255, 0.8)";
     context.fillText(INFO, 190,70);
   }
 }
 
-module.exports = Profile;
+module.exports = User;

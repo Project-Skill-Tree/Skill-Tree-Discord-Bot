@@ -1,5 +1,6 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
+const User = require("../objects/user");
 /** @module APIHelper */
 
 function getKey() {
@@ -35,6 +36,28 @@ exports.authUser = function(discordid) {
       return res.data._id !== undefined;
     }).catch(() => {
       return false;
+    });
+};
+
+/**
+ * Get JSON object for user given discord ID
+ * @param user - discord user object
+ * @param callback - method to pass user object to
+ * @return UserID
+ * @exports getSkills
+ */
+exports.profile = function(user, callback) {
+  axios
+    .get(process.env.API_URL + "users/profile/", {
+      headers: {
+        api_key: getKey(),
+        discordid: user.id
+      }
+    }).then(res => {
+      res.data["username"] = user.username;
+      callback(User.create(res.data));
+    }).catch(() => {
+      console.log("Error: user not found");
     });
 };
 
