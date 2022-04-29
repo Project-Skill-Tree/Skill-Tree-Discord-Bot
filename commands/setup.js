@@ -107,6 +107,7 @@ exports.run = async (client,message) => {
       case "character":
         userGender = i.component.label;
         characterMessage.delete();
+        finalMessage = await scope.send({embeds: [finalEmbed],components: [finalRow]});
         scope.send("**TO HELP YOU START WITH YOUR QUEST \nHERE ARE A FEW ITEMS YOU CAN USE. \nWANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
         const book = new Item("SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
         book.send(client, scope);
