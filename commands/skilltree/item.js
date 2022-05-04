@@ -1,4 +1,4 @@
-const Item = require("../objects/item");
+const Item = require("../../objects/item");
 
 /**
  * Test method to send an embedded item to the chat

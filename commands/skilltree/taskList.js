@@ -1,9 +1,9 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
-const {romanise} = require("../modules/romanNumeralHelper");
-const {formatFrequency} = require("../modules/frequencyFormatter.js");
-const {updateTask} = require("../modules/APIHelper");
-const Skill = require("../objects/skill");
-const Task = require("../objects/task");
+const {romanise} = require("../../modules/romanNumeralHelper");
+const {formatFrequency} = require("../../modules/frequencyFormatter.js");
+const {updateTask, auth} = require("../../modules/APIHelper");
+const Skill = require("../../objects/skill");
+const Task = require("../../objects/task");
 
 const tasks = [
   new Skill("reading.png","Reading", 4, "READ 30m", 1, "day", 30, 800),
@@ -23,6 +23,13 @@ const tasks = [
  * @param level
  */
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+  //Validate user exists
+  auth(message.author.id, message.channel, () => {
+    taskListCommand(client, message);
+  });
+};
+
+async function taskListCommand(client, message) {
   //let tasksToday = getTasks(message.author.id, new Date());
   //let tasksYesterday = getTasks(message.author.id, new Date(new Date() - 24*60*60*1000));
 
@@ -84,7 +91,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
 
     i.deferUpdate();
   });
-};
+}
 
 function createDropDownBox() {
   return new MessageActionRow().addComponents(
@@ -114,7 +121,7 @@ function buildEmbed(day) {
 
   const dailyTasks = tasks.filter(task => task.skill.interval == "day");
   const otherTasks = tasks.filter(task => task.skill.interval != "day");
-  console.log(dailyTasks);
+
   const dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx));
   const otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length));
 

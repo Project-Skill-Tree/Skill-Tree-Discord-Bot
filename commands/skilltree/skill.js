@@ -1,6 +1,5 @@
-const Skill = require("../objects/skill");
-const {createLargeSwipePanel} = require("../modules/createSwipePanel");
-const {startSkill, getAvailableSkills, authUser} = require("../modules/APIHelper");
+const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
+const {startSkill, getAvailableSkills, auth} = require("../../modules/APIHelper");
 
 /**
  * Test method to send an embedded skill to the chat
@@ -10,12 +9,17 @@ const {startSkill, getAvailableSkills, authUser} = require("../modules/APIHelper
  * @param level
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  if (!authUser(message.author.id)) return;
+  //Validate user exists
+  auth(message.author.id, message.channel,() => {
+    skillCommand(client, message);
+  });
+};
 
+function skillCommand(client, message) {
+  //Get available skills
   getAvailableSkills(message.author.id, skills => {
-    console.log(skills.length);
     if (skills.length === 0) {
-      message.channel.send("```You have no available skills. Use ~tasks to see what```");
+      message.channel.send("```You have no available skills. Use ~tasks to see what skills you have started```");
       return;
     }
 
@@ -26,7 +30,7 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
       });
     });
   });
-};
+}
 
 exports.conf = {
   enabled: true,
@@ -38,6 +42,6 @@ exports.conf = {
 exports.help = {
   name: "skill",
   category: "Skill Tree",
-  description: "Tests embedded skill messages",
+  description: "Displays all of your available skills and allows you to start them",
   usage: "skill"
 };

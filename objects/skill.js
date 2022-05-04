@@ -30,6 +30,7 @@ class Skill extends Swipeable {
     this.timelimit = timelimit;
     this.frequency = frequency;
     this.xp = xp;
+    this.children = [];
   }
 
   /**
@@ -58,7 +59,7 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.iconPath,"advanced.png",  this.level);
+    const badgeIcon = await getBadgeIcon(this.iconPath, this.level);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
     embed.setColor("#d21cff");

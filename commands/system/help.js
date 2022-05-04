@@ -6,7 +6,7 @@ a command, it is not shown to them. If a command name is given with the
 help command, its extended help is shown.
 */
 const { codeBlock } = require("@discordjs/builders");
-const { toProperCase } = require("../modules/functions.js");
+const { toProperCase } = require("../../modules/functions.js");
 const {MessageActionRow, MessageButton} = require("discord.js");
 
 exports.run = (client, message, args, level) => {

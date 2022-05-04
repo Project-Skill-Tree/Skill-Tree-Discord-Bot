@@ -26,7 +26,7 @@ class Item extends Swipeable {
    * @param channel
    */
   async send(client, channel) {
-    const icon = new MessageAttachment(await addGlow("icons/chest.png", 50), "icon.png");
+    const icon = new MessageAttachment(await addGlow("icons/chest.png", 64, "transparent"), "icon.png");
     const embed = this.update(new MessageEmbed());
     channel.send({embeds: [embed], files: [icon]});
   }

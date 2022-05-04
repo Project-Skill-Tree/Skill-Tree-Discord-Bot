@@ -1,4 +1,4 @@
-const Challenge = require("../objects/challenge");
+const Challenge = require("../../objects/challenge");
 
 /**
  * Test method to send an embedded skill to the chat

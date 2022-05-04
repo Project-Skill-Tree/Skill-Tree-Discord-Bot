@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
 const User = require("../objects/user");
+const {authErrMsg} = require("./AuthHelper");
 /** @module APIHelper */
 
 function getKey() {
@@ -24,18 +25,27 @@ exports.createAccount = function(discordid) {
     });
 };
 
-exports.authUser = function(discordid) {
+/**
+ * Authorise the user as existing in the database
+ * @param discordid
+ * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
+ * @param callback - Callback with param true/false for user found/not
+ */
+exports.auth = function(discordid, channel=null, callback) {
   axios
     .get(process.env.API_URL + "users/loginDiscord/", {
-      discordid: discordid,
-    },{
       headers: {
-        api_key: getKey()
+        api_key: getKey(),
+        discordid: discordid,
       }
     }).then(res => {
-      return res.data._id !== undefined;
-    }).catch(() => {
-      return false;
+      if (channel != null) {
+        authErrMsg(res.data.userExists, channel, callback);
+      } else {
+        if (res.data.userExists) {
+          callback();
+        }
+      }
     });
 };
 
@@ -43,7 +53,7 @@ exports.authUser = function(discordid) {
  * Get JSON object for user given discord ID
  * @param user - discord user object
  * @param callback - method to pass user object to
- * @return UserID
+ * @param onError - method to call after user not found or method error
  * @exports getSkills
  */
 exports.profile = function(user, callback) {
@@ -54,10 +64,10 @@ exports.profile = function(user, callback) {
         discordid: user.id
       }
     }).then(res => {
-      res.data["username"] = user.username;
+      res.data.user["username"] = user.username;
       callback(User.create(res.data));
-    }).catch(() => {
-      console.log("Error: user not found");
+    }).catch(err => {
+      console.log(err);
     });
 };
 
@@ -81,7 +91,8 @@ exports.getSkills = function(callback) {
 
 /**
  * Get JSON object containing skills available to a given user from database
- * @return {Promise<AxiosResponse<any>>}
+ * @param discordid - Discord user ID
+ * @param callback - function to run, passes list of skills
  * @exports getSkills
  */
 exports.getAvailableSkills = function(discordid, callback) {
@@ -101,9 +112,10 @@ exports.getAvailableSkills = function(discordid, callback) {
 /**
  * Get the JSON object for a skill with a given id from the database
  * @param {string} id - The ObjectID of the skill to be requested
+ * @param callback
  * @returns Skill or Null
  */
-exports.getSkill = function(id) {
+exports.getSkill = function(id, callback) {
   axios
     .get(process.env.API_URL + "skills/?id="+id, {
       headers: {
@@ -111,9 +123,9 @@ exports.getSkill = function(id) {
       }
     }).then(res => {
       console.log(`statusCode: ${res.status}`);
-      return Skill.create(res.data);
+      callback(Skill.create(res.data));
     }).catch(() => {
-      return null;
+      callback(null);
     });
 };
 
@@ -122,10 +134,9 @@ exports.getSkill = function(id) {
  * @param id - discord id of the user
  * @param title - title of the skill to start
  * @param level - level of the skill to start
- * @return {Promise<AxiosResponse<any>>}
  */
 exports.startSkill = function(id, title, level) {
-  return axios
+  axios
     .post(process.env.API_URL + "skills/startSkill", {
       discordid: id,
       title: title,

@@ -23,7 +23,7 @@ class Challenge extends Swipeable {
    */
   async send(client, channel) {
     //TODO: Dynamically load characters for challenges
-    const icon = new MessageAttachment(await addGlow("characters/spartan.png", 100), "icon.png");
+    const icon = new MessageAttachment(await addGlow("icons/challenge.png", 100, "transparent"), "icon.png");
     const embed = this.update(new MessageEmbed());
 
     channel.send({ embeds: [embed], files: [icon]});

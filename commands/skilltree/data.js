@@ -1,4 +1,4 @@
-const API = require("../modules/APIHelper.js");
+const API = require("../../modules/APIHelper.js");
 
 // eslint-disable-next-line no-unused-vars
 exports.run = async (client, message, args, _level) => {

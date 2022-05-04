@@ -1,4 +1,4 @@
-const {createAccount} = require("../modules/APIHelper");
+const {createAccount} = require("../../modules/APIHelper");
 
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   createAccount(message.author.id).then(() => {
