@@ -6,8 +6,6 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
   //Validate user exists
   auth(message.author.id, message.channel,() => {
     profile(message.author, user => {
-      user.level = args[0];
-      user.xp = Math.floor(Math.random() * XPHandler.calcXP(user.level));
       displayProfile(user, message.channel);
     });
   });
