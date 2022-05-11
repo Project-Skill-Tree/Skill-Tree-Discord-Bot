@@ -1,7 +1,6 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
 const User = require("../objects/user");
-const {authErrMsg} = require("./AuthHelper");
 /** @module APIHelper */
 
 function getKey() {
@@ -28,23 +27,45 @@ exports.createAccount = function(discordid) {
 /**
  * Authorise the user as existing in the database
  * @param discordid
- * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
+ * @param gender
+ * @param difficulty
+ * @param dms_enabled
  * @param callback - Callback with param true/false for user found/not
  */
-exports.auth = function(discordid, channel=null, callback) {
+exports.createUser = function(discordid,gender,difficulty,dms_enabled,callback) {
   axios
-    .get(process.env.API_URL + "users/loginDiscord/", {
+    .post(process.env.API_URL + "users/registerDiscord/",{
+      discordid: discordid,
+      gender: gender,
+      difficulty: difficulty,
+      dms_enabled:dms_enabled}, {
       headers: {
         api_key: getKey(),
-        discordid: discordid,
       }
     }).then(res => {
-      if (channel != null) {
-        authErrMsg(res.data.userExists, channel, callback);
-      } else {
-        if (res.data.userExists) {
-          callback();
-        }
+      if (res.data.userFound) {
+        callback();
+      }
+    });
+};
+
+/**
+ * Updating a user in the database
+ * @param discordid
+ * @param gender
+ * @param difficulty
+ * @param dms_enabled
+ **/
+exports.updateUser =function(discordid, gender, difficulty, dms_enabled) {
+  return axios
+    .post(process.env.API_URL + "users/updateUser/", {
+      discordid: discordid,
+      gender:gender,
+      difficulty:difficulty,
+      dms_enabled:dms_enabled
+    },{
+      headers: {
+        api_key: getKey()
       }
     });
 };
