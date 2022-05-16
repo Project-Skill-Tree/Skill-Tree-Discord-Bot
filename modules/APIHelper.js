@@ -1,6 +1,8 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
 const User = require("../objects/user");
+const {authErrMsg} = require("./AuthHelper");
+
 /** @module APIHelper */
 
 function getKey() {
@@ -20,6 +22,54 @@ exports.createAccount = function(discordid) {
     },{
       headers: {
         api_key: getKey()
+      }
+    });
+};
+
+/**
+ * Authorise the user as existing in the database
+ * @param discordid
+ * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
+ * @param callback - Callback with param true/false for user found/not
+ */
+exports.auth = function(discordid, channel=null, callback) {
+  axios
+    .get(process.env.API_URL + "users/loginDiscord/", {
+      headers: {
+        api_key: getKey(),
+        discordid: discordid,
+      }
+    }).then(res => {
+      if (channel != null) {
+        authErrMsg(res.data.userExists, channel, callback);
+      } else {
+        if (res.data.userExists) {
+          callback();
+        }
+      }
+    });
+};
+
+/**
+ * Authorise the user as existing in the database
+ * @param discordid
+ * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
+ * @param callback - Callback with param true/false for user found/not
+ */
+exports.auth = function(discordid, channel=null, callback) {
+  axios
+    .get(process.env.API_URL + "users/loginDiscord/", {
+      headers: {
+        api_key: getKey(),
+        discordid: discordid,
+      }
+    }).then(res => {
+      if (channel != null) {
+        authErrMsg(res.data.userExists, channel, callback);
+      } else {
+        if (res.data.userExists) {
+          callback();
+        }
       }
     });
 };
@@ -53,7 +103,7 @@ exports.createUser = function(discordid,gender,difficulty,dms_enabled,callback) 
  * Updating a user in the database
  * @param discordid
  * @param gender
- * @param difficulty
+ * @param difficulty 
  * @param dms_enabled
  **/
 exports.updateUser =function(discordid, gender, difficulty, dms_enabled) {
@@ -189,6 +239,23 @@ exports.updateTask = function(id, task, date) {
       }
     });
 };
+/**
+ * 
+ * @param xp - amount of xp to add 
+ * @param discordid - the discord ID of the user 
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+exports.addXP = function(xp, discordid) {
+  return axios
+    .post(process.env.API_URL + "users/addXP", {
+      xp: parseInt(xp),
+      discordid: discordid
+    },{
+      headers: {
+        api_key: getKey()
+      }
+    });
+}
 
 /**
  * Gets a users skills and returns them as task objects with "completed" field
