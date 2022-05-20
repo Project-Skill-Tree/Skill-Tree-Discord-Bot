@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
 const User = require("../objects/user");
+const Task = require("../objects/task");
 const {authErrMsg} = require("./AuthHelper");
 
 /** @module APIHelper */
@@ -40,39 +41,11 @@ exports.auth = function(discordid, channel=null, callback) {
         discordid: discordid,
       }
     }).then(res => {
-      if (channel != null) {
-        authErrMsg(res.data.userExists, channel, callback);
-      } else {
-        if (res.data.userExists) {
-          callback();
-        }
-      }
+      authErrMsg(res.data._id, channel, callback);
     });
 };
+  
 
-/**
- * Authorise the user as existing in the database
- * @param discordid
- * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
- * @param callback - Callback with param true/false for user found/not
- */
-exports.auth = function(discordid, channel=null, callback) {
-  axios
-    .get(process.env.API_URL + "users/loginDiscord/", {
-      headers: {
-        api_key: getKey(),
-        discordid: discordid,
-      }
-    }).then(res => {
-      if (channel != null) {
-        authErrMsg(res.data.userExists, channel, callback);
-      } else {
-        if (res.data.userExists) {
-          callback();
-        }
-      }
-    });
-};
 
 /**
  * Authorise the user as existing in the database
@@ -161,15 +134,54 @@ exports.getSkills = function(callback) {
 };
 
 /**
+ * Get JSON object containing tasks that the user has accepted from the database
+ * @return {Promise<AxiosResponse<any>>}
+ * @exports getTasksInProgress
+ */
+exports.getTasksInProgress = function(userID,callback) {
+  axios.get(process.env.API_URL + "tasks/currentTasks", {
+    headers: {
+      userID: userID,
+      api_key: getKey()
+    }
+  }).then((res)=>{
+    const tasks = res.data.map(data => Task.create(data)); 
+    console.log(tasks);
+    callback(tasks);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+/**
+ * Get JSON object containing skills that the user has accepted from the database
+ * @return {Promise<AxiosResponse<any>>}
+ * @exports getSkillsInProgress
+ */
+exports.getSkillsInProgress = function(userID,callback) {
+  axios.get(process.env.API_URL + "skills/skillsInProgress", {
+    headers: {
+      userID: userID,
+      api_key: getKey()
+    }
+  }).then((res)=>{
+    const skills = res.data;
+    callback(skills);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+/**
  * Get JSON object containing skills available to a given user from database
- * @param discordid - Discord user ID
+ * @param UserID
  * @param callback - function to run, passes list of skills
  * @exports getSkills
  */
-exports.getAvailableSkills = function(discordid, callback) {
+exports.getAvailableSkills = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/available", {
     headers: {
-      discordid: discordid,
+      userID: userID,
       api_key: getKey()
     }
   }).then(res => {
@@ -226,12 +238,12 @@ exports.startSkill = function(id, title, level) {
  * @param date - "today" or "yesterday"
  * @return {Promise<AxiosResponse<any>>}
  */
-exports.updateTask = function(id, task, date) {
+exports.updateTask = function(userid, skill, date) {
   return axios
-    .post(process.env.API_URL + "trackSkill", {
-      discordid: id,
-      taskid: task.id,
-      completed: task.completed,
+    .post(process.env.API_URL + "tasks/updateTask", {
+      userid: userid,
+      skillid: skill.id,
+      completed: skill.completed,
       date: date
     },{
       headers: {

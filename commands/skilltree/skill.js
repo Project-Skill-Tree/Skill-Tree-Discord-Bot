@@ -10,14 +10,14 @@ const {startSkill, getAvailableSkills, auth} = require("../../modules/APIHelper"
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
-  auth(message.author.id, message.channel,() => {
-    skillCommand(client, message);
+  auth(message.author.id, message.channel,(userID) => {
+    skillCommand(client, message,userID);
   });
 };
 
-function skillCommand(client, message) {
+function skillCommand(client, message,userID) {
   //Get available skills
-  getAvailableSkills(message.author.id, skills => {
+  getAvailableSkills(userID, skills => {
     if (skills.length === 0) {
       message.channel.send("```You have no available skills. Use ~tasks to see what skills you have started```");
       return;
@@ -26,7 +26,7 @@ function skillCommand(client, message) {
     skills[0].send(message.channel).then(msg => {
       //Create swipable menu
       createLargeSwipePanel(client, message.author, msg, skills, "START", skill => {
-        startSkill(message.author.id, skill.title, skill.level);
+        startSkill(message.member.id, skill.title, skill.level);
       });
     });
   });

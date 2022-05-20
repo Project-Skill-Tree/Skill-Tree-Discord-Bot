@@ -2,18 +2,9 @@ const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = requi
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {formatFrequency} = require("../../modules/frequencyFormatter.js");
 const {updateTask, auth} = require("../../modules/APIHelper");
-const Skill = require("../../objects/skill");
-const Task = require("../../objects/task");
+const {getSkillsInProgress} = require("../../modules/APIHelper");
 
-const tasks = [
-  new Skill("reading.png","Reading", 4, "READ 30m", 1, "day", 30, 800),
-  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", 3, "day", 30, 2000),
-  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", 5, "week", 30, 100)
-].map(skill => new Task(0, skill, Math.random() > 0.5));
 
-// Initialize task objects from skill objects.
-// The Math.random() > 0.5 part just decides a random value for whether the task has been completed or not,
-// as it's just a template for now.
 
 /**
  * Test method to send a template task list - sends an embed containing all the tasks under two categories, DAILY and NO DEADLINE
@@ -23,19 +14,23 @@ const tasks = [
  * @param level
  */
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  //Validate user exists
-  auth(message.author.id, message.channel, () => {
-    taskListCommand(client, message);
+  //gets tasks and makes it a global variable
+  auth(message.author.id, message.channel, (userID) => {
+    getSkillsInProgress(userID,(list)=>{
+      taskListCommand(client,message,list);
+    }
+    );
   });
+  //Validate user exists
+
 };
 
-async function taskListCommand(client, message) {
+async function taskListCommand(client, message,tasks) {
   //let tasksToday = getTasks(message.author.id, new Date());
   //let tasksYesterday = getTasks(message.author.id, new Date(new Date() - 24*60*60*1000));
 
-  const embed = buildEmbed();
-
   var date = "today";
+  const embed = buildEmbed(date,tasks);
   const dropDownBox = createDropDownBox(tasks);
 
   const row = new MessageActionRow()
@@ -44,12 +39,12 @@ async function taskListCommand(client, message) {
         .setCustomId("yesterday")
         .setLabel("YESTERDAY")
         .setStyle("PRIMARY")
-        .setDisabled(false),
+        .setDisabled(true),
       new MessageButton()
         .setCustomId("today")
         .setLabel("TODAY")
         .setStyle("SECONDARY")
-        .setDisabled(true));
+        .setDisabled(false));
 
   const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox, row] });
 
@@ -72,7 +67,7 @@ async function taskListCommand(client, message) {
         row.components[1].setStyle("PRIMARY").setDisabled(false);
       }
 
-      const embed = buildEmbed(date);
+      const embed = buildEmbed(date,tasks);
       msg.edit({embeds: [embed], components: [dropDownBox, row]});
     }
 
@@ -80,11 +75,12 @@ async function taskListCommand(client, message) {
       const skillTitle = i.values[0];
       const task = tasks.find(task => task.skill.title === skillTitle);
       task.completed = !task.completed;
-
-      updateTask(message.author.id, task, date);
+      auth(message.author.id, message.channel, (userID) => {
+        updateTask(userID, task, date);
+      });
 
       // Send the same embed, but with the updated values of the tasks array.
-      const embed = buildEmbed(date);
+      const embed = buildEmbed(date,tasks);
       const dropDownBox = createDropDownBox(tasks);
       msg.edit({ embeds: [embed], components: [dropDownBox, row] });
     }
@@ -93,15 +89,15 @@ async function taskListCommand(client, message) {
   });
 }
 
-function createDropDownBox() {
+function createDropDownBox(tasks) {
   return new MessageActionRow().addComponents(
     new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Complete/uncomplete a task").addOptions(
       tasks.map(
         task => {
           return {
-            label: `${task.skill.title} ${romanise(task.skill.level)}`,
-            description: task.skill.goal,
-            value: task.skill.title,
+            label: `${task.title} ${romanise(task.level)}`,
+            description: task.goal,
+            value: task.title,
             emoji: task.completed ? "✅" : "❌",
           };
         }
@@ -110,7 +106,8 @@ function createDropDownBox() {
   );
 }
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(day) {
+function buildEmbed(day,tasks) {
+  
   let date = new Date();
   if (day === "yesterday") {
     date = new Date(new Date().getTime() - 24*60*60*1000);
@@ -118,28 +115,27 @@ function buildEmbed(day) {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
-
-  const dailyTasks = tasks.filter(task => task.skill.interval == "day");
-  const otherTasks = tasks.filter(task => task.skill.interval != "day");
-
-  const dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx));
-  const otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length));
-
+  const dailyTasks = tasks.filter(task => task.interval === "day");
+  const otherTasks = tasks.filter(task => task.interval != "day");
+  let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx)).join("\n"); 
+  let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length)).join("\n");
+  if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
+  if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
   const embed = new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")
-    .addField("Daily Tasks", dailyTaskStrings.join("\n"))
-    .addField("Ongoing", otherTaskStrings.join("\n"));
+    .addField("Daily Tasks", dailyTaskStrings)
+    .addField("Ongoing", otherTaskStrings);
 
   return embed;
 }
 
 function formatTask(task, idx) {
   const completedEmoji = task.completed ? ":white_check_mark:": ":x:";
-  const levelRoman = romanise(task.skill.level);
-  const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
+  const levelRoman = romanise(task.level);
+  const frequencyFormat = formatFrequency(task.frequency, task.interval);
 
-  return `${completedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
+  return `${completedEmoji} | **${idx + 1}. ${task.title} ${levelRoman} (${frequencyFormat})**: ${task.goal}`;
 }
 
 exports.conf = {
