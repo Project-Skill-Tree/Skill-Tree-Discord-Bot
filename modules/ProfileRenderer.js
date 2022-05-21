@@ -25,9 +25,7 @@ async function getProfileImage(user) {
   const context = canvas.getContext("2d");
 
   //Canvas settings
-  context.antialias = "default";
-  context.quality = "nearest";
-  context.imageSmoothingEnabled = false;
+  context.imageSmoothingEnabled = true;
   context.font = "30px \"Akira\"";
 
   const color = XPHandler.getColor(user.level);
@@ -45,7 +43,7 @@ async function getProfileImage(user) {
   context.fillText(user.name, 180, 40, 300);
   context.shadowBlur = 0;
 
-  await drawProfile(canvas, user,80, 130);
+  await drawProfile(canvas, user,80, 140, 130);
   await drawXP(canvas, user,165 + 25,160, 365 - 64, 30);
   await drawProfileInfo(canvas, user);
 
@@ -53,7 +51,7 @@ async function getProfileImage(user) {
   return canvas.toBuffer();
 }
 
-async function drawProfile(canvas, user, profileX, profileWidth) {
+async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) {
   const context = canvas.getContext("2d");
 
   context.fillStyle = "rgba(0, 0, 0, 0.6)";
@@ -62,11 +60,18 @@ async function drawProfile(canvas, user, profileX, profileWidth) {
   //Draw character
   const characterPath = XPHandler.getCharacter(user.level);
   const character = await Canvas.loadImage("./assets/characters/"+characterPath);
-  const iconSizeRatio = profileWidth / character.width;
+  const iconSizeRatio = Math.min(profileWidth / character.width, profileHeight / character.height);
 
-  context.drawImage(character, profileX-profileWidth*0.5,
+  context.shadowColor = XPHandler.getColor(user.level);
+  context.shadowBlur = 50;
+
+  context.drawImage(character,
+    profileX - character.width * iconSizeRatio * 0.5,
     canvas.height / 2 - character.height * iconSizeRatio * 0.5 - 10,
-    character.width * iconSizeRatio, character.height * iconSizeRatio);
+    character.width * iconSizeRatio,
+    character.height * iconSizeRatio);
+
+  context.shadowBlur = 0;
 
   const LVL = `LVL: ${user.level}`;
   context.font = "20px \"Akira\"";

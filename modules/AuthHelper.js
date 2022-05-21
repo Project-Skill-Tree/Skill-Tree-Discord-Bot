@@ -2,7 +2,7 @@
 
 /*
  * Displays an error message if the user is not found
- * @param {Boolean} userExists - T/F depending on if the user is registered
+ * @param {?Boolean} id - null or userID value
  * @param channel - channel to send warn message
  * @param callback - function to run if the user exists
  */

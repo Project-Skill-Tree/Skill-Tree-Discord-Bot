@@ -14,15 +14,13 @@ const {getSkillsInProgress} = require("../../modules/APIHelper");
  * @param level
  */
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  //gets tasks and makes it a global variable
+  //Validate user exists
   auth(message.author.id, message.channel, (userID) => {
     getSkillsInProgress(userID,(list)=>{
       taskListCommand(client,message,list);
     }
     );
   });
-  //Validate user exists
-
 };
 
 async function taskListCommand(client, message,tasks) {
@@ -116,7 +114,7 @@ function buildEmbed(day,tasks) {
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
   const dailyTasks = tasks.filter(task => task.interval === "day");
-  const otherTasks = tasks.filter(task => task.interval != "day");
+  const otherTasks = tasks.filter(task => task.interval !== "day");
   let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx)).join("\n"); 
   let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length)).join("\n");
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}

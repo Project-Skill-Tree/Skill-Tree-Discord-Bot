@@ -2,14 +2,14 @@ const Rank = require("../objects/rank");
 /** @module XPHandler */
 
 const ranks = [
-  new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "acolyte.png"),
-  new Rank("Spartan",10,"rgb(255, 100, 69)", "red_spartan.png"),
-  new Rank("Disciple",20,"rgb(75, 252, 252)", "disciple.png"),
-  new Rank("Warrior",30,"rgb(255,207,40)", "spartan.png"),
-  new Rank("Adonis",40,"rgb(161, 105, 231)", "purple_adonis.png"),
-  new Rank("Maximus",50,"rgb(33,255,177)", "maximus.png"),
-  new Rank("Gold Adonis",60,"rgb(255,198,7)", "gold_adonis.png"),
-  new Rank("Overseer",80,"rgb(253,84, 191)", "overseer.png"),
+  new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "character1.png"),
+  new Rank("Spartan",10,"rgb(255, 100, 69)", "character2.png"),
+  new Rank("Disciple",20,"rgb(75, 252, 252)", "character3.png"),
+  new Rank("Warrior",40,"rgb(255,207,40)", "character4.png"),
+  new Rank("Adonis",60,"rgb(161, 105, 231)", "character5.png"),
+  new Rank("Maximus",80,"rgb(33,255,177)", "character6.png"),
+  //new Rank("Gold Adonis",60,"rgb(255,198,7)", "gold_adonis.png"),
+  //new Rank("Overseer",80,"rgb(253,84, 191)", "overseer.png"),
 ];
 
 /**

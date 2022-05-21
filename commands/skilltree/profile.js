@@ -1,6 +1,5 @@
 const {profile, auth} = require("../../modules/APIHelper");
 const {displayProfile} = require("../../modules/ProfileRenderer");
-const XPHandler = require("../../modules/XPHandler");
 
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists

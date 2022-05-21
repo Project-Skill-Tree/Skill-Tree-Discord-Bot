@@ -19,7 +19,7 @@ exports.run = async (client,message) => {
     .setTitle("Initializing Setup Process")
     .setDescription("Answer the following questions to set up your Skill Tree account")
     .setColor(`#${Configurations().primary}`)
-    .setFooter({text:"Completion Status: \n (1/5)"});
+    .setFooter("Completion Status: \n (1/5)");
   //Difficulty embed
   const difficultyEmbed = new MessageEmbed()
     .setTitle("Set Experience Level")
@@ -28,26 +28,26 @@ exports.run = async (client,message) => {
     .addField("1. Easy", "This is the beginner level (<3 months of self improvement), and will start you at Meditation I, Journalling I and Exercising I")
     .addField("2. Medium", "This is the intermediate level (<6 months of self improvement), and will start you at Meditation II, Journalling II, Exercising II and Social skills I")
     .addField("3. Hard", "The most advanced level (around one year and more of self improvement), and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I")
-    .setFooter({text:"Completion Status: \n (2/5) "});
+    .setFooter("Completion Status: \n (2/5) ");
   //enable DMs embed
   const dmEmbed = new MessageEmbed()
     .setTitle("Enable DM Reminders")
     .setColor(`#${Configurations().primary}`)
     .setDescription("Do you want the bot to remind you of tasks to complete in Direct Messages?")
-    .setFooter({text:"Completion Status: \n (3/5) "}); 
+    .setFooter("Completion Status: \n (3/5) ");
   //TODO: get Gender of the player
   const characterEmbed = new MessageEmbed()
     .setTitle("3️Choose your Character")
     .setColor(`#${Configurations().primary}`)
     .setDescription("Choose the preferred gender of your character")
-    .setFooter({text:"Completion Status: \n (4/5) "});
+    .setFooter("Completion Status: \n (4/5) ");
   //help and information embed
   const finalEmbed = new MessageEmbed()
     .setTitle(":white_check_mark: Complete")
     .setColor(`#${Configurations().primary}`)
     .setDescription(`Your Skill Tree account is completely configured! envoke ~help to see all the commands you can use! \n Press "Learn More" to join the discord server and to get information about the project 
     `)
-    .setFooter({text:"Completion Status: \n (5/5) "});
+    .setFooter("Completion Status: \n (5/5) ");
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
@@ -111,7 +111,7 @@ exports.run = async (client,message) => {
         break;
       case "dm":
         dmMessage.delete();
-        enabledDMs = i.component.label==="Yes"?true:false;
+        enabledDMs = i.component.label === "Yes";
         characterMessage = await scope.send({embeds: [characterEmbed],components: [characterRow]});
         break;
       case "character":
