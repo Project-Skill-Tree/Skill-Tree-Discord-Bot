@@ -12,6 +12,7 @@ const taskList = [
 ].map(skill => new Task(0, skill,
   Array.from({length: 7}, () => Math.random() > 0.3)));
 
+/** @module WeeklyReviewRenderer */
 
 /**
  * Sends an embedded weekly review, including xp gained, new items, skills completed

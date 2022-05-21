@@ -48,3 +48,25 @@ exports.formatFrequency = function(frequency, interval) {
   }
   return timesString;
 };
+
+/**
+ * Formats a written day nem into a date object
+ * Today -> new Date()
+ * Yesterday -> new Date() - 1
+ * @param day - written day [yesterday, today, tomorrow]
+ * @return {Date} - date object
+ */
+exports.dayToDate = function(day) {
+  if (day === "today") {
+    return new Date();
+  } else if (day === "yesterday") {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday;
+  } else if (day === "tomorrow") {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() + 1);
+    return yesterday;
+  }
+  return new Date();
+};

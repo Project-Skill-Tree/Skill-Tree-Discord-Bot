@@ -14,7 +14,6 @@ function getKey() {
  * Get JSON object containing skills from database
  * @param {String} discordid - discordid of the user
  * @return UserID
- * @exports getSkills
  */
 exports.createAccount = function(discordid) {
   return axios
@@ -41,7 +40,7 @@ exports.auth = function(discordid, channel=null, callback) {
         discordid: discordid,
       }
     }).then(res => {
-      authErrMsg(res.data._id, channel, callback);
+      authErrMsg(res.data.id, channel, callback);
     });
 };
 
@@ -95,7 +94,6 @@ exports.updateUser =function(discordid, gender, difficulty, dms_enabled) {
  * Get JSON object for user given discord ID
  * @param user - discord user object
  * @param callback - method to pass user object to
- * @exports getSkills
  */
 exports.profile = function(user, callback) {
   axios
@@ -114,7 +112,6 @@ exports.profile = function(user, callback) {
 
 /**
  * Get JSON object containing skills from database
- * @exports getSkills
  */
 exports.getSkills = function(callback) {
   axios.get(process.env.API_URL + "skills", {
@@ -131,7 +128,6 @@ exports.getSkills = function(callback) {
 
 /**
  * Get JSON object containing tasks that the user has accepted from the database
- * @exports getTasksInProgress
  */
 exports.getTasksInProgress = function(userID,callback) {
   axios.get(process.env.API_URL + "tasks/currentTasks", {
@@ -150,12 +146,28 @@ exports.getTasksInProgress = function(userID,callback) {
 
 /**
  * Get JSON object containing skills that the user has accepted from the database
- * @exports getSkillsInProgress
  */
-exports.getSkillsInProgress = function(userID,callback) {
-  axios.get(process.env.API_URL + "skills/skillsInProgress", {
+exports.getSkillsInProgress = function(userID, callback) {
+  axios.get(process.env.API_URL + "skills/inProgress", {
     headers: {
-      userID: userID,
+      userid: userID,
+      api_key: getKey()
+    }
+  }).then((res)=>{
+    const skills = res.data;
+    callback(skills);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+/**
+ * Get JSON object containing skills that the user has accepted from the database
+ */
+exports.getCurrentTasks = function(userID, callback) {
+  axios.get(process.env.API_URL + "tasks/currentTasks", {
+    headers: {
+      userid: userID,
       api_key: getKey()
     }
   }).then((res)=>{
@@ -170,7 +182,6 @@ exports.getSkillsInProgress = function(userID,callback) {
  * Get JSON object containing skills available to a given user from database
  * @param userID
  * @param callback - function to run, passes list of skills
- * @exports getSkills
  */
 exports.getAvailableSkills = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/available", {
@@ -191,7 +202,6 @@ exports.getAvailableSkills = function(userID, callback) {
  * @param {string} id - The ObjectID of the skill to be requested
  * @param callback
  * @returns Skill or Null
- * @exports getSkill
  */
 exports.getSkill = function(id, callback) {
   axios
@@ -212,7 +222,6 @@ exports.getSkill = function(id, callback) {
  * @param userID - userID
  * @param title - title of the skill to start
  * @param level - level of the skill to start
- * @exports startSkill
  */
 exports.startSkill = function(userID, title, level) {
   axios
@@ -232,7 +241,6 @@ exports.startSkill = function(userID, title, level) {
  * @param userid - userID
  * @param skill
  * @param date - "today" or "yesterday"
- * @exports updateTask
  */
 exports.updateTask = function(userid, skill, date) {
   return axios
@@ -252,7 +260,6 @@ exports.updateTask = function(userid, skill, date) {
  *
  * @param xp - amount of xp to add
  * @param discordid - the discord ID of the user
- * @exports addXP
  */
 exports.addXP = function(xp, discordid) {
   return axios
@@ -270,7 +277,6 @@ exports.addXP = function(xp, discordid) {
  * Gets a users skills and returns them as task objects with "completed" field
  * @param id - discordID of the user
  * @param date - date of the tasks to get
- * @exports getTasks
  */
 exports.getTasks = function(id, date) {
   return axios

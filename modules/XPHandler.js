@@ -8,8 +8,6 @@ const ranks = [
   new Rank("Warrior",40,"rgb(255,207,40)", "character4.png"),
   new Rank("Adonis",60,"rgb(161, 105, 231)", "character5.png"),
   new Rank("Maximus",80,"rgb(33,255,177)", "character6.png"),
-  //new Rank("Gold Adonis",60,"rgb(255,198,7)", "gold_adonis.png"),
-  //new Rank("Overseer",80,"rgb(253,84, 191)", "overseer.png"),
 ];
 
 /**

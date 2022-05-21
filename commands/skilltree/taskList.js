@@ -1,8 +1,9 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
-const {formatFrequency} = require("../../modules/frequencyFormatter.js");
+const {formatFrequency} = require("../../modules/timeFormatter.js");
 const {updateTask, auth} = require("../../modules/APIHelper");
 const {getSkillsInProgress} = require("../../modules/APIHelper");
+const {dayToDate} = require("../../modules/timeFormatter");
 
 
 
@@ -16,14 +17,17 @@ const {getSkillsInProgress} = require("../../modules/APIHelper");
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
   auth(message.author.id, message.channel, (userID) => {
-    getSkillsInProgress(userID,(list)=>{
-      taskListCommand(client,message,list);
-    }
-    );
+    getCurrentTasks(userID,(tasks)=>{
+      if (tasks.length === 0) {
+        message.channel.send("```No Current tasks, go to ~skills to start a skill```");
+      } else {
+        taskListCommand(client, message, tasks, userID);
+      }
+    });
   });
 };
 
-async function taskListCommand(client, message,tasks) {
+async function taskListCommand(client, message,tasks, userID) {
   //let tasksToday = getTasks(message.author.id, new Date());
   //let tasksYesterday = getTasks(message.author.id, new Date(new Date() - 24*60*60*1000));
 
@@ -55,12 +59,11 @@ async function taskListCommand(client, message,tasks) {
     }
 
     if (i.isButton()) {
+      date = i.customId; //today or yesterday
       if (i.customId === "today") {
-        date = "today";
         row.components[0].setStyle("PRIMARY").setDisabled(false);
         row.components[1].setStyle("SECONDARY").setDisabled(true);
       } else if (i.customId === "yesterday") {
-        date = "yesterday";
         row.components[0].setStyle("SECONDARY").setDisabled(true);
         row.components[1].setStyle("PRIMARY").setDisabled(false);
       }
@@ -71,11 +74,11 @@ async function taskListCommand(client, message,tasks) {
 
     if (i.isSelectMenu()) {
       const skillTitle = i.values[0];
+      console.log(tasks);
+      console.log(skillTitle);
       const task = tasks.find(task => task.skill.title === skillTitle);
       task.completed = !task.completed;
-      auth(message.author.id, message.channel, (userID) => {
-        updateTask(userID, task, date);
-      });
+      updateTask(userID, task, dayToDate(date));
 
       // Send the same embed, but with the updated values of the tasks array.
       const embed = buildEmbed(date,tasks);
@@ -106,10 +109,8 @@ function createDropDownBox(tasks) {
 // Helper function for building an embed in order to reduce repetition in the code.
 function buildEmbed(day,tasks) {
   
-  let date = new Date();
-  if (day === "yesterday") {
-    date = new Date(new Date().getTime() - 24*60*60*1000);
-  }
+  const date = dayToDate(day);
+
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;

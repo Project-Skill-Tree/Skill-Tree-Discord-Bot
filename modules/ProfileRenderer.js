@@ -3,6 +3,8 @@ const Canvas = require("canvas");
 const XPHandler = require("./XPHandler");
 const {drawBadge} = require("../objects/badge");
 
+/** @module ProfileRenderer */
+
 /**
  * Sends an embedded profile summary, including level, character, xp, badges, items, skills, etc.
  * @param user - Skill tree user object

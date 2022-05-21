@@ -1,19 +1,31 @@
 /* eslint-disable no-case-declarations */
 const { MessageEmbed, MessageActionRow, MessageButton} = require("discord.js");
-const { createUser,updateUser } = require("../../modules/APIHelper");
+const { createUser, updateUser, auth} = require("../../modules/APIHelper");
 const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
 
 exports.run = async (client,message) => {
-  function setupUser(id,gender,difficulty,dms_enabled) {
-    //validates that user does not exist in the database already
-    gender = gender.toLowerCase();
-    difficulty =difficulty.toLowerCase();
-    createUser(id,gender,difficulty,dms_enabled,()=>{
-      updateUser(id,gender,difficulty);
-    });
+  //Authorise user doesn't exist
+  auth(message.author.id, null, (userFound)=>{
+    if (userFound == null) {
+      startSetup(client, message);
+    } else {
+      message.channel.send("```User account already exists```");
+    }
+  });
+};
 
-  }
+function setupUser(id, gender, difficulty, dms_enabled) {
+  //validates that user does not exist in the database already
+  gender = gender.toLowerCase();
+  difficulty = difficulty.toLowerCase();
+  createUser(id,gender,difficulty,dms_enabled,()=>{
+    updateUser(id,gender,difficulty);
+  });
+
+}
+
+async function startSetup(client, message) {
   //initial embed
   const initEmbed = new MessageEmbed()
     .setTitle("Initializing Setup Process")
@@ -134,7 +146,7 @@ exports.run = async (client,message) => {
   });
 
 
-};
+}
 exports.conf = {
   enabled: true,
   guildOnly: false,
