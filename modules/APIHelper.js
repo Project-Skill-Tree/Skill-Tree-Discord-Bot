@@ -11,22 +11,6 @@ function getKey() {
 }
 
 /**
- * Get JSON object containing skills from database
- * @param {String} discordid - discordid of the user
- * @return UserID
- */
-exports.createAccount = function(discordid) {
-  return axios
-    .post(process.env.API_URL + "users/registerDiscord/", {
-      discordid: discordid,
-    },{
-      headers: {
-        api_key: getKey()
-      }
-    });
-};
-
-/**
  * Authorise the user as existing in the database
  * @param discordid
  * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
@@ -64,6 +48,7 @@ exports.createUser = function(discordid, gender, difficulty, dms_enabled, callba
       }
     }).then(res => {
       if (res.data.userFound) {
+        console.log("found!");
         callback();
       }
     });
@@ -76,10 +61,10 @@ exports.createUser = function(discordid, gender, difficulty, dms_enabled, callba
  * @param difficulty
  * @param dms_enabled
  **/
-exports.updateUser =function(discordid, gender, difficulty, dms_enabled) {
+exports.updateUser =function(userID, gender, difficulty, dms_enabled) {
   return axios
     .post(process.env.API_URL + "users/updateUser/", {
-      discordid: discordid,
+      userid: userID,
       gender:gender,
       difficulty:difficulty,
       dms_enabled:dms_enabled

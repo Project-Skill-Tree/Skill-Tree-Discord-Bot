@@ -17,7 +17,7 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
 
 function skillCommand(client, message,userID) {
   //Get available skills
-  getAvailableSkills(userID, skills => {
+  getAvailableSkills(userID, skills => { // gets available,not started skills
     if (skills.length === 0) {
       message.channel.send("```You have no available skills. Use ~tasks to see what skills you have started```");
       return;

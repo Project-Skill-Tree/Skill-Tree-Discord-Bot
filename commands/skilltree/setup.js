@@ -5,24 +5,18 @@ const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
 
 exports.run = async (client,message) => {
-  //Authorise user doesn't exist
-  auth(message.author.id, null, (userFound)=>{
-    if (userFound == null) {
-      startSetup(client, message);
-    } else {
-      message.channel.send("```User account already exists```");
-    }
-  });
+  startSetup(client, message);
 };
 
 function setupUser(id, gender, difficulty, dms_enabled) {
   //validates that user does not exist in the database already
   gender = gender.toLowerCase();
   difficulty = difficulty.toLowerCase();
-  createUser(id,gender,difficulty,dms_enabled,()=>{
-    updateUser(id,gender,difficulty);
+  createUser(id,gender,difficulty,dms_enabled,()=>{ //creates the user
+    auth(id,null,(userID)=>{
+      updateUser(userID,gender,difficulty);
+    });
   });
-
 }
 
 async function startSetup(client, message) {
@@ -57,7 +51,7 @@ async function startSetup(client, message) {
   const finalEmbed = new MessageEmbed()
     .setTitle(":white_check_mark: Complete")
     .setColor(`#${Configurations().primary}`)
-    .setDescription(`Your Skill Tree account is completely configured! envoke ~help to see all the commands you can use! \n Press "Learn More" to join the discord server and to get information about the project 
+    .setDescription(`Your Skill Tree account is completely configured! check ~guide to understand how you can use skill tree \n Press "Learn More" to join the discord server and to get information about the project 
     `)
     .setFooter("Completion Status: \n (5/5) ");
   //information about the project

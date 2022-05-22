@@ -68,8 +68,6 @@ async function taskListCommand(client, message,tasks, userID) {
       }
     }
 
-    console.log(getAbsDate(tasks[0].startDate));
-    console.log(getAbsDate(date));
 
     const filteredTasks = tasks.filter(task => {
       return getAbsDate(date) >= getAbsDate(task.startDate);

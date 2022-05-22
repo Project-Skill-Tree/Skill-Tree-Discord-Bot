@@ -17,8 +17,6 @@ module.exports = async (client, message) => {
   // If there is no guild, get default conf (DMs)
   const settings = message.settings = getSettings(message.guild);
 
-  //Ignore any channel which isn't #testing
-  if (message.channel.name !== "testing") return;
 
   // Checks if the bot was mentioned via regex, with no message after it,
   // returns the prefix. The reason why we used regex here instead of
