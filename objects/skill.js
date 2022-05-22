@@ -11,6 +11,7 @@ class Skill extends Swipeable {
   /**
    * Skill constructor
    * @constructor
+   * @param id
    * @param {string} iconPath - image path for the icon to be displayed, relative to "/icons/" folder
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
@@ -19,10 +20,14 @@ class Skill extends Swipeable {
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
+   * @param requires - required skills
+   * @param children - child skills
    */
-  constructor(iconPath, title, level, goal, frequency, interval, timelimit, xp) {
+  constructor(id, title, level, goal,
+    frequency, interval, timelimit, xp,
+    iconPath,requires, children=[]) {
     super();
-    this.iconPath = iconPath;
+    this.id = id;
     this.title = title;
     this.level = level;
     this.goal = goal;
@@ -30,7 +35,9 @@ class Skill extends Swipeable {
     this.timelimit = timelimit;
     this.frequency = frequency;
     this.xp = xp;
-    this.children = [];
+    this.requires = requires;
+    this.children = children;
+    this.iconPath = iconPath;
   }
 
   /**
@@ -39,7 +46,17 @@ class Skill extends Swipeable {
    * @return {Skill}
    */
   static create(data) {
-    return new Skill(data.iconPath, data.title, data.level, data.goal, data.frequency, data.interval, data.timelimit, data.xp);
+    return new Skill(data._id,
+      data.title,
+      data.level,
+      data.goal,
+      data.frequency,
+      data.interval,
+      data.timelimit,
+      data.xp,
+      data.iconPath,
+      data.requires,
+      data.children);
   }
 
   /**

@@ -132,12 +132,11 @@ exports.getSkills = function(callback) {
 exports.getTasksInProgress = function(userID,callback) {
   axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
-      userID: userID,
+      id: userID,
       api_key: getKey()
     }
   }).then((res)=>{
     const tasks = res.data.map(data => Task.create(data));
-    console.log(tasks);
     callback(tasks);
   }).catch(res => {
     console.log(res);
@@ -149,23 +148,6 @@ exports.getTasksInProgress = function(userID,callback) {
  */
 exports.getSkillsInProgress = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/inProgress", {
-    headers: {
-      userid: userID,
-      api_key: getKey()
-    }
-  }).then((res)=>{
-    const skills = res.data;
-    callback(skills);
-  }).catch(res => {
-    console.log(res);
-  });
-};
-
-/**
- * Get JSON object containing skills that the user has accepted from the database
- */
-exports.getCurrentTasks = function(userID, callback) {
-  axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
       api_key: getKey()
@@ -220,15 +202,13 @@ exports.getSkill = function(id, callback) {
 /**
  * Adds the skill to the users active skills
  * @param userID - userID
- * @param title - title of the skill to start
- * @param level - level of the skill to start
+ * @param skillID - skillID of the skill to start
  */
-exports.startSkill = function(userID, title, level) {
+exports.startSkill = function(userID, skillID) {
   axios
     .post(process.env.API_URL + "skills/startSkill", {
       id: userID,
-      title: title,
-      level: level,
+      skillid: skillID
     },{
       headers: {
         api_key: getKey()
@@ -239,15 +219,16 @@ exports.startSkill = function(userID, title, level) {
 /**
  * Sets the completed state of a user's skill task for a given date
  * @param userid - userID
- * @param skill
+ * @param task
  * @param date - "today" or "yesterday"
+ * @param checked - T/F if checked/unchecked
  */
-exports.updateTask = function(userid, skill, date) {
+exports.updateTask = function(userid, task, date, checked) {
   return axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
-      skillid: skill.id,
-      completed: skill.completed,
+      taskid: task.id,
+      checked: checked,
       date: date
     },{
       headers: {

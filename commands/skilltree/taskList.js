@@ -1,9 +1,8 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {formatFrequency} = require("../../modules/timeFormatter.js");
-const {updateTask, auth} = require("../../modules/APIHelper");
-const {getSkillsInProgress} = require("../../modules/APIHelper");
-const {dayToDate} = require("../../modules/timeFormatter");
+const {updateTask, auth, getTasksInProgress} = require("../../modules/APIHelper");
+const {dayToDate, getAbsDate} = require("../../modules/timeFormatter");
 
 
 
@@ -17,7 +16,7 @@ const {dayToDate} = require("../../modules/timeFormatter");
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
   auth(message.author.id, message.channel, (userID) => {
-    getCurrentTasks(userID,(tasks)=>{
+    getTasksInProgress(userID,(tasks)=>{
       if (tasks.length === 0) {
         message.channel.send("```No Current tasks, go to ~skills to start a skill```");
       } else {
@@ -28,12 +27,11 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
 };
 
 async function taskListCommand(client, message,tasks, userID) {
-  //let tasksToday = getTasks(message.author.id, new Date());
-  //let tasksYesterday = getTasks(message.author.id, new Date(new Date() - 24*60*60*1000));
+  var day = "today";
+  var date = dayToDate(day);
 
-  var date = "today";
-  const embed = buildEmbed(date,tasks);
-  const dropDownBox = createDropDownBox(tasks);
+  const embed = buildEmbed(tasks, date);
+  const dropDownBox = createDropDownBox(tasks, date);
 
   const row = new MessageActionRow()
     .addComponents(
@@ -41,12 +39,12 @@ async function taskListCommand(client, message,tasks, userID) {
         .setCustomId("yesterday")
         .setLabel("YESTERDAY")
         .setStyle("PRIMARY")
-        .setDisabled(true),
+        .setDisabled(false),
       new MessageButton()
         .setCustomId("today")
         .setLabel("TODAY")
         .setStyle("SECONDARY")
-        .setDisabled(false));
+        .setDisabled(true));
 
   const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox, row] });
 
@@ -59,7 +57,8 @@ async function taskListCommand(client, message,tasks, userID) {
     }
 
     if (i.isButton()) {
-      date = i.customId; //today or yesterday
+      day = i.customId; //today or yesterday
+      date = dayToDate(day);
       if (i.customId === "today") {
         row.components[0].setStyle("PRIMARY").setDisabled(false);
         row.components[1].setStyle("SECONDARY").setDisabled(true);
@@ -67,57 +66,65 @@ async function taskListCommand(client, message,tasks, userID) {
         row.components[0].setStyle("SECONDARY").setDisabled(true);
         row.components[1].setStyle("PRIMARY").setDisabled(false);
       }
-
-      const embed = buildEmbed(date,tasks);
-      msg.edit({embeds: [embed], components: [dropDownBox, row]});
     }
+
+    console.log(getAbsDate(tasks[0].startDate));
+    console.log(getAbsDate(date));
+
+    const filteredTasks = tasks.filter(task => {
+      return getAbsDate(date) >= getAbsDate(task.startDate);
+    });
 
     if (i.isSelectMenu()) {
       const skillTitle = i.values[0];
-      console.log(tasks);
-      console.log(skillTitle);
-      const task = tasks.find(task => task.skill.title === skillTitle);
-      task.completed = !task.completed;
-      updateTask(userID, task, dayToDate(date));
-
-      // Send the same embed, but with the updated values of the tasks array.
-      const embed = buildEmbed(date,tasks);
-      const dropDownBox = createDropDownBox(tasks);
-      msg.edit({ embeds: [embed], components: [dropDownBox, row] });
+      const task = filteredTasks.find(task => task.skill.title === skillTitle);
+      task.setChecked(!task.isChecked(date), date);
+      updateTask(userID, task, date, task.isChecked(date));
     }
+
+    // Send the same embed, but with the updated values of the tasks array.
+    const embed = buildEmbed(filteredTasks, date);
+    const dropDownBox = createDropDownBox(filteredTasks, date);
+    const components = [];
+    if (dropDownBox != null) {
+      components.push(dropDownBox);
+    }
+    components.push(row);
+    msg.edit({ embeds: [embed], components: components});
 
     i.deferUpdate();
   });
 }
 
-function createDropDownBox(tasks) {
-  return new MessageActionRow().addComponents(
-    new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Complete/uncomplete a task").addOptions(
-      tasks.map(
-        task => {
-          return {
-            label: `${task.title} ${romanise(task.level)}`,
-            description: task.goal,
-            value: task.title,
-            emoji: task.completed ? "✅" : "❌",
-          };
-        }
+function createDropDownBox(tasks, date) {
+  if (tasks.length !== 0) {
+    return new MessageActionRow().addComponents(
+      new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Check/uncheck a task").addOptions(
+        tasks.map(
+          task => {
+            return {
+              label: `${task.skill.title} ${romanise(task.skill.level)}`,
+              description: task.skill.goal,
+              value: task.skill.title,
+              emoji: task.isChecked(date) ? "✅" : "❌",
+            };
+          }
+        )
       )
-    )
-  );
+    );
+  }
+  return null;
 }
-// Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(day,tasks) {
-  
-  const date = dayToDate(day);
 
+// Helper function for building an embed in order to reduce repetition in the code.
+function buildEmbed(tasks, date) {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
-  const dailyTasks = tasks.filter(task => task.interval === "day");
-  const otherTasks = tasks.filter(task => task.interval !== "day");
-  let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx)).join("\n"); 
-  let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length)).join("\n");
+  const dailyTasks = tasks.filter(task => task.skill.interval === "day");
+  const otherTasks = tasks.filter(task => task.skill.interval !== "day");
+  let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx, date)).join("\n");
+  let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length, date)).join("\n");
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
   if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
   const embed = new MessageEmbed()
@@ -129,12 +136,12 @@ function buildEmbed(day,tasks) {
   return embed;
 }
 
-function formatTask(task, idx) {
-  const completedEmoji = task.completed ? ":white_check_mark:": ":x:";
-  const levelRoman = romanise(task.level);
-  const frequencyFormat = formatFrequency(task.frequency, task.interval);
+function formatTask(task, idx, date) {
+  const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
+  const levelRoman = romanise(task.skill.level);
+  const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
 
-  return `${completedEmoji} | **${idx + 1}. ${task.title} ${levelRoman} (${frequencyFormat})**: ${task.goal}`;
+  return `${checkedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
 }
 
 exports.conf = {
