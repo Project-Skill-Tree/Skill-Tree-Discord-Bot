@@ -1,7 +1,7 @@
 {
   "name": "skill-tree",
   "version": "2.1.0",
-  "description": "Discord bot to gamify Self-improvement, allowing users to keep track of their progress irl with guided challenges.",
+  "description": "Discord bot to gamify Self-improvement, allowing users to keep track of their progress IRL with guided challenges.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Adonis-Self-Improvement/ASI-DiscordBot"
+    "url": "git+https://github.com/Project-Skill-Tree/Skill-Tree-Discord-Bot"
   },
   "author": "Sean Hardy",
   "contributors": [
@@ -25,7 +25,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/issues"
+    "url": "https://github.com/Project-Skill-Tree/Skill-Tree-Discord-Bot/issues"
   },
   "dependencies": {
     "@discordjs/builders": "^0.2.0",
