@@ -1,5 +1,5 @@
-# ASI-DiscordBot
-The self-improvement Discord bot. The first service of the Adonis Self-improvement project, allowing users to keep track of their self-improvement progress through a Discord bot.
+# Skill-Tree-Discord-Bot
+The Skill Tree Discord Bot allows users to keep track of their self-improvement progress effortlessly through Discord.
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/CKKshDe8rx)
 ![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/ASI-DiscordBot)
