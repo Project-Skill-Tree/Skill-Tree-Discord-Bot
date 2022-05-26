@@ -1,4 +1,3 @@
-const API = require("../../modules/APIHelper.js");
 const {MessageEmbed} = require("discord.js");
 const Configurations = require("../../modules/botConfigurations");
 

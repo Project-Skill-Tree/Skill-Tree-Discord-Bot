@@ -77,7 +77,7 @@ exports.getAbsDate = function(d0) {
   var x0 = new Date(d0);
   x0.setHours(12,0,0);
   return Math.round( x0 / msPerDay );
-}
+};
 
 
 /**
@@ -110,4 +110,4 @@ exports.getDaysBetweenDates = function(d0, d1) {
 
   // Round to remove daylight saving errors
   return Math.round( (x1 - x0) / msPerDay );
-}
+};

@@ -209,7 +209,7 @@ exports.startSkill = function(userID, skillID) {
  * @param checked - T/F if checked/unchecked
  */
 exports.updateTask = function(userid, task, date, checked) {
-  return axios
+  axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
       taskid: task.id,
@@ -236,6 +236,8 @@ exports.addXP = function(xp, discordid) {
       headers: {
         api_key: getKey()
       }
+    }).then(res => {
+      console.log(res);
     });
 };
 
