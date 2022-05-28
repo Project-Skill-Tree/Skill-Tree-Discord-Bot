@@ -1,16 +1,8 @@
 const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
-const XPHandler = require("./XPHandler");
-const Skill = require("../objects/skill");
-const Task = require("../objects/task");
+const XPHandler = require("./XPHelper");
 const {romanise} = require("./romanNumeralHelper");
-
-const taskList = [
-  new Skill("reading.png","Reading", 4, "READ 30m", 1, "day", 30, 800),
-  new Skill("meditation.png","Meditation", 1, "Meditate for 30m", 3, "day", 30, 2000),
-  new Skill("exercise.png","Exercise", 3, "Hit PRs in every exercise", 5, "week", 30, 100)
-].map(skill => new Task(0, skill,
-  Array.from({length: 7}, () => Math.random() > 0.3)));
+const {drawBadge} = require("../objects/badge");
 
 /** @module WeeklyReviewRenderer */
 
@@ -20,8 +12,8 @@ const taskList = [
  * @param user - Skill tree user object
  * @param channel - the channel to send the message to
  */
-exports.displayReview = async function(user, channel) {
-  const reviewImage = new MessageAttachment(await getWeeklyReview(user), `${user.name}_review.png`);
+exports.displayReview = async function(user, channel, tasks) {
+  const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
   return channel.send({files: [reviewImage]});
 };
@@ -31,7 +23,7 @@ exports.displayReview = async function(user, channel) {
  * @param user - Skill tree user object
  * @return {Promise<Buffer>} buffer -
  */
-async function getWeeklyReview(user) {
+async function getWeeklyReview(user, tasks) {
   const canvas = Canvas.createCanvas(400, 800);
   const context = canvas.getContext("2d");
 
@@ -48,7 +40,7 @@ async function getWeeklyReview(user) {
   await drawHeaderFooter(canvas);
 
   await drawXP(canvas, user,20, 150, 360, 30);
-  await drawTasks(canvas, user,0,190,400,200);
+  await drawTasks(canvas, user, tasks,0,190,400,200);
 
   //return final buffer
   return canvas.toBuffer();
@@ -150,57 +142,31 @@ async function drawXP(canvas, user, x, y, w, h) {
   context.fillText(xpText, x + XPwidth*0.5 - textWidth*0.5, y + h - 10);
 }
 
-async function drawTasks(canvas, user, x, y, w, h) {
+async function drawTasks(canvas, user, tasks, x, y, w, h) {
   const context = canvas.getContext("2d");
   const pad = 10;
 
   //Sort badges in descending XP order
-  const tasks = taskList.sort((a, b) => {
+  const taskList = tasks.sort((a, b) => {
     return b.xp - a.xp;
   });
 
   let maxSize = 0;
-  for (let i = 0; i < tasks.length; i++) {
-    maxSize = Math.max(maxSize, tasks[i].completed.length);
+  for (let i = 0; i < taskList.length; i++) {
+    maxSize = Math.max(maxSize, taskList[i].data.length);
   }
 
   //Width of one habit
-  const tHeight = (h - pad*2) / tasks.length;
+  const tHeight = (h - pad*2) / taskList.length;
   const tWidth = (w - pad*2 - tHeight - 10) / maxSize;
   const size = Math.min(tHeight, tWidth) - 4;
 
   //draw habits
-  tasks.map(async (task, index) => {
+  await taskList.map(async (task, index) => {
     //Draw task icon
-    context.fillStyle = "rgba(255, 255, 255, 1.0)";
-    context.strokeStyle = "rgba(255, 255, 255, 1.0)";
-    context.lineWidth = 3;
-    context.strokeRect(
-      x + pad + 4,
-      y + pad + tHeight*index + 4,
-      tHeight - 8,
-      tHeight - 8);
-    context.lineWidth = 1;
-    const icon = await Canvas.loadImage("./assets/icons/" + task.skill.iconPath);
-    const iconSizeRatio = Math.min((tHeight - 10) / icon.width, (tHeight - 10) / icon.height);
-    context.drawImage(icon,
-      x + pad + 5,
-      y + pad + 5 + tHeight*index,
-      icon.width * iconSizeRatio,
-      icon.height * iconSizeRatio);
-    const level = `${romanise(task.skill.level)}`;
-    const lvlWidth = context.measureText(level).width;
-    context.font = "15px \"Akira\"";
-    context.strokeStyle = "rgba(0,0,0,1.0)";
-    context.lineWidth = 3;
-    context.strokeText(level,
-      x + pad + tHeight*0.5 - lvlWidth*0.5,
-      y + pad + tHeight*index + tHeight*0.9);
-    context.lineWidth = 1;
-    context.fillStyle = "rgba(255, 255, 255, 1.0)";
-    context.fillText(level,
-      x + pad + tHeight*0.5 - lvlWidth*0.5,
-      y + pad + tHeight*index + tHeight*0.9);
+    drawBadge(canvas, x + pad + tHeight*0.5,
+      y + pad + tHeight * index + tHeight*0.5,
+      tHeight, task.skill.icon, task.skill.level);
 
     //Draw day completion chart
     context.shadowBlur = 0;
@@ -211,19 +177,21 @@ async function drawTasks(canvas, user, x, y, w, h) {
       y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,
       w - pad*2 - tHeight,
       size + 15);
-    for (let i = 0; i < task.completed.length; i++) {
-      if (task.completed[i]) context.fillStyle = "rgba(108, 199, 78,0.8)";
+    const dateIndex = new Date();
+    for (let i = 0; i < 7; i++) {
+      if (task.isChecked(dateIndex)) context.fillStyle = "rgba(108, 199, 78,0.8)";
       else context.fillStyle = "rgba(102, 102, 102, 0.6)";
       context.fillRect(
         x + w - pad - tWidth*(i+1) + 2,
         y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
         size,
         size);
+      dateIndex.setDate(dateIndex.getDate() - 1);
     }
 
     //Draw completion percentage
     context.font = "25px \"Akira\"";
-    const percent = Math.floor(100 * task.completed.filter(Boolean).length / task.completed.length);
+    const percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
     const text = `${percent}%`;
     const percentMetric = context.measureText(text);
     const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;

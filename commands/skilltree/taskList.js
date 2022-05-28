@@ -1,8 +1,8 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
-const {formatFrequency} = require("../../modules/timeFormatter.js");
+const {formatFrequency} = require("../../modules/dateHelper.js");
 const {updateTask, auth, getTasksInProgress} = require("../../modules/APIHelper");
-const {dayToDate, getAbsDate} = require("../../modules/timeFormatter");
+const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
 
 
 

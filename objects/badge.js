@@ -1,4 +1,7 @@
 const Canvas = require("canvas");
+const { createConverter } = require("convert-svg-to-png");
+const {tint} = require("../modules/UIHelper");
+
 /** @module badge */
 
 /**
@@ -8,14 +11,14 @@ const Canvas = require("canvas");
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
  */
-exports.getBadgeIcon = async function(iconPath, level) {
-  const canvas = Canvas.createCanvas(64, 64);
+exports.getBadgeIcon = async function(iconPath, level, size) {
+  const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
   context.antialias = "default";
   context.quality = "nearest";
   context.imageSmoothingEnabled = false;
 
-  await exports.drawBadge(canvas, canvas.width/2, canvas.height/2, 64, iconPath, level);
+  await exports.drawBadge(canvas, canvas.width/2, canvas.height/2, size*0.8, iconPath, level);
   return canvas.toBuffer();
 };
 
@@ -37,28 +40,53 @@ exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
   if (level != null) {
     const background = await Canvas.loadImage(`./assets/badges/${level}.png`);
     //Center image in canvas
-    const backgroundSizeRatio = Math.min(size / background.width, size / background.height);
+    const backgroundSizeRatio = size / background.width;
     context.drawImage(background, x - background.width * backgroundSizeRatio * 0.5,
       y - background.height * backgroundSizeRatio * 0.5,
       background.width * backgroundSizeRatio, background.height * backgroundSizeRatio);
   } else {
     const background = await Canvas.loadImage("./assets/badges/empty.png");
     //Center image in canvas
-    const backgroundSizeRatio = Math.min(size / background.width, size / background.height);
+    const backgroundSizeRatio = size / background.width;
     context.drawImage(background, x - background.width * backgroundSizeRatio * 0.5,
       y - background.height * backgroundSizeRatio * 0.5,
       background.width * backgroundSizeRatio, background.height * backgroundSizeRatio);
   }
 
   if (iconPath != null) {
+    let icon = null;
+    const type = iconPath.split(".").pop();
+    const converter = createConverter();
+    switch (type) {
+      case "svg":
+        //Convert svg to png with sharp and load to canvas
+        try {
+          const buf = await converter.convertFile("./assets/icons/" + iconPath);
+          icon = await Canvas.loadImage(buf);
+        } finally {
+          await converter.destroy();
+        }
+        break;
+      case "png":
+      case "jpg":
+        icon = await Canvas.loadImage("./assets/icons/" + iconPath);
+        break;
+      default:
+        return;
+    }
     //Add badge icon
-    context.shadowBlur = 10;
-    const icon = await Canvas.loadImage("./assets/icons/" + iconPath);
+    context.shadowBlur = 0;
     //Centre icon in the canvas (+ additional buffer because the badge is isometric
     //and we want to centre it on the top face
-    const iconSizeRatio = Math.min(size*0.5 / icon.width, size*0.5 / icon.height);
+    const iconSizeRatio = Math.min(size*0.4 / icon.width, size*0.4 / icon.height);
+
+    // draw image
+    context.drawImage(tint(icon, "#120024"), x - icon.width * iconSizeRatio * 0.5,
+      y - icon.height*iconSizeRatio*0.5 - 5, icon.width * iconSizeRatio, icon.height * iconSizeRatio);
+
+    //Draw normal
     context.drawImage(icon, x - icon.width * iconSizeRatio * 0.5,
-      y - icon.height * iconSizeRatio * 0.5 - 5, icon.width * iconSizeRatio, icon.height * iconSizeRatio);
+      y - icon.height*iconSizeRatio*0.5 - 8, icon.width * iconSizeRatio, icon.height * iconSizeRatio);
     context.shadowBlur = 0;
   }
 };

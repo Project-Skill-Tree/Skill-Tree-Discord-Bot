@@ -107,3 +107,25 @@ exports.strokeRoundRect = function(ctx, x, y,
   ctx.closePath();
   ctx.stroke();
 };
+
+/**
+ * Tint
+ * @param img
+ * @param colour
+ * @return {Buffer}
+ */
+exports.tint = function(img, colour) {
+  const w = img.width;
+  const h = img.height;
+  const canvas = Canvas.createCanvas(w, h);
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = colour;
+  ctx.fillRect(0,0, w, h);
+  ctx.globalCompositeOperation = "destination-in";
+  ctx.drawImage( img, 0, 0 );
+
+  ctx.globalCompositeOperation = "source-out";
+
+  return canvas;
+};

@@ -1,6 +1,6 @@
 const {MessageAttachment, MessageEmbed} = require("discord.js");
 const Canvas = require("canvas");
-const XPHandler = require("./XPHandler");
+const XPHandler = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
 
 /** @module ProfileRenderer */
@@ -65,7 +65,7 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   const iconSizeRatio = Math.min(profileWidth / character.width, profileHeight / character.height);
 
   context.shadowColor = XPHandler.getColor(user.level);
-  context.shadowBlur = 50;
+  context.shadowBlur = 20;
 
   context.drawImage(character,
     profileX - character.width * iconSizeRatio * 0.5,
@@ -124,7 +124,7 @@ async function drawProfileInfo(canvas, user) {
 
   //Sort badges in descending XP order
   const sortedSkills = user.skills.sort((a, b) => {
-    return b.xp - a.xp;
+    return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
   //draw badges
@@ -138,15 +138,14 @@ async function drawProfileInfo(canvas, user) {
       await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, null, null);
     } else {
       //Draw skill badge
-      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.iconPath, skill.level);
+      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.icon, skill.level);
     }
   }
 
   //draw INFO
-  const totalXP = XPHandler.calcTotalXP(user.level, user.xp);
-  const INFO = `Total XP: ${totalXP}XP\n` +
+  const INFO = `Total XP: ${user.xp}XP\n` +
     `Completed Skills: ${user.skills.length}\n`+
-    `Current Skills: ${0}\n` +
+    `Current Skills: ${user.skillsinprogress.length}\n` +
     `Days Tracked: ${0}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";

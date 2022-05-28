@@ -1,10 +1,12 @@
-const {profile, auth} = require("../../modules/APIHelper");
-const {displayReview} = require("../../modules/WeeklyReviewRenderer");
+const {profile, auth, getRecentTasks} = require("../../modules/APIHelper");
+const {displayReview} = require("../../modules/weeklyReviewRenderer");
 
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  auth(message.author.id, message.channel,() => {
-    profile(message.author, user => {
-      displayReview(user, message.channel);
+  auth(message.author.id, message.channel,(userID) => {
+    profile(userID, user => {
+      getRecentTasks(userID, (tasks) => {
+        displayReview(user, message.channel, tasks);
+      });
     });
   });
 };

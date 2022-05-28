@@ -2,7 +2,7 @@ const axios = require("axios");
 const Skill = require("../objects/skill");
 const User = require("../objects/user");
 const Task = require("../objects/task");
-const {authErrMsg} = require("./AuthHelper");
+const {authErrMsg} = require("./authHelper");
 
 /** @module APIHelper */
 
@@ -85,7 +85,7 @@ exports.profile = function(user, callback) {
     .get(process.env.API_URL + "users/profile/", {
       headers: {
         api_key: getKey(),
-        id: user.id
+        id: user
       }
     }).then(res => {
       res.data.user["username"] = user.username;
@@ -119,6 +119,21 @@ exports.getTasksInProgress = function(userID,callback) {
     headers: {
       id: userID,
       api_key: getKey()
+    }
+  }).then((res)=>{
+    const tasks = res.data.map(data => Task.create(data));
+    callback(tasks);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+exports.getRecentTasks = function(userID,callback) {
+  axios.get(process.env.API_URL + "tasks/recentTasks", {
+    headers: {
+      id: userID,
+      api_key: getKey(),
+      limit: 7
     }
   }).then((res)=>{
     const tasks = res.data.map(data => Task.create(data));

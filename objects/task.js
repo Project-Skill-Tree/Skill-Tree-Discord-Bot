@@ -2,6 +2,7 @@
  * Task Object
  */
 const Skill = require("./skill");
+const {getDaysBetweenDates} = require("../modules/dateHelper");
 
 class Task {
   /**
@@ -21,13 +22,13 @@ class Task {
   }
 
   isChecked(date) {
-    const index = date.getDate() - this.startDate.getDate();
+    const index = getDaysBetweenDates(this.startDate, date);
     const checked = this.data[index];
     return (checked == null) ? false : checked;
   }
 
   setChecked(checked, date) {
-    const index = date.getDate() - this.startDate.getDate();
+    const index = getDaysBetweenDates(this.startDate, date);
     this.data[index] = checked;
   }
 

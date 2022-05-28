@@ -73,8 +73,8 @@ exports.dayToDate = function(day) {
 
 
 exports.getAbsDate = function(d0) {
-  var msPerDay = 8.64e7;
-  var x0 = new Date(d0);
+  const msPerDay = 8.64e7;
+  const x0 = new Date(d0);
   x0.setHours(12,0,0);
   return Math.round( x0 / msPerDay );
 };
@@ -98,11 +98,11 @@ exports.getAbsDate = function(d0) {
 */
 exports.getDaysBetweenDates = function(d0, d1) {
 
-  var msPerDay = 8.64e7;
+  const msPerDay = 8.64e7;
 
   // Copy dates so don't mess them up
-  var x0 = new Date(d0);
-  var x1 = new Date(d1);
+  const x0 = new Date(d0);
+  const x1 = new Date(d1);
 
   // Set to noon - avoid DST errors
   x0.setHours(12,0,0);

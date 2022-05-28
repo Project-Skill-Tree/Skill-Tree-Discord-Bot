@@ -1,7 +1,7 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
-const {formatFrequency} = require("../modules/timeFormatter.js");
+const {formatFrequency} = require("../modules/dateHelper.js");
 
 /**
  * Skill Object used for storing templates for skills in the tree.
@@ -12,7 +12,6 @@ class Skill extends Swipeable {
    * Skill constructor
    * @constructor
    * @param id
-   * @param {string} iconPath - image path for the icon to be displayed, relative to "/icons/" folder
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
@@ -20,12 +19,13 @@ class Skill extends Swipeable {
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
+   * @param {string} icon - image path for the icon to be displayed, relative to "/icons/" folder
    * @param requires - required skills
    * @param children - child skills
    */
   constructor(id, title, level, goal,
     frequency, interval, timelimit, xp,
-    iconPath,requires, children=[]) {
+    icon,requires, children=[]) {
     super();
     this.id = id;
     this.title = title;
@@ -37,7 +37,7 @@ class Skill extends Swipeable {
     this.xp = xp;
     this.requires = requires;
     this.children = children;
-    this.iconPath = iconPath;
+    this.icon = icon;
   }
 
   /**
@@ -54,7 +54,7 @@ class Skill extends Swipeable {
       data.interval,
       data.timelimit,
       data.xp,
-      data.iconPath,
+      data.icon,
       data.requires,
       data.children);
   }
@@ -76,7 +76,7 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.iconPath, this.level);
+    const badgeIcon = await getBadgeIcon(this.icon, this.level, 64);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
     embed.setColor("#d21cff");
