@@ -29,6 +29,27 @@ exports.addGlow = async function(iconPath, size, color="white") {
 };
 
 /**
+ * Adds glow effect to a given asset
+ * @param {string} iconPath - relative path from /assets/
+ * @param {number} size - max width/height of the image
+ * @returns {Promise<Buffer>} - canvas buffer
+ */
+exports.imageToBuffer = async function(iconPath, size) {
+  const canvas = Canvas.createCanvas(size, size);
+  const context = canvas.getContext("2d");
+
+  const icon = await Canvas.loadImage("./assets/" + iconPath);
+  //Centre icon in the canvas (+ additional buffer because the badge is isometric
+  //and we want to centre it on the top face
+  const iconSizeRatio = Math.min(size / icon.width, size / icon.height);
+  context.drawImage(icon, canvas.width/2 - icon.width * iconSizeRatio * 0.5,
+    canvas.height/2 - icon.height * iconSizeRatio * 0.5,
+    icon.width * iconSizeRatio, icon.height * iconSizeRatio);
+
+  return canvas.toBuffer();
+};
+
+/**
  * Draws a rounded rectangle using the current state of the canvas.
  * If you omit the last three params, it will draw a rectangle
  * outline with a 5 pixel border radius

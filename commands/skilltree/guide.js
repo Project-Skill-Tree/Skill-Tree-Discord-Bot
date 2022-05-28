@@ -1,15 +1,41 @@
-const {MessageEmbed} = require("discord.js");
-const Configurations = require("../../modules/botConfigurations");
+const Page = require("../../objects/page");
+const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
 
-// eslint-disable-next-line no-unused-vars
-exports.run = async (client, message, args, _level) => {
-  const embed1 = new MessageEmbed()
-    .setTitle("Welcome to Skill Tree")
-    .setColor(`#${Configurations().primary}`)
-    .setDescription("The following messages will help guide you through the workings of the Skill Tree Application. \n\n Skill Tree is a project dedicated to gamifying self-improvement, and thereby making the great value it brings more accessable (via this bot!) \n By completing tasks involving skills you learn in your day-to-day life, You find yourself growing in a fun way. To gamify this process, Skill Tree will emulate the ideas we love in games such as in-game-characters, XP points and levels, Items and leaderboards.")
-    ; 
-  await message.reply({embeds:[embed1]});
+/**
+ * The guide command displays 5 pages of instructions for how to use the bot.
+ * The guide uses arrows to navigate the guide menu
+ * Page 1: Skill Tree
+ * Page 2: Setup and creating your account
+ * Page 3: Skills
+ * Page 4: Ranks and XP
+ * Page 5: Items and Challenges
+ */
+exports.run = async (client, message) => {
+  //Get pages
+  const pages = getPages();
+
+  //Create swipeable menu
+  createLargeSwipePanel(client, message.author, message.channel, pages);
 };
+
+function getPages() {
+  return [
+    new Page("Skill Tree",
+      "The Skill Tree gamifies self-improvement with real-life skills, " +
+      "challenges, items, XP, levels, and more. Like a video game skill tree, you " +
+      "start from one single skill, unlocking new paths as you progress in your " +
+      "self-improvement journey. It's a massively multiplayer online habit tracker, " +
+      "designed so that you can consistently and efficiently progressively overload your habits, " +
+      "without being overwhelmed with knowledge"),
+    new Page("Skill Tree",
+      "The Skill Tree gamifies self-improvement with real-life skills, " +
+      "challenges, items, XP, levels, and more. Like a video game skill tree, you " +
+      "start from one single skill, unlocking new paths as you progress in your " +
+      "self-improvement journey. It's a massively multiplayer online habit tracker, " +
+      "designed so that you can consistently and efficiently progressively overload your habits, " +
+      "without being overwhelmed with knowledge"),
+  ];
+}
 
 exports.conf = {
   enabled: true,

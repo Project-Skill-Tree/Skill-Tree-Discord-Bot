@@ -1,6 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("../modules/UIHelper");
+const {imageToBuffer} = require("../modules/UIHelper");
 /**
  * Item Object
  */
@@ -26,7 +26,7 @@ class Item extends Swipeable {
    * @param channel
    */
   async send(client, channel) {
-    const icon = new MessageAttachment(await addGlow("icons/chest.png", 64, "transparent"), "icon.png");
+    const icon = new MessageAttachment(await imageToBuffer("icons/chest.png", 64), "icon.png");
     const embed = this.update(new MessageEmbed());
     channel.send({embeds: [embed], files: [icon]});
   }

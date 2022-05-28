@@ -7,10 +7,11 @@ const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param {User} user - User who sent the message
- * @param {MessageEmbed} msg - Discord embedded message object
+ * @param {Channel} channel - Discord channel to send to
  * @param {Swipeable[]} list - List of swipeable objects
  */
-exports.createSwipePanel = function(client, user, msg, list) {
+exports.createSwipePanel = async function(client, user, channel, list) {
+  const msg = await list[0].send(channel);
   let currentPage = 0;
 
   //Add left/right messageButton to message
@@ -57,24 +58,25 @@ exports.createSwipePanel = function(client, user, msg, list) {
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param {User} user - User who sent the message
- * @param {MessageEmbed} msg - Discord embedded message object
+ * @param {Channel} channel - Discord channel
  * @param {Swipeable[]} list - List of swipeable objects
  * @param {?string=} actionName - Label for the action to be completed on this page (e.g. "START")
  * @param {?function=} action - function to run on action button pressed, takes current item as parameter
  */
-exports.createLargeSwipePanel = function(client, user, msg, list, actionName=null, action=null) {
+exports.createLargeSwipePanel = async function(client, user, channel, list, actionName = null, action = null) {
+  const msg = await list[0].send(channel);
   let currentPage = 0;
   const currentPageButton = new MessageButton().setCustomId("current");
 
   //Create action button if defined
   if (action) {
     currentPageButton
-      .setLabel(`${actionName} ${currentPage+1}/${list.length}`)
+      .setLabel(`${actionName} ${currentPage + 1}/${list.length}`)
       .setStyle("SUCCESS")
       .setDisabled(false);
   } else {
     currentPageButton
-      .setLabel(`${currentPage+1}/${list.length}`)
+      .setLabel(`${currentPage + 1}/${list.length}`)
       .setStyle("SECONDARY")
       .setDisabled(true);
   }
@@ -109,7 +111,7 @@ exports.createLargeSwipePanel = function(client, user, msg, list, actionName=nul
     || i.customId === "first"
     || i.customId === "last") && i.user.id === user.id;
 
-  const collector = msg.createMessageComponentCollector({ filter, time: 30000 });
+  const collector = msg.createMessageComponentCollector({filter, time: 30000});
   collector.on("collect", async i => {
     switch (i.customId) {
       case "first":
@@ -127,7 +129,8 @@ exports.createLargeSwipePanel = function(client, user, msg, list, actionName=nul
         currentPage = list.length - 1;
         if (currentPage === -1) currentPage = list.length - 1;
         break;
-      default: break;
+      default:
+        break;
     }
 
     //Update page number
@@ -148,7 +151,7 @@ exports.createLargeSwipePanel = function(client, user, msg, list, actionName=nul
 
   if (action) {
     const actionFilter = i => i.customId === "action" && i.user.id === user.id;
-    const actionCollector = msg.createMessageComponentCollector({ actionFilter, time: 30000 });
+    const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 30000});
     actionCollector.on("collect", async i => {
       await i.deferUpdate();
       action(list[currentPage]);

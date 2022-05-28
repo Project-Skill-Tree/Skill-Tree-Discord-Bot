@@ -23,11 +23,8 @@ function skillCommand(client, message,userID) {
       return;
     }
 
-    skills[0].send(message.channel).then(msg => {
-      //Create swipable menu
-      createLargeSwipePanel(client, message.author, msg, skills, "START", skill => {
-        startSkill(userID, skill.id);
-      });
+    createLargeSwipePanel(client, message.author, message.channel, skills, "START", skill => {
+      startSkill(userID, skill.id);
     });
   });
 }

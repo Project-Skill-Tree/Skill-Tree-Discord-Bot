@@ -1,6 +1,6 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("../modules/UIHelper");
+const {imageToBuffer} = require("../modules/UIHelper");
 
 /**
  * Challenge Object
@@ -23,7 +23,7 @@ class Challenge extends Swipeable {
    */
   async send(client, channel) {
     //TODO: Dynamically load characters for challenges
-    const icon = new MessageAttachment(await addGlow("icons/challenge.png", 100, "transparent"), "icon.png");
+    const icon = new MessageAttachment(await imageToBuffer("icons/challenge.png", 100), "icon.png");
     const embed = this.update(new MessageEmbed());
 
     channel.send({ embeds: [embed], files: [icon]});
