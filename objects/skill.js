@@ -60,6 +60,15 @@ class Skill extends Swipeable {
   }
 
   /**
+   * Create Skill object from json data
+   * @param data - JSON data for the skill
+   * @return {Skill}
+   */
+  static create(data) {
+    return new Skill(data.iconPath, data.title, data.level, data.goal, data.frequency, data.interval, data.timelimit, data.xp);
+  }
+
+  /**
    * Sends an embedded skill in the chat
    * @param channel - channel to send the message in
    */
