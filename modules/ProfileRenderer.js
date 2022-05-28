@@ -7,11 +7,13 @@ const {drawBadge} = require("../objects/badge");
 
 /**
  * Sends an embedded profile summary, including level, character, xp, badges, items, skills, etc.
- * @param user - Skill tree user object
+ * @param user - User object
  * @param channel - the channel to send the message to
  */
 exports.displayProfile = async function(user, channel) {
+  //Generate profile
   const profileImage = new MessageAttachment(await getProfileImage(user), "profile.png");
+  //Get inventory
   const itemMenu = createItemMenu(user);
 
   return channel.send({embeds: [itemMenu], files: [profileImage]});
@@ -33,13 +35,17 @@ async function getProfileImage(user) {
   const color = XPHandler.getColor(user.level);
   context.shadowColor = color;
 
+  //Draw background
   const background = await Canvas.loadImage("./assets/backgrounds/bg2.png");
   context.drawImage(background, 0, 0, background.width, background.height);
 
+  //Extract RGB values from rank colour, then set alpha to 0.1
+  //Used for tinting the background
   const [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
   context.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.1)`;
   context.fillRect(0, 0, 600, 200);
 
+  //Draw username
   context.shadowBlur = 10;
   context.fillStyle = "rgba(255,255,255,1)";
   context.fillText(user.name, 180, 40, 300);
@@ -53,6 +59,15 @@ async function getProfileImage(user) {
   return canvas.toBuffer();
 }
 
+/**
+ * Draw character and level
+ * @param canvas - canvas object
+ * @param user - user object
+ * @param profileX - X midpoint of the profile
+ * @param profileWidth - width of the profile
+ * @param profileHeight - height of the drawing
+ * @return {Promise<void>}
+ */
 async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) {
   const context = canvas.getContext("2d");
 
@@ -64,8 +79,9 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   const character = await Canvas.loadImage("./assets/characters/"+characterPath);
   const iconSizeRatio = Math.min(profileWidth / character.width, profileHeight / character.height);
 
+  //Draw with glow
   context.shadowColor = XPHandler.getColor(user.level);
-  context.shadowBlur = 20;
+  context.shadowBlur = 15;
 
   context.drawImage(character,
     profileX - character.width * iconSizeRatio * 0.5,
@@ -75,6 +91,7 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
 
   context.shadowBlur = 0;
 
+  //Draw user's level
   const LVL = `LVL: ${user.level}`;
   context.font = "20px \"Akira\"";
   context.fillStyle = XPHandler.getColor(user.level);
@@ -85,6 +102,16 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   context.shadowBlur = 0;
 }
 
+/**
+ * Draw XP bar
+ * @param canvas - canvas object
+ * @param user - user object
+ * @param x - x start coordinate
+ * @param y - y start coordinate
+ * @param w - width of XP bar
+ * @param h - height of XP bar
+ * @return {Promise<void>}
+ */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
   const maxXP = XPHandler.calcXP(user.level);
@@ -116,6 +143,16 @@ async function drawXP(canvas, user, x, y, w, h) {
   context.fillText(xpText, x + w*0.5 - textWidth*0.5, y + h - 10);
 }
 
+/**
+ * Draw profile information
+ * 1. Total XP
+ * 2. Completed Skills
+ * 3. Current skills
+ * 4. Days tracked
+ * @param canvas
+ * @param user
+ * @return {Promise<void>}
+ */
 async function drawProfileInfo(canvas, user) {
   const context = canvas.getContext("2d");
   //Draw badge background
@@ -152,12 +189,18 @@ async function drawProfileInfo(canvas, user) {
   context.fillText(INFO, 190,70);
 }
 
+/**
+ * Create embedded inventory
+ * @param user
+ * @return {MessageEmbed}
+ */
 function createItemMenu(user) {
   let items;
   if (user.items.length === 0) {
     items = "```Empty```";
   } else {
-    items = user.items.map(item => ` ${item.emoji} [${item.name}](${item.link})`).join("\n");
+    //Create item text with emoji and URL-linked name
+    items = user.items.map(item => `${item.emoji} [${item.name}](${item.link})`).join("\n");
   }
   return new MessageEmbed()
     .setTitle("INVENTORY 🎒")

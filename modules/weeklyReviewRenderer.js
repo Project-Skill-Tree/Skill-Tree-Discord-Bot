@@ -11,6 +11,7 @@ const {drawBadge} = require("../objects/badge");
  * skill consistency and more
  * @param user - Skill tree user object
  * @param channel - the channel to send the message to
+ * @param tasks - tasks to display
  */
 exports.displayReview = async function(user, channel, tasks) {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
@@ -21,6 +22,7 @@ exports.displayReview = async function(user, channel, tasks) {
 /**
  * Generate the weekly review for this user
  * @param user - Skill tree user object
+ * @param tasks - Tasks to display
  * @return {Promise<Buffer>} buffer -
  */
 async function getWeeklyReview(user, tasks) {
@@ -47,6 +49,11 @@ async function getWeeklyReview(user, tasks) {
 }
 
 
+/**
+ * Draw header banner and title, as well as footer banner and skill tree logo
+ * @param canvas
+ * @return {Promise<void>}
+ */
 async function drawHeaderFooter(canvas) {
   const context = canvas.getContext("2d");
   context.font = "30px \"Akira\"";
@@ -86,6 +93,16 @@ async function drawHeaderFooter(canvas) {
     logo.height*iconSizeRatio);
 }
 
+/**
+ * Draw xp changed since last review
+ * @param canvas
+ * @param user
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @return {Promise<void>}
+ */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
   const maxXP = XPHandler.calcXP(user.level);
@@ -95,6 +112,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Add extra text to show increase
   context.font = "16px \"Akira\"";
+  //TODO: fix xp change not being calculated with real values
   const xpIncrease = XPHandler.calcTotalXP(user.level, user.xp) - XPHandler.calcTotalXP(prevLevel, prevXP);
   const increaseText = `+ ${xpIncrease} XP`;
   const increaseTextWidth = context.measureText(increaseText).width;
@@ -142,13 +160,24 @@ async function drawXP(canvas, user, x, y, w, h) {
   context.fillText(xpText, x + XPwidth*0.5 - textWidth*0.5, y + h - 10);
 }
 
+/**
+ * Draw set of tasks that the user is currently participating in, or have recently ended
+ * @param canvas
+ * @param user
+ * @param tasks
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @return {Promise<void>}
+ */
 async function drawTasks(canvas, user, tasks, x, y, w, h) {
   const context = canvas.getContext("2d");
   const pad = 10;
 
-  //Sort badges in descending XP order
+  //Sort tasks in descending order of level and then XP
   const taskList = tasks.sort((a, b) => {
-    return b.xp - a.xp;
+    return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
   let maxSize = 0;
@@ -156,12 +185,12 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
     maxSize = Math.max(maxSize, taskList[i].data.length);
   }
 
-  //Width of one habit
+  //Width of one task
   const tHeight = (h - pad*2) / taskList.length;
   const tWidth = (w - pad*2 - tHeight - 10) / maxSize;
   const size = Math.min(tHeight, tWidth) - 4;
 
-  //draw habits
+  //draw tasks
   await taskList.map(async (task, index) => {
     //Draw task icon
     drawBadge(canvas, x + pad + tHeight*0.5,
@@ -172,6 +201,7 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
     context.shadowBlur = 0;
     context.strokeStyle = "rgba(0,0,0,0)";
     context.fillStyle = "rgba(20, 20, 20, 1.0)";
+    //x (startX) + tHeight (size of icon) + pad (padding) + 5
     context.fillRect(
       x + tHeight + pad + 5,
       y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,

@@ -3,7 +3,7 @@ const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
 
 /**
  * Create swipeable panel
- * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
+ * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param {User} user - User who sent the message
@@ -149,6 +149,7 @@ exports.createLargeSwipePanel = async function(client, user, channel, list, acti
     await i.deferUpdate();
   });
 
+  //Create action listener
   if (action) {
     const actionFilter = i => i.customId === "action" && i.user.id === user.id;
     const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 30000});

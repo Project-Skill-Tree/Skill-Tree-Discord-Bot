@@ -1,9 +1,9 @@
-/**
- * Task Object
- */
 const Skill = require("./skill");
 const {getDaysBetweenDates} = require("../modules/dateHelper");
 
+/**
+ * Task Object
+ */
 class Task {
   /**
    * @param id - taskID
@@ -21,12 +21,25 @@ class Task {
     this.completed = completed;
   }
 
+  /**
+   * Returns true if this task has been checked off for a given date, false otherwise
+   * handles dates outside the data range
+   * @param {Date} date - date to query
+   * @return {boolean|*}
+   */
   isChecked(date) {
     const index = getDaysBetweenDates(this.startDate, date);
     const checked = this.data[index];
     return (checked == null) ? false : checked;
   }
 
+  /**
+   * Sets the task check state for a given day
+   * handles dates outside the data range
+   * @param checked - true/false ischecked value to set
+   * @param {Date} date - date to query
+   * @return {boolean|*}
+   */
   setChecked(checked, date) {
     const index = getDaysBetweenDates(this.startDate, date);
     this.data[index] = checked;

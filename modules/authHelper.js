@@ -1,7 +1,7 @@
 /** @module AuthHelper */
 
 /**
- * Displays an error message if the user is not found
+ * Displays an error message if the user is not found, executes the callback if the channel is null
  * @param {?Boolean} id - null or userID value
  * @param channel - channel to send warn message
  * @param callback - function to run if the user exists

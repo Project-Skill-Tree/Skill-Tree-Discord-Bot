@@ -3,10 +3,11 @@ const Canvas = require("canvas");
 /** @module UIHelper */
 
 /**
- * Adds glow effect to a given asset
- * @param {string} iconPath - relative path from /assets/
+ * Adds glow effect to a given asset and resizes it
+ * @param {string} iconPath - relative path of icon from /assets/ folder
  * @param {number} size - max width/height of the image
- * @param {string=} color - Color of the glow effect to add
+ * (scales to fit as much as possible whilst contained)
+ * @param {string=} color - Color of the glow effect to add (default: white)
  * @returns {Promise<Buffer>} - canvas buffer
  */
 exports.addGlow = async function(iconPath, size, color="white") {
@@ -18,8 +19,7 @@ exports.addGlow = async function(iconPath, size, color="white") {
   context.shadowBlur = 10;
 
   const icon = await Canvas.loadImage("./assets/" + iconPath);
-  //Centre icon in the canvas (+ additional buffer because the badge is isometric
-  //and we want to centre it on the top face
+  //Centre icon in the canvas
   const iconSizeRatio = Math.min(size / icon.width, size / icon.height);
   context.drawImage(icon, canvas.width/2 - icon.width * iconSizeRatio * 0.5,
     canvas.height/2 - icon.height * iconSizeRatio * 0.5,
@@ -29,9 +29,10 @@ exports.addGlow = async function(iconPath, size, color="white") {
 };
 
 /**
- * Adds glow effect to a given asset
- * @param {string} iconPath - relative path from /assets/
+ * Converts an image file into a buffer
+ * @param {string} iconPath - relative path from /assets/ folder
  * @param {number} size - max width/height of the image
+ * (scales to fit as much as possible whilst contained)
  * @returns {Promise<Buffer>} - canvas buffer
  */
 exports.imageToBuffer = async function(iconPath, size) {
@@ -39,8 +40,7 @@ exports.imageToBuffer = async function(iconPath, size) {
   const context = canvas.getContext("2d");
 
   const icon = await Canvas.loadImage("./assets/" + iconPath);
-  //Centre icon in the canvas (+ additional buffer because the badge is isometric
-  //and we want to centre it on the top face
+  //Centre icon in the canvas
   const iconSizeRatio = Math.min(size / icon.width, size / icon.height);
   context.drawImage(icon, canvas.width/2 - icon.width * iconSizeRatio * 0.5,
     canvas.height/2 - icon.height * iconSizeRatio * 0.5,
@@ -130,10 +130,10 @@ exports.strokeRoundRect = function(ctx, x, y,
 };
 
 /**
- * Tint
- * @param img
- * @param colour
- * @return {Buffer}
+ * Draw image to buffer with the colour given
+ * @param img - image object to draw
+ * @param colour - colour to draw as
+ * @return {Canvas}
  */
 exports.tint = function(img, colour) {
   const w = img.width;

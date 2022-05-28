@@ -8,6 +8,7 @@ const {tint} = require("../modules/UIHelper");
  * Get the badge image
  * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
  * @param {?number} level - Skill level of the badge
+ * @param {size} size - size of badge icon
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
  */
@@ -29,7 +30,7 @@ exports.getBadgeIcon = async function(iconPath, level, size) {
  * @param y - Y coordinate of the centre of the badge
  * @param size - Size of the badge
  * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
- * @param level - badge level
+ * @param {?number} level - badge level
  * @return {Promise<void>}
  */
 exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
@@ -55,11 +56,12 @@ exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
 
   if (iconPath != null) {
     let icon = null;
+    //Parse the icon file type
     const type = iconPath.split(".").pop();
     const converter = createConverter();
     switch (type) {
       case "svg":
-        //Convert svg to png with sharp and load to canvas
+        //Convert svg to png and load to canvas
         try {
           const buf = await converter.convertFile("./assets/icons/" + iconPath);
           icon = await Canvas.loadImage(buf);

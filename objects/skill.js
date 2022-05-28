@@ -10,7 +10,6 @@ const {formatFrequency} = require("../modules/dateHelper.js");
 class Skill extends Swipeable {
   /**
    * Skill constructor
-   * @constructor
    * @param id
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
@@ -22,6 +21,7 @@ class Skill extends Swipeable {
    * @param {string} icon - image path for the icon to be displayed, relative to "/icons/" folder
    * @param requires - required skills
    * @param children - child skills
+   * @constructor
    */
   constructor(id, title, level, goal,
     frequency, interval, timelimit, xp,

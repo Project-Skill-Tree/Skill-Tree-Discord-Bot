@@ -8,7 +8,6 @@
  */
 exports.formatFrequency = function(frequency, interval) {
   let timesString;
-
   if (frequency > 1) {
     switch (interval) {
       case "day":
@@ -72,6 +71,11 @@ exports.dayToDate = function(day) {
 };
 
 
+/**
+ * Gets a date in absolute number of days since Jan 1st 1970
+ * @param {Date} d0
+ * @return {number}
+ */
 exports.getAbsDate = function(d0) {
   const msPerDay = 8.64e7;
   const x0 = new Date(d0);

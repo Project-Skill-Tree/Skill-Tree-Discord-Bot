@@ -4,6 +4,7 @@ const {imageToBuffer} = require("../modules/UIHelper");
 
 /**
  * Page object to save text and image information for swipeable displays
+ * @implements Swipeable - Can be cycled to display multiple pages
  */
 class Page extends Swipeable {
   /**
@@ -12,6 +13,7 @@ class Page extends Swipeable {
    * @param {string} title - short page title
    * @param {string} text - page content
    * @param {?string=} imagePath - optional image path
+   * @constructor
    */
   constructor(title, text, imagePath=null) {
     super();
