@@ -1,4 +1,4 @@
-const {profile, auth} = require("../../modules/APIHelper");
+const {getUser, authUser} = require("../../modules/APIHelper");
 const {displayProfile} = require("../../modules/ProfileRenderer");
 
 /**
@@ -7,9 +7,9 @@ const {displayProfile} = require("../../modules/ProfileRenderer");
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
-  auth(message.author.id, message.channel,(userID) => {
+  authUser(message.author.id, message.channel,(userID) => {
     //Get user profile
-    profile(userID, message.author.username, user => {
+    getUser(userID, message.author.username, user => {
       //Display profile
       displayProfile(user, message.channel);
     });

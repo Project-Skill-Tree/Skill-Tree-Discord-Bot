@@ -1,12 +1,12 @@
 const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
-const {startSkill, getAvailableSkills, auth} = require("../../modules/APIHelper");
+const {startSkill, getAvailableSkills, authUser} = require("../../modules/APIHelper");
 
 /**
  * Sends a swipeable list of all the user's available skills
  */
 exports.run = (client, message) => {
   //Validate user exists
-  auth(message.author.id, message.channel,(userID) => {
+  authUser(message.author.id, message.channel,(userID) => {
     //Get available skills
     getAvailableSkills(userID, skills => { // gets available,not started skills
       if (skills.length === 0) {

@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 const { MessageEmbed, MessageActionRow, MessageButton} = require("discord.js");
-const { createUser, updateUser, auth} = require("../../modules/APIHelper");
+const { createUser, updateUser, authUser} = require("../../modules/APIHelper");
 const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
 
@@ -21,7 +21,7 @@ function setupUser(id, gender, difficulty, dms_enabled) {
   gender = gender.toLowerCase();
   difficulty = difficulty.toLowerCase();
   createUser(id,gender,difficulty,dms_enabled,()=>{ //creates the user
-    auth(id,null,(userID) => {
+    authUser(id,null,(userID) => {
       updateUser(userID,gender,difficulty);
     });
   });

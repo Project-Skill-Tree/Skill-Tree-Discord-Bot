@@ -1,22 +1,21 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {formatFrequency} = require("../../modules/dateHelper.js");
-const {updateTask, auth, getTasksInProgress} = require("../../modules/APIHelper");
+const {updateTask, authUser, getCurrentTasks} = require("../../modules/APIHelper");
 const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
-
-
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
  */
 exports.run = async (client, message) => {
   //Validate user exists
-  auth(message.author.id, message.channel, (userID) => {
+  authUser(message.author.id, message.channel, (userID) => {
     //Get tasks
-    getTasksInProgress(userID,(tasks)=>{
+    getCurrentTasks(userID,(tasks)=>{
       if (tasks.length === 0) {
         message.channel.send("```No Current tasks, go to ~skills to start a skill```");
       } else {
+        //Show tasks in embed
         createTaskList(client, message, tasks, userID);
       }
     });
@@ -132,13 +131,11 @@ function buildEmbed(tasks, date) {
   let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length, date)).join("\n");
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
   if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
-  const embed = new MessageEmbed()
+  return new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")
     .addField("Daily Tasks", dailyTaskStrings)
     .addField("Ongoing", otherTaskStrings);
-
-  return embed;
 }
 
 function formatTask(task, idx, date) {

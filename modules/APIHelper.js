@@ -6,6 +6,9 @@ const {authErrMsg} = require("./authHelper");
 
 /** @module APIHelper */
 
+/**
+ * Get API authentication key
+ */
 function getKey() {
   return process.env.API_KEY;
 }
@@ -17,7 +20,7 @@ function getKey() {
  * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
  * @param callback - Callback with param true/false for user found/not
  */
-exports.auth = function(discordid, channel=null, callback) {
+exports.authUser = function(discordid, channel=null, callback) {
   axios
     .get(process.env.API_URL + "users/loginDiscord/", {
       headers: {
@@ -81,7 +84,7 @@ exports.updateUser =function(userID, gender, difficulty, dms_enabled) {
  * @param username - discord username
  * @param callback - method to pass user object to
  */
-exports.profile = function(userID, username, callback) {
+exports.getUser = function(userID, username, callback) {
   axios
     .get(process.env.API_URL + "users/profile/", {
       headers: {
@@ -115,12 +118,13 @@ exports.getSkills = function(callback) {
 
 /**
  * Get JSON object containing tasks that the user has accepted from the database
+ * @param userID - MongoDB userID
  * @param callback - list of task objects
  */
-exports.getTasksInProgress = function(userID,callback) {
+exports.getCurrentTasks = function(userID,callback) {
   axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
-      id: userID,
+      userid: userID,
       api_key: getKey()
     }
   }).then((res)=>{
@@ -133,14 +137,14 @@ exports.getTasksInProgress = function(userID,callback) {
 
 /**
  * Get all tasks in the last <limit> days
- * @param userID
+ * @param userID- MongoDB userID
  * @param {number} limit - number of days ago for the last habit entry
  * @param callback
  */
 exports.getRecentTasks = function(userID, limit, callback) {
   axios.get(process.env.API_URL + "tasks/recentTasks", {
     headers: {
-      id: userID,
+      userid: userID,
       api_key: getKey(),
       limit: limit
     }
@@ -154,7 +158,7 @@ exports.getRecentTasks = function(userID, limit, callback) {
 
 /**
  * Get JSON object containing skills that the user has accepted from the database
- * @param userID - mongoDB userID
+ * @param userID - MongoDB userID
  * @param callback - return JSON data of skills in progress
  */
 exports.getSkillsInProgress = function(userID, callback) {
@@ -173,7 +177,7 @@ exports.getSkillsInProgress = function(userID, callback) {
 
 /**
  * Get JSON object containing skills available to a given user from database
- * @param userID
+ * @param userID - MongoDB userID
  * @param callback - function to run, passes list of skills
  */
 exports.getAvailableSkills = function(userID, callback) {
@@ -192,18 +196,17 @@ exports.getAvailableSkills = function(userID, callback) {
 
 /**
  * Get the JSON object for a skill with a given id from the database
- * @param {string} id - The ObjectID of the skill to be requested
- * @param callback
+ * @param {string} skillID - SkillID
+ * @param callback - Called with JSON parameter for skill object/null
  * @returns Skill or Null
  */
-exports.getSkill = function(id, callback) {
+exports.getSkill = function(skillID, callback) {
   axios
-    .get(process.env.API_URL + "skills/?id="+id, {
+    .get(process.env.API_URL + "skills/?id="+skillID, {
       headers: {
         api_key: getKey()
       }
     }).then(res => {
-      console.log(`statusCode: ${res.status}`);
       callback(Skill.create(res.data));
     }).catch(() => {
       callback(null);
@@ -264,21 +267,5 @@ exports.addXP = function(xp, discordid) {
       }
     }).then(res => {
       console.log(res);
-    });
-};
-
-/**
- * Gets a users skills and returns them as task objects with "completed" field
- * @param id - discordID of the user
- * @param date - date of the tasks to get
- */
-exports.getTasks = function(id, date) {
-  return axios
-    .get(process.env.API_URL + "currentTasks", {
-      headers: {
-        api_key: getKey(),
-        discordid: id,
-        date: date,
-      }
     });
 };

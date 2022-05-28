@@ -1,10 +1,19 @@
-const {profile, auth, getRecentTasks} = require("../../modules/APIHelper");
+const {getUser, authUser, getRecentTasks} = require("../../modules/APIHelper");
 const {displayReview} = require("../../modules/weeklyReviewRenderer");
 
-exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
-  auth(message.author.id, message.channel,(userID) => {
-    profile(userID, user => {
+/**
+ * #TODO TEST METHOD - DELETE ON RELEASE
+ * @param client
+ * @param message
+ */
+exports.run = (client, message) => {
+  //Authenticate user
+  authUser(message.author.id, message.channel,(userID) => {
+    //Get user profile
+    getUser(userID, user => {
+      //Get last 7 days worth of tasks
       getRecentTasks(userID, 7, (tasks) => {
+        //Display weekly analytics
         displayReview(user, message.channel, tasks);
       });
     });
