@@ -21,10 +21,10 @@ class User {
     this.items = items;
   }
 
-  static create(data) {
+  static create(username, data) {
     const user = data.user;
     const items = data.items;
-    return new User(user.name, user.level, user.xp, user.skillscompleted, user.skillsinprogress, items);
+    return new User(username, user.level, user.xp, user.skillscompleted, user.skillsinprogress, items);
   }
 }
 

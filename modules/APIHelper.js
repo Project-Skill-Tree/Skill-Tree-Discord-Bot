@@ -11,8 +11,9 @@ function getKey() {
 }
 
 /**
- * Authorise the user as existing in the database
- * @param discordid
+ * Authorise the user, return callback value if they exist in the database,
+ * display an error message if the channel is defined and the user is not found
+ * @param discordid - Discord ID
  * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
  * @param callback - Callback with param true/false for user found/not
  */
@@ -29,7 +30,7 @@ exports.auth = function(discordid, channel=null, callback) {
 };
 
 /**
- * Authorise the user as existing in the database
+ * Create a user in the database
  * @param discordid
  * @param gender
  * @param difficulty
@@ -48,7 +49,6 @@ exports.createUser = function(discordid, gender, difficulty, dms_enabled, callba
       }
     }).then(res => {
       if (res.data.userFound) {
-        console.log("found!");
         callback();
       }
     });
@@ -56,7 +56,7 @@ exports.createUser = function(discordid, gender, difficulty, dms_enabled, callba
 
 /**
  * Updating a user in the database
- * @param discordid
+ * @param userID
  * @param gender
  * @param difficulty
  * @param dms_enabled
@@ -66,8 +66,8 @@ exports.updateUser =function(userID, gender, difficulty, dms_enabled) {
     .post(process.env.API_URL + "users/updateUser/", {
       userid: userID,
       gender:gender,
-      difficulty:difficulty,
-      dms_enabled:dms_enabled
+      difficulty: difficulty,
+      dms_enabled: dms_enabled
     },{
       headers: {
         api_key: getKey()
@@ -77,19 +77,20 @@ exports.updateUser =function(userID, gender, difficulty, dms_enabled) {
 
 /**
  * Get JSON object for user given discord ID
- * @param user - discord user object
+ * @param userID - mongoDB userID
+ * @param username - discord username
  * @param callback - method to pass user object to
  */
-exports.profile = function(user, callback) {
+exports.profile = function(userID, username, callback) {
   axios
     .get(process.env.API_URL + "users/profile/", {
       headers: {
         api_key: getKey(),
-        id: user
+        id: userID
       }
     }).then(res => {
-      res.data.user["username"] = user.username;
-      callback(User.create(res.data));
+      res.data.user["username"] = username;
+      callback(User.create(username, res.data));
     }).catch(err => {
       console.log(err);
     });
@@ -97,6 +98,7 @@ exports.profile = function(user, callback) {
 
 /**
  * Get JSON object containing skills from database
+ * @param callback - Callback with list of skill objects
  */
 exports.getSkills = function(callback) {
   axios.get(process.env.API_URL + "skills", {
@@ -113,6 +115,7 @@ exports.getSkills = function(callback) {
 
 /**
  * Get JSON object containing tasks that the user has accepted from the database
+ * @param callback - list of task objects
  */
 exports.getTasksInProgress = function(userID,callback) {
   axios.get(process.env.API_URL + "tasks/currentTasks", {
@@ -128,12 +131,18 @@ exports.getTasksInProgress = function(userID,callback) {
   });
 };
 
-exports.getRecentTasks = function(userID,callback) {
+/**
+ * Get all tasks in the last <limit> days
+ * @param userID
+ * @param {number} limit - number of days ago for the last habit entry
+ * @param callback
+ */
+exports.getRecentTasks = function(userID, limit, callback) {
   axios.get(process.env.API_URL + "tasks/recentTasks", {
     headers: {
       id: userID,
       api_key: getKey(),
-      limit: 7
+      limit: limit
     }
   }).then((res)=>{
     const tasks = res.data.map(data => Task.create(data));
@@ -145,6 +154,8 @@ exports.getRecentTasks = function(userID,callback) {
 
 /**
  * Get JSON object containing skills that the user has accepted from the database
+ * @param userID - mongoDB userID
+ * @param callback - return JSON data of skills in progress
  */
 exports.getSkillsInProgress = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/inProgress", {
@@ -153,7 +164,7 @@ exports.getSkillsInProgress = function(userID, callback) {
       api_key: getKey()
     }
   }).then((res)=>{
-    const skills = res.data;
+    const skills = res.data.map(data => Skill.create(data));
     callback(skills);
   }).catch(res => {
     console.log(res);

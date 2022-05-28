@@ -4,16 +4,24 @@ const { createUser, updateUser, auth} = require("../../modules/APIHelper");
 const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
 
+/**
+ * Setup user account
+ * Page 1. Info page
+ * Page 2. Set experience level (beginner/intermeditae/expert)
+ * Page 3. DM reminders
+ * Page 4. Choose your character (male/female)
+ * Page 5. Complete confirmation
+ */
 exports.run = async (client,message) => {
+  //Start setup
   startSetup(client, message);
 };
 
 function setupUser(id, gender, difficulty, dms_enabled) {
-  //validates that user does not exist in the database already
   gender = gender.toLowerCase();
   difficulty = difficulty.toLowerCase();
   createUser(id,gender,difficulty,dms_enabled,()=>{ //creates the user
-    auth(id,null,(userID)=>{
+    auth(id,null,(userID) => {
       updateUser(userID,gender,difficulty);
     });
   });
@@ -54,6 +62,7 @@ async function startSetup(client, message) {
     .setDescription(`Your Skill Tree account is completely configured! check ~guide to understand how you can use skill tree \n Press "Learn More" to join the discord server and to get information about the project 
     `)
     .setFooter("Completion Status: \n (5/5) ");
+
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
@@ -151,6 +160,6 @@ exports.conf = {
 exports.help = {
   name: "setup",
   category: "Skill Tree",
-  description: "sets up user account",
+  description: "Sets up user account",
   usage: "setup"
 };

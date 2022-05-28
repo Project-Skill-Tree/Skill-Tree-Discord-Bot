@@ -7,28 +7,35 @@ const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
 
 
 /**
- * Test method to send a template task list - sends an embed containing all the tasks under two categories, DAILY and NO DEADLINE
- * @param client
- * @param message
- * @param args
- * @param level
+ * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
  */
-exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
+exports.run = async (client, message) => {
   //Validate user exists
   auth(message.author.id, message.channel, (userID) => {
+    //Get tasks
     getTasksInProgress(userID,(tasks)=>{
       if (tasks.length === 0) {
         message.channel.send("```No Current tasks, go to ~skills to start a skill```");
       } else {
-        taskListCommand(client, message, tasks, userID);
+        createTaskList(client, message, tasks, userID);
       }
     });
   });
 };
 
-async function taskListCommand(client, message,tasks, userID) {
-  var day = "today";
-  var date = dayToDate(day);
+/**
+ * Create task list
+ * Has yesterday/today button to toggle previous day
+ * Has combobox to select which skill has been completed
+ * @param client
+ * @param message
+ * @param tasks
+ * @param userID
+ * @return {Promise<void>}
+ */
+async function createTaskList(client, message,tasks, userID) {
+  let day = "today";
+  let date = dayToDate(day);
 
   const embed = buildEmbed(tasks, date);
   const dropDownBox = createDropDownBox(tasks, date);

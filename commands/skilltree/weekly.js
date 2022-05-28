@@ -4,7 +4,7 @@ const {displayReview} = require("../../modules/weeklyReviewRenderer");
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   auth(message.author.id, message.channel,(userID) => {
     profile(userID, user => {
-      getRecentTasks(userID, (tasks) => {
+      getRecentTasks(userID, 7, (tasks) => {
         displayReview(user, message.channel, tasks);
       });
     });
