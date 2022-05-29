@@ -7,10 +7,11 @@ require("dotenv").config();
 // Load up the discord.js library
 const { Client, Collection } = require("discord.js");
 // We also load the rest of the things we need in this file:
-const { readdirSync } = require("fs");
+const fs = require("fs");
 const { intents, partials, permLevels } = require("./config.js");
 const logger = require("./modules/logger.js");
 const {registerFont} = require("canvas");
+const Path = require("path");
 
 registerFont("./assets/fonts/Akira.otf", { family: "Akira"});
 
@@ -48,9 +49,11 @@ const init = async () => {
 
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
-  const commands = readdirSync("./commands/").filter(file => file.endsWith(".js"));
+  const files = [];
+  getFiles("./commands/", files);
+  const commands = files.filter(file => file.endsWith(".js"));
   for (const file of commands) {
-    const props = require(`./commands/${file}`);
+    const props = require(`./${file}`);
     logger.log(`Loading Command: ${props.help.name}. 👌`, "log");
     client.container.commands.set(props.help.name, props);
     props.conf.aliases.forEach(alias => {
@@ -59,7 +62,7 @@ const init = async () => {
   }
 
   // Now we load any **slash** commands you may have in the ./slash directory.
-  const slashFiles = readdirSync("./slash").filter(file => file.endsWith(".js"));
+  const slashFiles = fs.readdirSync("./slash").filter(file => file.endsWith(".js"));
   for (const file of slashFiles) {
     const command = require(`./slash/${file}`);
     const commandName = file.split(".")[0];
@@ -70,7 +73,7 @@ const init = async () => {
   }
 
   // Then we load events, which will include our message and ready event.
-  const eventFiles = readdirSync("./events/").filter(file => file.endsWith(".js"));
+  const eventFiles = fs.readdirSync("./events/").filter(file => file.endsWith(".js"));
   for (const file of eventFiles) {
     const eventName = file.split(".")[0];
     logger.log(`Loading Event: ${eventName}. 👌`, "log");
@@ -91,5 +94,13 @@ const init = async () => {
 
 // End top-level async/await function.
 };
+
+function getFiles(dir, files) {
+  fs.readdirSync(dir).forEach(file => {
+    const abs = Path.join(dir, file);
+    if (fs.statSync(abs).isDirectory()) return getFiles(abs, files);
+    else return files.push(abs);
+  });
+}
 
 init();

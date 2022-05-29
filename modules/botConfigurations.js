@@ -6,4 +6,4 @@ const configurations =  {
   server_id:"953924192259170335",
 };
 
-module.exports = function getConfigurations() {return configurations};
+module.exports = function getConfigurations() {return configurations;};

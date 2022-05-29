@@ -2,6 +2,7 @@
 
 /**
  * Return the roman numeral version of a given number
+ * e.g. 3 -> III, 5 -> V
  * @param {number} num - Number to convert
  * @return {?string} - Roman numeral
  */

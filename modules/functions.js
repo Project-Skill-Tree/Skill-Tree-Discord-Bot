@@ -4,7 +4,7 @@ const { settings } = require("./settings.js");
 // Let's start by getting some useful functions that we'll use throughout
 // the bot, like logs and elevation features.
 
-/*
+/**
   PERMISSION LEVEL FUNCTION
 
   This is a very basic permission system for commands which uses "levels"
@@ -29,7 +29,7 @@ function permlevel(message) {
   return permlvl;
 }
 
-/*
+/**
   GUILD SETTINGS FUNCTION
 
   This function merges the default settings (from config.defaultSettings) with any
@@ -49,7 +49,7 @@ function getSettings(guild) {
   return ({...settings.get("default"), ...guildConf});
 }
 
-/*
+/**
   SINGLE-LINE AWAIT MESSAGE
 
   A simple way to grab a single reply, from the user that initiated
@@ -73,7 +73,7 @@ async function awaitReply(msg, question, limit = 60000) {
 }
 
 
-/* MISCELLANEOUS NON-CRITICAL FUNCTIONS */
+/**MISCELLANEOUS NON-CRITICAL FUNCTIONS */
   
 // toProperCase(String) returns a proper-cased string such as: 
 // toProperCase("Mary had a little lamb") returns "Mary Had A Little Lamb"
