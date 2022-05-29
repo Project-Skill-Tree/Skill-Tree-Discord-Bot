@@ -1,17 +1,18 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("../modules/UIHelper");
+const {imageToBuffer} = require("../modules/UIHelper");
+
 /**
  * Item Object
+ * @implements Swipeable - Can be cycled to display multiple items
  */
 class Item extends Swipeable {
   /**
    * Create Item object
-   * @constructor
    * @param {string} name - Item name (e.g. GUIDE TO SELF IMPROVEMENT)
    * @param {string} link - The link to the item resource
    * @param {?string=} emoji - the emoiji to display with the item
-   * @returns {exports}
+   * @constructor
    */
   constructor(name, link, emoji=null) {
     super();
@@ -26,14 +27,15 @@ class Item extends Swipeable {
    * @param channel
    */
   async send(client, channel) {
-    const icon = new MessageAttachment(await addGlow("icons/chest.png", 50), "icon.png");
+    const icon = new MessageAttachment(await imageToBuffer("icons/chest.png", 64), "icon.png");
     const embed = this.update(new MessageEmbed());
     channel.send({embeds: [embed], files: [icon]});
   }
 
   /**
    * Updates properties of embed with values from this class
-   * @param embed
+   * @param embed - embed to update
+   * @return embed - updated embed
    */
   update(embed) {
     let description = `+ [${this.name}](${this.link})`;
