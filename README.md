@@ -41,7 +41,7 @@ To start the bot, in the command prompt, run the following command:
 
 ## Contributing
 Read up on [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) for instructions on code contribution.
-Read the [documentation wiki](https://project-skill-tree.github.io/Skill-Tree-Docs/)
+Read the [documentation wiki](https://www.projectskilltree.com)
 ### Setting up a development environment
 Read [Installation](#installation) to get started.
 
