@@ -1,9 +1,9 @@
 # Skill-Tree-Discord-Bot
 The Skill Tree Discord Bot allows users to keep track of their self-improvement progress effortlessly through Discord.
 
-[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/CKKshDe8rx)
-![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/Skill-Tree-Discord-Bot)
-[![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/Skill-Tree-Discord-Bot)](https://github.com/Adonis-Self-Improvement/Skill-Tree-Discord-Bot/stargazers)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/skilltree)
+![GitHub commits](https://badgen.net/github/license/Project-Skill-Tree/Skill-Tree-Discord-Bot)
+[![GitHub commits](https://badgen.net/github/stars/Project-Skill-Tree/Skill-Tree-Discord-Bot)](https://github.com/Project-Skill-Tree/Skill-Tree-Discord-Bot/stargazers)
 
 ## Tech
 - [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's Data
@@ -26,7 +26,7 @@ for more info.
 
 Create a folder within your projects directory and run the following inside it:
 
-`git clone https://github.com/Adonis-Self-Improvement/Skill-Tree-Discord-Bot.git`
+`git clone https://github.com/Project-Skill-Tree/Skill-Tree-Discord-Bot.git`
 
 Once finished:
 
