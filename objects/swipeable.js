@@ -3,7 +3,11 @@
  * @interface
  * @type {Swipeable}
  */
-module.exports = class Swipeable {
+class Swipeable {
+  /**
+   * Must define the *Uppdate* Method to update the discord embed
+   * @constructor
+   */
   constructor() {
     //Cannot instantiate abstract class
     if (new.target === Swipeable) {
@@ -14,4 +18,6 @@ module.exports = class Swipeable {
       throw new TypeError("Must override update method");
     }
   }
-};
+}
+
+module.exports = Swipeable;

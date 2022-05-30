@@ -1,9 +1,9 @@
-# ASI-DiscordBot
-The self-improvement Discord bot. The first service of the Adonis Self-improvement project, allowing users to keep track of their self-improvement progress through a Discord bot.
+# Skill-Tree-Discord-Bot
+The Skill Tree Discord Bot allows users to keep track of their self-improvement progress effortlessly through Discord.
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/CKKshDe8rx)
-![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/ASI-DiscordBot)
-[![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/ASI-DiscordBot)](https://github.com/Adonis-Self-Improvement/ASI-DiscordBot/stargazers)
+![GitHub commits](https://badgen.net/github/license/Adonis-Self-Improvement/Skill-Tree-Discord-Bot)
+[![GitHub commits](https://badgen.net/github/stars/Adonis-Self-Improvement/Skill-Tree-Discord-Bot)](https://github.com/Adonis-Self-Improvement/Skill-Tree-Discord-Bot/stargazers)
 
 ## Tech
 - [DiscordJS](https://discord.js.org/#/) NodeJS module to interact with Discord's Data
@@ -26,7 +26,7 @@ for more info.
 
 Create a folder within your projects directory and run the following inside it:
 
-`git clone https://github.com/Adonis-Self-Improvement/ASI-DiscordBot.git`
+`git clone https://github.com/Adonis-Self-Improvement/Skill-Tree-Discord-Bot.git`
 
 Once finished:
 
@@ -41,7 +41,7 @@ To start the bot, in the command prompt, run the following command:
 
 ## Contributing
 Read up on [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) for instructions on code contribution.
-Read the [documentation wiki](https://adonis-self-improvement.github.io/skill-tree-docs.github.io/)
+Read the [documentation wiki](https://project-skill-tree.github.io/Skill-Tree-Docs/)
 ### Setting up a development environment
 Read [Installation](#installation) to get started.
 

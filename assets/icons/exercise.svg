@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100"
+   height="100"
+   viewBox="0 0 100 100"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="exercise-KendrickEL.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true"
+     inkscape:snap-nodes="false"
+     inkscape:zoom="3.22"
+     inkscape:cx="16.770186"
+     inkscape:cy="69.720497"
+     inkscape:window-width="1600"
+     inkscape:window-height="877"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     id="path849"
+     style="fill:#ffba00;stroke-width:0.425064"
+     d="M 12.577336,64.342646 V 35.657352 l 4.160639,-3.474446 4.160639,3.474448 -10e-7,28.685293 -4.160638,3.474447 z"
+     sodipodi:nodetypes="ccccccc" />
+  <path
+     id="path1068"
+     style="fill:#ffba00;stroke-width:0.55287"
+     d="M 24.378578,68.655112 V 31.344886 l 5.411636,-4.519123 5.411637,4.519126 -2e-6,37.310224 -5.411635,4.519124 z"
+     sodipodi:nodetypes="ccccccc" />
+  <path
+     id="path1070"
+     style="fill:#ffba00;stroke-width:0.425064"
+     d="M 87.220484,64.342646 V 35.657352 l -4.160639,-3.474446 -4.160639,3.474448 10e-7,28.685293 4.160638,3.474447 z"
+     sodipodi:nodetypes="ccccccc" />
+  <path
+     id="path1072"
+     style="fill:#ffba00;stroke-width:0.55287"
+     d="M 75.419242,68.655112 V 31.344886 l -5.411636,-4.519123 -5.411637,4.519126 2e-6,37.310224 5.411635,4.519124 z"
+     sodipodi:nodetypes="ccccccc" />
+  <path
+     id="path1118"
+     style="fill:#ffba00;stroke-width:0.315238"
+     d="m 6.2099483,46.77683 -1.4335936,3.22253 1.4335936,3.224925 H 20.898614 V 46.77683 Z m 18.1686297,0 v 6.447455 H 75.419242 V 46.77683 Z m 54.520628,0 v 6.447455 h 14.888892 l 1.435547,-3.224925 -1.435547,-3.22253 z"
+     sodipodi:nodetypes="ccccccccccccccccc" />
+  <path
+     id="rect1984"
+     style="fill:#ffba00;stroke-width:0.740664"
+     d="m 33.170307,44.099933 4.658385,1.225807 v 9.349629 l -4.658385,1.225807 z"
+     sodipodi:nodetypes="ccccc" />
+  <path
+     id="rect2066"
+     style="fill:#ffba00;stroke-width:0.740664"
+     d="m 62.207573,45.32574 4.658385,-1.225807 v 11.801243 l -4.658385,-1.225807 z"
+     sodipodi:nodetypes="ccccc" />
+  <path
+     id="rect2068"
+     style="fill:#ffba00;stroke-width:0.740664"
+     d="M 9.8783808,45.32574 14.536766,44.099933 V 55.901176 L 9.8783808,54.675369 Z"
+     sodipodi:nodetypes="ccccc" />
+  <path
+     id="rect2070"
+     style="fill:#ffba00;stroke-width:0.740664"
+     d="m 84.723099,44.099933 4.658385,1.225807 v 9.349629 l -4.658385,1.225807 z"
+     sodipodi:nodetypes="ccccc" />
+</svg>

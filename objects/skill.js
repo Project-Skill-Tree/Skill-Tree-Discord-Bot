@@ -1,7 +1,7 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
-const formatFrequency = require("../modules/frequencyFormatter.js");
+const {formatFrequency} = require("../modules/dateHelper.js");
 
 /**
  * Skill Object used for storing templates for skills in the tree.
@@ -10,19 +10,24 @@ const formatFrequency = require("../modules/frequencyFormatter.js");
 class Skill extends Swipeable {
   /**
    * Skill constructor
-   * @constructor
-   * @param {string} iconPath - image path for the icon to be displayed, relative to "/icons/" folder
+   * @param id
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
+   * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
-   * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
    * @param {number} xp - The amount of XP granted upon completion of the skill
+   * @param {string} icon - image path for the icon to be displayed, relative to "/icons/" folder
+   * @param requires - required skills
+   * @param children - child skills
+   * @constructor
    */
-  constructor(iconPath, title, level, goal, interval, timelimit, frequency, xp) {
+  constructor(id, title, level, goal,
+    frequency, interval, timelimit, xp,
+    icon,requires, children=[]) {
     super();
-    this.iconPath = iconPath;
+    this.id = id;
     this.title = title;
     this.level = level;
     this.goal = goal;
@@ -30,6 +35,37 @@ class Skill extends Swipeable {
     this.timelimit = timelimit;
     this.frequency = frequency;
     this.xp = xp;
+    this.requires = requires;
+    this.children = children;
+    this.icon = icon;
+  }
+
+  /**
+   * Create Skill object from json data
+   * @param data - JSON data for the skill
+   * @return {Skill}
+   */
+  static create(data) {
+    return new Skill(data._id,
+      data.title,
+      data.level,
+      data.goal,
+      data.frequency,
+      data.interval,
+      data.timelimit,
+      data.xp,
+      data.icon,
+      data.requires,
+      data.children);
+  }
+
+  /**
+   * Create Skill object from json data
+   * @param data - JSON data for the skill
+   * @return {Skill}
+   */
+  static create(data) {
+    return new Skill(data.iconPath, data.title, data.level, data.goal, data.frequency, data.interval, data.timelimit, data.xp);
   }
 
   /**
@@ -49,10 +85,10 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.iconPath,"advanced.png",  this.level);
+    const badgeIcon = await getBadgeIcon(this.icon, this.level, 64);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
-    embed.setColor("#7d005d");
+    embed.setColor("#d21cff");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
     embed.setFields(

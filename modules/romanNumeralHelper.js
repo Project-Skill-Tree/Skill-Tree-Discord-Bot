@@ -1,10 +1,12 @@
+/** @module romanNumeralHelper */
+
 /**
  * Return the roman numeral version of a given number
+ * e.g. 3 -> III, 5 -> V
  * @param {number} num - Number to convert
  * @return {?string} - Roman numeral
- * @module romanNumeralHelper
  */
-module.exports = function romanise(num) {
+exports.romanise = function(num) {
   if (isNaN(num))
     return null;
   const digits = String(+num).split(""),

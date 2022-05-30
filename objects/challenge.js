@@ -1,15 +1,18 @@
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
-const {addGlow} = require("../modules/UIHelper");
+const {imageToBuffer} = require("../modules/UIHelper");
 
 /**
  * Challenge Object
- * @param challenge - The challenge description
- * @param {number} xp - The xp to be awarded on completion
- * @param {?string=} link - The link to the item resource
- * @returns {exports}
+ * @implements Swipeable - Can be cycled to display multiple challenges
  */
 class Challenge extends Swipeable {
+  /**
+   * @param challenge - The challenge description
+   * @param {number} xp - The xp to be awarded on completion
+   * @param {?string=} link - The link to the item resource (default: null)
+   * @constructor
+   */
   constructor(challenge, xp, link=null) {
     super();
     this.challenge = challenge;
@@ -22,8 +25,7 @@ class Challenge extends Swipeable {
    * @param channel
    */
   async send(client, channel) {
-    //TODO: Dynamically load characters for challenges
-    const icon = new MessageAttachment(await addGlow("characters/spartan.png", 100), "icon.png");
+    const icon = new MessageAttachment(await imageToBuffer("icons/challenge.png", 100), "icon.png");
     const embed = this.update(new MessageEmbed());
 
     channel.send({ embeds: [embed], files: [icon]});
@@ -31,11 +33,11 @@ class Challenge extends Swipeable {
 
   /**
    * Updates properties of embed with values from this class
-   * @param embed
-   * @return embed
+   * @param embed - embed to update
+   * @return embed - updated embed
    */
   update(embed) {
-    var link = "";
+    let link = "";
     //Add link if one exists
     if (this.link) link = `[[LINK]](${this.link})`;
     embed.setColor("#bd290b");

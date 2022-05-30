@@ -1,4 +1,4 @@
-/*
+/**
 Logger class for easy and aesthetically pleasing console logging 
 */
 const { cyan, red, magenta, gray, yellow, white, green } = require("colorette");
