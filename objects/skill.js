@@ -2,6 +2,7 @@ const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
 const {formatFrequency} = require("../modules/dateHelper.js");
+const {romanise} = require("../modules/romanNumeralHelper");
 
 /**
  * Skill Object used for storing templates for skills in the tree.
@@ -76,16 +77,16 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.icon, this.level, 64);
+    const badgeIcon = await getBadgeIcon(this.icon, this.level, 250);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
     embed.setColor("#d21cff");
-    embed.setTitle(this.title);
+    embed.setTitle(`${this.title} ${romanise(this.level)}`);
     embed.setThumbnail("attachment://badge.png");
     embed.setFields(
       {
         name: "GOAL: ",
-        value: codeBlock(`${this.goal} (${formatFrequency(this.frequency, this.interval)})`),
+        value: codeBlock(`${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})`),
       },
       {
         name: "TIME: ",

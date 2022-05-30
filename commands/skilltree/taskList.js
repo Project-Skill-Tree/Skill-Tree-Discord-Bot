@@ -143,7 +143,7 @@ function formatTask(task, idx, date) {
   const levelRoman = romanise(task.skill.level);
   const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
 
-  return `${checkedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
+  return `${checkedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${task.percentChecked()})**: \n${task.skill.goal}`;
 }
 
 exports.conf = {
