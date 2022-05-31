@@ -42,7 +42,7 @@ async function getWeeklyReview(user, tasks) {
   await drawHeaderFooter(canvas);
 
   await drawXP(canvas, user,20, 150, 360, 30);
-  await drawTasks(canvas, user, tasks,0,190,400,200);
+  await drawTasks(canvas, user, tasks,0,190,400,550);
 
   //return final buffer
   return canvas.toBuffer();
@@ -178,16 +178,11 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
   //Sort tasks in descending order of level and then XP
   const taskList = tasks.sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
-  });
-
-  let maxSize = 0;
-  for (let i = 0; i < taskList.length; i++) {
-    maxSize = Math.max(maxSize, taskList[i].data.length);
-  }
+  }).splice(0,6);
 
   //Width of one task
-  const tHeight = (h - pad*2) / taskList.length;
-  const tWidth = (w - pad*2 - tHeight - 10) / maxSize;
+  const tHeight = 90;
+  const tWidth = (w - pad*2 - tHeight - 10) / 7;
   const size = Math.min(tHeight, tWidth) - 4;
 
   //draw tasks

@@ -10,7 +10,7 @@ exports.run = (client, message) => {
   //Authenticate user
   authUser(message.author.id, message.channel,(userID) => {
     //Get user profile
-    getUser(userID, user => {
+    getUser(userID, message.author.username,user => {
       //Get last 7 days worth of tasks
       getRecentTasks(userID, 7, (tasks) => {
         //Display weekly analytics

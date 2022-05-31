@@ -151,6 +151,15 @@ exports.tint = function(img, colour) {
   return canvas;
 };
 
+/**
+ * Returns a string embedded in a code block ```like this```
+ * @param str
+ * @return {string}
+ */
+exports.codeBlock = function(str) {
+  return "```" + str + "```";
+}
+
 exports.codeBlock = function(str) {
   return "```" + str + "```";
 }
