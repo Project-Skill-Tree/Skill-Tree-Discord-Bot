@@ -158,8 +158,8 @@ exports.tint = function(img, colour) {
  */
 exports.codeBlock = function(str) {
   return "```" + str + "```";
-}
+};
 
 exports.codeBlock = function(str) {
   return "```" + str + "```";
-}
+};
