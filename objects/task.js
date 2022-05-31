@@ -46,6 +46,19 @@ class Task {
   }
 
   /**
+   * Returns the percentage of checked tasks
+   * @return {string}
+   */
+  percentChecked() {
+    //Set current value in case there was a long gap between tasks
+    //Data only stores the most recent set, so we need to set the current date to
+    //the value at isChecked true if true, false if false, and false if not found.
+    //That sets the length to the correct value to calculate the percentage
+    const date = new Date();
+    this.setChecked(this.isChecked(date), date);
+    return `${Math.round(100 * this.data.filter(v => v).length / this.data.length)}%`;
+  }
+  /**
    * Create Task object from json data
    * @param data - JSON data for the task
    * @return {Task}

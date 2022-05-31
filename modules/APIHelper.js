@@ -237,7 +237,7 @@ exports.startSkill = function(userID, skillID) {
  * @param date - "today" or "yesterday"
  * @param checked - T/F if checked/unchecked
  */
-exports.updateTask = function(userid, task, date, checked) {
+exports.updateTask = function(userid, task, date, checked, channel) {
   axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
@@ -248,6 +248,7 @@ exports.updateTask = function(userid, task, date, checked) {
       headers: {
         api_key: getKey()
       }
+    }).then((res)=>{
     });
 };
 
