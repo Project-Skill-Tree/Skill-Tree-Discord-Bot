@@ -8,15 +8,14 @@ const {tint} = require("../modules/UIHelper");
  * Get the badge image
  * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
  * @param {?number} level - Skill level of the badge
- * @param {size} size - size of badge icon
+ * @param {number} size - size of badge icon
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
  */
 exports.getBadgeIcon = async function(iconPath, level, size) {
   const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
-  context.antialias = "default";
-  context.quality = "nearest";
+  context.quality = "good";
   context.imageSmoothingEnabled = false;
 
   await exports.drawBadge(canvas, canvas.width/2, canvas.height/2, size*0.8, iconPath, level);
@@ -84,11 +83,11 @@ exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
 
     // draw image
     context.drawImage(tint(icon, "#120024"), x - icon.width * iconSizeRatio * 0.5,
-      y - icon.height*iconSizeRatio*0.5 - 5, icon.width * iconSizeRatio, icon.height * iconSizeRatio);
+      y - icon.height*iconSizeRatio*0.5 - 5*(size/64), icon.width * iconSizeRatio, icon.height * iconSizeRatio);
 
     //Draw normal
     context.drawImage(icon, x - icon.width * iconSizeRatio * 0.5,
-      y - icon.height*iconSizeRatio*0.5 - 8, icon.width * iconSizeRatio, icon.height * iconSizeRatio);
+      y - icon.height*iconSizeRatio*0.5 - 8*(size/64), icon.width * iconSizeRatio, icon.height * iconSizeRatio);
     context.shadowBlur = 0;
   }
 };
