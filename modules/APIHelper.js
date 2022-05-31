@@ -5,7 +5,6 @@ const Task = require("../objects/task");
 const {authErrMsg} = require("./authHelper");
 const Item = require("../objects/item");
 const Challenge = require("../objects/challenge");
-const {createLargeSwipePanel} = require("./menuHelper");
 
 /** @module APIHelper */
 
