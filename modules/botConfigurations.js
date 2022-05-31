@@ -1,5 +1,5 @@
 const configurations =  {
-  website: "<UNRELEASED>",
+  website: "www.projectskilltree.com",
   invite_link: "https://discord.gg/skilltree",
   primary: "3A015C",
   secondary: "BA5081",

@@ -2,6 +2,8 @@ const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = requi
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {updateTask, authUser, getCurrentTasks} = require("../../modules/APIHelper");
 const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
+const Challenge = require("../../objects/challenge");
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
@@ -82,7 +84,14 @@ async function createTaskList(client, message,tasks, userID) {
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => `${task.skill.title}${task.skill.level}` === skillTitle);
       task.setChecked(!task.isChecked(date), date);
-      updateTask(userID, task, date, task.isChecked(date));
+
+      updateTask(userID, task, date, task.isChecked(date), (unlocked)=>{
+        message.channel.send({embeds: [
+          new MessageEmbed()
+            .setTitle("UNLOCKED")
+            .setColor("#ffce00")]});
+        createLargeSwipePanel(client, message.author, message.channel, unlocked);
+      });
     }
 
     // Send the same embed, but with the updated values of the tasks array.

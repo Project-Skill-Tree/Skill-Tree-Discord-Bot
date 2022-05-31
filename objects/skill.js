@@ -2,6 +2,8 @@ const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
 const {formatFrequency} = require("../modules/dateHelper.js");
+const {codeBlock} = require("../modules/UIHelper");
+const {romanise} = require("../modules/romanNumeralHelper");
 
 /**
  * Skill Object used for storing templates for skills in the tree.
@@ -60,15 +62,6 @@ class Skill extends Swipeable {
   }
 
   /**
-   * Create Skill object from json data
-   * @param data - JSON data for the skill
-   * @return {Skill}
-   */
-  static create(data) {
-    return new Skill(data.iconPath, data.title, data.level, data.goal, data.frequency, data.interval, data.timelimit, data.xp);
-  }
-
-  /**
    * Sends an embedded skill in the chat
    * @param channel - channel to send the message in
    */
@@ -85,28 +78,15 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.icon, this.level, 64);
+    const badgeIcon = await getBadgeIcon(this.icon, this.level, 300);
     const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
 
-    embed.setColor("#d21cff");
+    await embed.setColor("#d21cff");
     embed.setTitle(this.title);
     embed.setThumbnail("attachment://badge.png");
-    embed.setFields(
-      {
-        name: "GOAL: ",
-        value: codeBlock(`${this.goal} (${formatFrequency(this.frequency, this.interval)})`),
-      },
-      {
-        name: "TIME: ",
-        value: codeBlock(`${this.timelimit} days`),
-      },
-      {
-        name: "XP: ",
-        value: codeBlock("diff\n" + `+ ${this.xp}XP`),
-      }
-    );
-
-    embed.setTimestamp();
+    embed.setDescription(`**GOAL:** ${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` +
+      `\n**TIME:** ${this.timelimit} days` +
+      `\n**XP:** ${this.xp}XP`);
 
     const embeds = [embed];
     const files = [badgeFile];
@@ -114,8 +94,5 @@ class Skill extends Swipeable {
   }
 }
 
-function codeBlock(str) {
-  return "```" + str + "```";
-}
 
 module.exports = Skill;

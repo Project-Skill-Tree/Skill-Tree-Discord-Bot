@@ -1,5 +1,5 @@
 const Page = require("../../objects/page");
-const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
 
 /**
  * The guide command displays 5 pages of instructions for how to use the bot.

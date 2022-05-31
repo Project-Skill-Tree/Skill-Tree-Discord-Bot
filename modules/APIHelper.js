@@ -3,6 +3,9 @@ const Skill = require("../objects/skill");
 const User = require("../objects/user");
 const Task = require("../objects/task");
 const {authErrMsg} = require("./authHelper");
+const Item = require("../objects/item");
+const Challenge = require("../objects/challenge");
+const {createLargeSwipePanel} = require("./menuHelper");
 
 /** @module APIHelper */
 
@@ -97,23 +100,6 @@ exports.getUser = function(userID, username, callback) {
     }).catch(err => {
       console.log(err);
     });
-};
-
-/**
- * Get JSON object containing skills from database
- * @param callback - Callback with list of skill objects
- */
-exports.getSkills = function(callback) {
-  axios.get(process.env.API_URL + "skills", {
-    headers: {
-      api_key: getKey()
-    }
-  }).then(res => {
-    const skills = res.data.map(data => Skill.create(data));
-    callback(skills);
-  }).catch(res => {
-    console.log(`Error fetching skills: ${res.status}`);
-  });
 };
 
 /**
@@ -236,8 +222,9 @@ exports.startSkill = function(userID, skillID) {
  * @param task
  * @param date - "today" or "yesterday"
  * @param checked - T/F if checked/unchecked
+ * @param callback - function to execute on completion
  */
-exports.updateTask = function(userid, task, date, checked, channel) {
+exports.updateTask = function(userid, task, date, checked, callback) {
   axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
@@ -249,6 +236,18 @@ exports.updateTask = function(userid, task, date, checked, channel) {
         api_key: getKey()
       }
     }).then((res)=>{
+      if (res.data.unlocked.length === 0) return;
+      const unlocked = res.data.unlocked.map(val => {
+        switch (val.type) {
+          case "Skill":
+            return Skill.create(val);
+          case "Item":
+            return Item.create(val);
+          case "Challenge":
+            return Challenge.create(val);
+        }
+      });
+      callback(unlocked);
     });
 };
 

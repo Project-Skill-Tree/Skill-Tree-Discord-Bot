@@ -82,7 +82,15 @@ const init = async () => {
     // provided by the discord.js event. 
     // This line is awesome by the way. Just sayin'.
     client.on(eventName, event.bind(null, client));
-  }  
+  }
+
+  const scheduledEvents = fs.readdirSync("./scheduled/").filter(file => file.endsWith(".js"));
+  for (const file of scheduledEvents) {
+    const eventName = file.split(".")[0];
+    logger.log(`Loading Scheduled Events: ${eventName}. 👌`, "log");
+    const event = require(`./scheduled/${file}`);
+    event.run();
+  }
 
   // Threads are currently in BETA.
   // This event will fire when a thread is created, if you want to expand

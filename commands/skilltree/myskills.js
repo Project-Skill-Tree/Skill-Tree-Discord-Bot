@@ -1,4 +1,4 @@
-const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {startSkill, getAvailableSkills, authUser} = require("../../modules/APIHelper");
 
 /**

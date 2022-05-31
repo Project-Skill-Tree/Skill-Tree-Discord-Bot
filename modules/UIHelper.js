@@ -150,3 +150,7 @@ exports.tint = function(img, colour) {
 
   return canvas;
 };
+
+exports.codeBlock = function(str) {
+  return "```" + str + "```";
+}
