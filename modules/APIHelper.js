@@ -217,6 +217,40 @@ exports.startSkill = function(userID, skillID) {
 };
 
 /**
+ * Adds the skill to the users active skills
+ * @param userID - userID
+ * @param skillID - skillID of the skill to start
+ */
+exports.skipSkill = function(userID, skillID) {
+  axios
+    .post(process.env.API_URL + "skills/skipSkill", {
+      id: userID,
+      skillid: skillID
+    },{
+      headers: {
+        api_key: getKey()
+      }
+    });
+};
+
+/**
+ * Adds the skill to the users active skills
+ * @param userID - userID
+ * @param skillID - skillID of the skill to start
+ */
+exports.revertSkill = function(userID, skillID) {
+  axios
+    .post(process.env.API_URL + "skills/revertSkill", {
+      id: userID,
+      skillid: skillID
+    },{
+      headers: {
+        api_key: getKey()
+      }
+    });
+};
+
+/**
  * Sets the completed state of a user's skill task for a given date
  * @param userid - userID
  * @param task
