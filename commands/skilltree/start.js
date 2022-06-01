@@ -14,9 +14,29 @@ exports.run = (client, message) => {
         return;
       }
       //Create panel showing skills
-      createLargeSwipePanel(client, message.author, message.channel, skills, "START", (skill) => {
-        startSkill(userID, skill.id);
-      });
+      createLargeSwipePanel(client, message.author, message.channel, skills, 
+        [{
+          name: "START",
+          description: "Start a skill and add it to your current skills",
+          action: (skill) => {
+            startSkill(userID, skill.id);
+            return true;
+          }
+        },{
+          name: "SKIP",
+          description: "Skip the skill and unlock all its children",
+          action: (skill) => {
+            skipSkill(userID, skill.id);
+            return true;
+          }
+        },{
+          name: "REVERT",
+          description: "Revert this skill and start the previous task",
+          action: (skill) => {
+            revertskill(userID, skill.id);
+            return true;
+          }
+        }], true);
     });
   });
 };

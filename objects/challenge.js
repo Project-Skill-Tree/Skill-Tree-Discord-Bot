@@ -52,13 +52,27 @@ class Challenge extends Swipeable {
   async update(embed) {
     let link = "";
     //Add link if one exists
-    const icon = new MessageAttachment(await imageToBuffer("icons/challenge.png", 200), "icon.png");
+    const icon = new MessageAttachment(await this.getIcon(), "icon.png");
     if (this.link) link = `[[LINK]](${this.link})`;
     await embed.setColor("#bd290b");
-    embed.setTitle("[CHALLENGE]");
+    embed.setTitle("```[CHALLENGE]```");
     embed.setThumbnail("attachment://icon.png");
     embed.setDescription(`${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```");
     return [[embed], [icon]];
+  }
+
+  getName() {
+    return "CHALLENGE";
+  }
+
+  toString() {
+    let link = "";
+    if (this.link) link = `[[LINK]](${this.link})`;
+    return `${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```";
+  }
+
+  async getIcon() {
+    return imageToBuffer("icons/challenge.png", 200);
   }
 }
 

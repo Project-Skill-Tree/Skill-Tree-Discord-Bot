@@ -1,4 +1,6 @@
 const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
+const {MessageSelectMenu} = require("discord.js");
+
 /** @module createSwipePanel */
 
 /**
@@ -60,50 +62,15 @@ exports.createSwipePanel = async function(client, user, channel, list) {
  * @param {User} user - User who sent the message
  * @param {Channel} channel - Discord channel
  * @param {Swipeable[]} list - List of swipeable objects
- * @param {?string=} actionName - Label for the action to be completed on this page (e.g. "START")
- * @param {?function=} action - function to run on action button pressed, takes current item as parameter
+ * @param {?[]=} actions - action name/description/action pairs
+ * item as parameter - return value is T/F based on whether this item will be removed or not
  */
-exports.createLargeSwipePanel = async function(client, user, channel, list, actionName = null, action = null) {
+exports.createLargeSwipePanel = async function(client, user, channel,
+  list, actions = null) {
   const msg = await list[0].send(channel);
   let currentPage = 0;
-  const currentPageButton = new MessageButton().setCustomId("current");
 
-  //Create action button if defined
-  if (action) {
-    currentPageButton
-      .setLabel(`${actionName} ${currentPage + 1}/${list.length}`)
-      .setStyle("SUCCESS")
-      .setDisabled(false);
-  } else {
-    currentPageButton
-      .setLabel(`${currentPage + 1}/${list.length}`)
-      .setStyle("SECONDARY")
-      .setDisabled(true);
-  }
-
-  //Add left/right messageButton to message
-  const row = new MessageActionRow()
-    .addComponents(
-      new MessageButton()
-        .setCustomId("first")
-        .setLabel("FIRST")
-        .setStyle("PRIMARY"),
-      new MessageButton()
-        .setCustomId("prev")
-        .setLabel("PREV")
-        .setStyle("PRIMARY"),
-      currentPageButton,
-      new MessageButton()
-        .setCustomId("next")
-        .setLabel("NEXT")
-        .setStyle("PRIMARY"),
-      new MessageButton()
-        .setCustomId("last")
-        .setLabel("LAST")
-        .setStyle("PRIMARY"),
-    );
-
-  msg.edit({components: [row]});
+  update(channel, msg, list, currentPage, actions);
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
@@ -111,7 +78,7 @@ exports.createLargeSwipePanel = async function(client, user, channel, list, acti
     || i.customId === "first"
     || i.customId === "last") && i.user.id === user.id;
 
-  const collector = msg.createMessageComponentCollector({filter, time: 86000});
+  const collector = msg.createMessageComponentCollector({filter, time: 100000});
   collector.on("collect", async i => {
     switch (i.customId) {
       case "first":
@@ -132,32 +99,98 @@ exports.createLargeSwipePanel = async function(client, user, channel, list, acti
       default:
         break;
     }
-
-    //Update page number
-    if (action) {
-      //Set action name and page number
-      row.components[2].setLabel(`${actionName} ${currentPage + 1}/${list.length}`);
-    } else {
-      row.components[2].setLabel(`${currentPage + 1}/${list.length}`);
-    }
-    msg.edit({components: [row]});
-
-    //update embed to show current page
-    const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
-    await msg.removeAttachments();
-    msg.edit({embeds: data[0], files: data[1]});
+    await update(channel, msg, list, currentPage, actions);
     await i.deferUpdate();
   });
 
   //Create action listener
-  if (action) {
-    const actionFilter = i => i.customId === "current" && i.user.id === user.id;
-    const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 86000});
-    actionCollector.on("collect", async i => {
-      if (i.customId === "current") {
-        await i.deferUpdate();
-        action(list[currentPage]);
+  if (actions == null) return;
+
+  const actionFilter = i => i.user.id === user.id;
+  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 100000});
+  actionCollector.on("collect", async i => {
+    //If action found
+    const action = actions.filter((v) => v.name === i.customId)[0];
+    if (action) {
+      const deleteItem = action.action(list[currentPage]);
+      //Delete item on action
+      if (deleteItem) {
+        const toRemove = list[currentPage];
+        list = list.filter(i => i !== toRemove);
+        //Set page index
+        currentPage = Math.max(currentPage - 1, 0);
+        await update(channel, msg, list, currentPage, actions);
       }
-    });
-  }
+    }
+    await i.deferUpdate();
+  });
 };
+
+async function update(channel, msg, list, currentPage, actions) {
+  //check for empty list
+  if (list.length === 0) {
+    msg.delete();
+    const embed = new MessageEmbed();
+    embed.setTitle("EMPTY");
+    embed.setDescription("No more items to display");
+    embed.setThumbnail("");
+    channel.send({embeds: [embed]});
+    return;
+  }
+
+  //Add navigation buttons to row
+  const row = createRow(currentPage, list.length);
+  const dropdown = createDropDownBox(actions);
+
+  //update embed to show current page
+  const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
+  if (msg.attachments.size !== 0) {
+    await msg.removeAttachments();
+  }
+  msg.edit({embeds: data[0], components: [row, dropdown], files: data[1]});
+}
+
+function createRow(currentPage, length) {
+  return new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("first")
+        .setLabel("FIRST")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("prev")
+        .setLabel("PREV")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("current")
+        .setLabel(`${currentPage + 1}/${length}`)
+        .setStyle("SECONDARY")
+        .setDisabled(true),
+      new MessageButton()
+        .setCustomId("next")
+        .setLabel("NEXT")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("last")
+        .setLabel("LAST")
+        .setStyle("PRIMARY"),
+    );
+}
+
+function createDropDownBox(actions) {
+  const actionList = actions.map(a => a.name).join("/");
+  console.log(actionList);
+  return new MessageActionRow().addComponents(
+    new MessageSelectMenu().setCustomId("actions").setPlaceholder(actionList).addOptions(
+      actions.map(
+        action => {
+          return {
+            label: action.name,
+            description: action.description,
+            value: action.name,
+          };
+        }
+      )
+    )
+  );
+}

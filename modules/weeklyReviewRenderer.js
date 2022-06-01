@@ -112,8 +112,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Add extra text to show increase
   context.font = "16px \"Akira\"";
-  //TODO: fix xp change not being calculated with real values
-  const xpIncrease = XPHandler.calcTotalXP(user.level, user.xp) - XPHandler.calcTotalXP(prevLevel, prevXP);
+  const xpIncrease = user.xp - user.getPrevXP();
   const increaseText = `+ ${xpIncrease} XP`;
   const increaseTextWidth = context.measureText(increaseText).width;
   const XPwidth = w - increaseTextWidth - 10;
@@ -177,7 +176,11 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
 
   //Sort tasks in descending order of level and then XP
   const taskList = tasks.sort((a, b) => {
-    return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
+    if (b.skill.level !== a.skill.level) { //sort by level
+      return (b.skill.level - a.skill.level);
+    } else { // if that fails: sort by xp
+      return b.skill.xp - a.skill.xp;
+    }
   }).splice(0,6);
 
   //Width of one task

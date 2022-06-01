@@ -51,15 +51,34 @@ class Item extends Swipeable {
    * @return embed - updated embed
    */
   async update(embed) {
+    const icon = new MessageAttachment(await this.getIcon(), "icon.png");
+
     let description = `+ [${this.name}](${this.link})`;
     if (this.emoji != null) description += ` (${this.emoji})`;
-    const icon = new MessageAttachment(await imageToBuffer("icons/chest.png", 200), "icon.png");
 
     await embed.setColor("#1071E5");
-    embed.setTitle("```[ITEM(S) FOUND]```");
+    embed.setTitle("```[ITEM FOUND]```");
     embed.setThumbnail("attachment://icon.png");
     embed.setDescription(description);
     return [[embed], [icon]];
+  }
+
+  /**
+   * Convert item to a string
+   * @return {string}
+   */
+  toString() {
+    let description = `+ [${this.name}](${this.link})`;
+    if (this.emoji != null) description += ` (${this.emoji})`;
+    return description;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  async getIcon() {
+    return imageToBuffer("icons/chest.png", 200);
   }
 }
 

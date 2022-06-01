@@ -160,6 +160,17 @@ exports.codeBlock = function(str) {
   return "```" + str + "```";
 };
 
-exports.codeBlock = function(str) {
-  return "```" + str + "```";
-};
+/**
+ * Split array into chunks of size n
+ * @param {*[]} arr
+ * @param {number} chunkSize
+ * @return {*[]}
+ */
+exports.splitToN = function(arr, chunkSize) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+}

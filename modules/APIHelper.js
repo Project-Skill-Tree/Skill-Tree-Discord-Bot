@@ -5,6 +5,7 @@ const Task = require("../objects/task");
 const {authErrMsg} = require("./authHelper");
 const Item = require("../objects/item");
 const Challenge = require("../objects/challenge");
+const Unlocked = require("../objects/unlocked");
 
 /** @module APIHelper */
 
@@ -235,36 +236,54 @@ exports.updateTask = function(userid, task, date, checked, callback) {
         api_key: getKey()
       }
     }).then((res)=>{
-      if (res.data.unlocked.length === 0) return;
+      if (res.data.unlocked.length === 0 || !res.data.unlocked.map) return;
+
+      const levelUp = res.data.levelUp;
       const unlocked = res.data.unlocked.map(val => {
         switch (val.type) {
           case "Skill":
-            return Skill.create(val);
+            return new Unlocked(Skill.create(val));
           case "Item":
-            return Item.create(val);
+            return new Unlocked(Item.create(val));
           case "Challenge":
-            return Challenge.create(val);
+            return new Unlocked(Challenge.create(val));
         }
       });
-      callback(unlocked);
+      callback(levelUp, unlocked);
     });
 };
 
 /**
  *
+ * @param userid - the discord ID of the user
  * @param xp - amount of xp to add
- * @param discordid - the discord ID of the user
  */
-exports.addXP = function(xp, discordid) {
+exports.addXP = function(userid, xp) {
   return axios
     .post(process.env.API_URL + "users/addXP", {
-      xp: parseInt(xp),
-      discordid: discordid
+      xp: xp,
+      userid: userid
     },{
       headers: {
         api_key: getKey()
       }
     }).then(res => {
       console.log(res);
+    });
+};
+
+/**
+ * @param userid - the discord ID of the user
+ * @param xp - amount of xp to add
+ */
+exports.updateXPHistory = function(userid, xp) {
+  return axios
+    .post(process.env.API_URL + "users/updateXPHistory", {
+      xp: xp,
+      id: userid
+    },{
+      headers: {
+        api_key: getKey()
+      }
     });
 };

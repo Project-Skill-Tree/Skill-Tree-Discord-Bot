@@ -2,7 +2,6 @@ const {MessageEmbed, MessageAttachment} = require("discord.js");
 const Swipeable = require("./swipeable");
 const {getBadgeIcon} = require("./badge");
 const {formatFrequency} = require("../modules/dateHelper.js");
-const {codeBlock} = require("../modules/UIHelper");
 const {romanise} = require("../modules/romanNumeralHelper");
 
 /**
@@ -78,11 +77,10 @@ class Skill extends Swipeable {
    * @returns data - [embed, files]
    */
   async update(embed) {
-    const badgeIcon = await getBadgeIcon(this.icon, this.level, 300);
-    const badgeFile = new MessageAttachment(badgeIcon, "badge.png");
+    const badgeFile = new MessageAttachment(await this.getIcon(), "badge.png");
 
     await embed.setColor("#d21cff");
-    embed.setTitle(this.title);
+    embed.setTitle(this.getName());
     embed.setThumbnail("attachment://badge.png");
     embed.setDescription(`**GOAL:** ${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` +
       `\n**TIME:** ${this.timelimit} days` +
@@ -91,6 +89,20 @@ class Skill extends Swipeable {
     const embeds = [embed];
     const files = [badgeFile];
     return [embeds, files];
+  }
+
+  toString() {
+    return `**GOAL:** ${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` +
+    `\n**TIME:** ${this.timelimit} days` +
+    `\n**XP:** ${this.xp}XP`;
+  }
+
+  getName() {
+    return `${this.title} ${romanise(this.level)}`;
+  }
+
+  async getIcon() {
+    return getBadgeIcon(this.icon, this.level, 300);
   }
 }
 
