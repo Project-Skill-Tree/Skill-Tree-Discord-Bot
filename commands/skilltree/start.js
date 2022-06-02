@@ -1,5 +1,5 @@
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {startSkill, getAvailableSkills, authUser} = require("../../modules/APIHelper");
+const {startSkill, getAvailableSkills, authUser, skipSkill, revertSkill} = require("../../modules/APIHelper");
 
 /**
  * Sends a swipeable list of all the user's available skills
@@ -33,7 +33,7 @@ exports.run = (client, message) => {
           name: "REVERT",
           description: "Revert this skill and start the previous task",
           action: (skill) => {
-            revertskill(userID, skill.id);
+            revertSkill(userID, skill.id);
             return true;
           }
         }], true);

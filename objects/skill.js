@@ -92,9 +92,9 @@ class Skill extends Swipeable {
   }
 
   toString() {
-    return `**GOAL:** ${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` +
-    `\n**TIME:** ${this.timelimit} days` +
-    `\n**XP:** ${this.xp}XP`;
+    return `**GOAL:**  \`${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)}) \`` +
+    `\n**TIME:** \`${this.timelimit} days\`` +
+    `\n**XP:** \`${this.xp}XP\``;
   }
 
   getName() {

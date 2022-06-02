@@ -173,4 +173,4 @@ exports.splitToN = function(arr, chunkSize) {
     res.push(chunk);
   }
   return res;
-}
+};

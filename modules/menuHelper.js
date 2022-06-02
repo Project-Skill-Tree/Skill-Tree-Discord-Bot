@@ -179,7 +179,6 @@ function createRow(currentPage, length) {
 
 function createDropDownBox(actions) {
   const actionList = actions.map(a => a.name).join("/");
-  console.log(actionList);
   return new MessageActionRow().addComponents(
     new MessageSelectMenu().setCustomId("actions").setPlaceholder(actionList).addOptions(
       actions.map(
