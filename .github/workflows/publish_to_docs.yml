@@ -31,5 +31,5 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./docs/out
-          external_repository: Project-Skill-Tree/skill-tree-docs
+          external_repository: Project-Skill-Tree/Skill-Tree-Docs
           publish_branch: main
