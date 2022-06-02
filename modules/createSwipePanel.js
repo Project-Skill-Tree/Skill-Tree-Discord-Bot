@@ -111,7 +111,7 @@ exports.createLargeSwipePanel = async function(client, user, channel, list, acti
     || i.customId === "first"
     || i.customId === "last") && i.user.id === user.id;
 
-  const collector = msg.createMessageComponentCollector({filter, time: 30000});
+  const collector = msg.createMessageComponentCollector({filter});
   collector.on("collect", async i => {
     switch (i.customId) {
       case "first":
