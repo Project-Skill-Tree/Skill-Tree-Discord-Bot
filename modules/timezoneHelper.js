@@ -40,6 +40,7 @@ exports.timezoneFromLocation = async function(location) {
           foundTimezone.timeZoneName,
         ),
         location: foundTimezone.timeZoneId,
+        dstOffset: Math.round(foundTimezone.dstOffset/360) / 10,
         //convert seconds into hours and round to nearest 1 decimal places (for 0.5)
         utcOffset: Math.round(foundTimezone.rawOffset/360) / 10,
       };
@@ -64,9 +65,12 @@ exports.timezoneCodeToLocationData = function(location) {
     location,
   );
   if (UTCMatch) {
-    const offset = UTCMatch[2]
+    let offset = UTCMatch[2]
       ? parseInt(UTCMatch[2])
       : 0;
+    if (UTCMatch[1] === "-") {
+      offset = -offset;
+    }
     if (offset > 14 || offset < -12) return;
 
     return {
@@ -76,6 +80,7 @@ exports.timezoneCodeToLocationData = function(location) {
       location: `Etc/GMT${
         offset > 0 ? "+" + offset : offset
       }`,
+      dstOffset: null,
       utcOffset: offset,
     };
   }
@@ -91,9 +96,8 @@ exports.timezoneCodeToLocationData = function(location) {
       location: `Etc/GMT${
         foundTimezoneCode >= 0 ? "+" : ""
       }${foundTimezoneCode}`,
-      utcOffset: `${
-        foundTimezoneCode >= 0 ? "+" : ""
-      }${foundTimezoneCode}`,
+      dstOffset: null,
+      utcOffset: foundTimezoneCode,
     };
   }
 };

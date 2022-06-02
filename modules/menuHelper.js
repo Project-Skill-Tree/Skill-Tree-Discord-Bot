@@ -7,6 +7,49 @@ const {MessageSelectMenu} = require("discord.js");
  * Create swipeable panel
  * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
  * List is cyclic and cycles back to the start
+ * @param msg - embedded message to attach to
+ * @param {User} user - User who sent the message
+ * @param onYes - function to run on "yes" selected
+ * @param onNo - function to run on "no" selected
+ */
+exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
+  //Add left/right messageButton to message
+  const row = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("yes")
+        .setLabel("YES")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("no")
+        .setLabel("NO")
+        .setStyle("PRIMARY"),
+    );
+  msg.edit({components: [row]});
+
+  //Create listener for button events
+  const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === user.id;
+  const collector = msg.createMessageComponentCollector({filter});
+  collector.on("collect", async i => {
+    await i.deferUpdate();
+    msg.delete();
+    switch (i.customId) {
+      case "yes":
+        onYes();
+        break;
+      case "no":
+        onNo();
+        break;
+      default: break;
+    }
+  });
+};
+
+
+/**
+ * Create swipeable panel
+ * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
+ * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param {User} user - User who sent the message
  * @param {Channel} channel - Discord channel to send to
@@ -32,7 +75,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
 
   //Create listener for button events
   const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === user.id;
-  const collector = msg.createMessageComponentCollector({ filter, time: 86000 });
+  const collector = msg.createMessageComponentCollector({filter});
   collector.on("collect", async i => {
     await i.deferUpdate();
     switch (i.customId) {
@@ -62,7 +105,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
  * @param {User} user - User who sent the message
  * @param {Channel} channel - Discord channel
  * @param {Swipeable[]} list - List of swipeable objects
- * @param {?[]=} actions - action name/description/action pairs
+ * @param {?[]=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
 exports.createLargeSwipePanel = async function(client, user, channel,
@@ -78,7 +121,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
     || i.customId === "first"
     || i.customId === "last") && i.user.id === user.id;
 
-  const collector = msg.createMessageComponentCollector({filter, time: 100000});
+  const collector = msg.createMessageComponentCollector({filter});
   collector.on("collect", async i => {
     switch (i.customId) {
       case "first":
@@ -107,7 +150,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   if (actions == null) return;
 
   const actionFilter = i => i.user.id === user.id;
-  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 100000});
+  const actionCollector = msg.createMessageComponentCollector({actionFilter});
   actionCollector.on("collect", async i => {
     //If action found
     const action = actions.filter((v) => v.name === i.customId)[0];

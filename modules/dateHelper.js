@@ -70,7 +70,6 @@ exports.dayToDate = function(day) {
   return new Date();
 };
 
-
 /**
  * Gets a date in absolute number of days since Jan 1st 1970
  * @param {Date} d0
@@ -82,7 +81,6 @@ exports.getAbsDate = function(d0) {
   x0.setHours(12,0,0);
   return Math.round( x0 / msPerDay );
 };
-
 
 /**
    Get the number of days between two dates - not inclusive.
@@ -115,3 +113,13 @@ exports.getDaysBetweenDates = function(d0, d1) {
   // Round to remove daylight saving errors
   return Math.round( (x1 - x0) / msPerDay );
 };
+
+exports.dateAsTime = function(date) {
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0"+minutes : minutes;
+  return hours + ":" + minutes + ampm;
+}
