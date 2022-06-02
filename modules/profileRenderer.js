@@ -97,8 +97,12 @@ async function getLevelUpProfileImage(user) {
   await drawProfile(canvas, user,80, 140, 130);
   await drawXP(canvas, user,190,130, 380, 30);
 
+  const metric = context.measureText(user.name);
+  const width = metric.width;
+
   context.shadowBlur = 10;
   context.fillStyle = "rgba(255,255,255,1)";
+  context.fillText(user.name, 380 - width*0.5, 40, 300);
   context.font = "60px \"Akira\"";
   context.fillText("LEVEL UP", 230, 100, 300);
   context.shadowBlur = 0;

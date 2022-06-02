@@ -139,15 +139,19 @@ async function update(channel, msg, list, currentPage, actions) {
   }
 
   //Add navigation buttons to row
+  const components = [];
   const row = createRow(currentPage, list.length);
-  const dropdown = createDropDownBox(actions);
+  components.push(row);
+  if (actions) {
+    components.push(createDropDownBox(actions));
+  }
 
   //update embed to show current page
   const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
   if (msg.attachments.size !== 0) {
     await msg.removeAttachments();
   }
-  msg.edit({embeds: data[0], components: [row, dropdown], files: data[1]});
+  msg.edit({embeds: data[0], components: components, files: data[1]});
 }
 
 function createRow(currentPage, length) {

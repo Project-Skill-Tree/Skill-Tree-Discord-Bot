@@ -34,7 +34,7 @@ class Unlocked extends Swipeable {
     const image = await this.object.getIcon();
     const file = new MessageAttachment(image, "img.png");
 
-    await embed.setColor("#d21cff");
+    await embed.setColor("#ffce00");
     embed.setTitle(`UNLOCKED: ${this.object.getName()}`);
     embed.setThumbnail("attachment://img.png");
     embed.setDescription(this.object.toString());

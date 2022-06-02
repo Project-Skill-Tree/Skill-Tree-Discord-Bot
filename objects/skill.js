@@ -82,9 +82,7 @@ class Skill extends Swipeable {
     await embed.setColor("#d21cff");
     embed.setTitle(this.getName());
     embed.setThumbnail("attachment://badge.png");
-    embed.setDescription(`**GOAL:** ${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` +
-      `\n**TIME:** ${this.timelimit} days` +
-      `\n**XP:** ${this.xp}XP`);
+    embed.setDescription(this.toString());
 
     const embeds = [embed];
     const files = [badgeFile];
@@ -92,9 +90,9 @@ class Skill extends Swipeable {
   }
 
   toString() {
-    return `**GOAL:**  \`${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)}) \`` +
-    `\n**TIME:** \`${this.timelimit} days\`` +
-    `\n**XP:** \`${this.xp}XP\``;
+    return "**GOAL:** \n`" + `${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` + "`" +
+    "\n**TIME:** `" + `${this.timelimit} days` + "`" +
+    "\n**XP:** `" + `${this.xp}XP` + "`";
   }
 
   getName() {

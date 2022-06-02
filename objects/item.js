@@ -53,13 +53,10 @@ class Item extends Swipeable {
   async update(embed) {
     const icon = new MessageAttachment(await this.getIcon(), "icon.png");
 
-    let description = `+ [${this.name}](${this.link})`;
-    if (this.emoji != null) description += ` (${this.emoji})`;
-
     await embed.setColor("#1071E5");
     embed.setTitle("```[ITEM FOUND]```");
     embed.setThumbnail("attachment://icon.png");
-    embed.setDescription(description);
+    embed.setDescription(this.toString());
     return [[embed], [icon]];
   }
 

@@ -50,14 +50,12 @@ class Challenge extends Swipeable {
    * @return embed - updated embed
    */
   async update(embed) {
-    let link = "";
     //Add link if one exists
     const icon = new MessageAttachment(await this.getIcon(), "icon.png");
-    if (this.link) link = `[[LINK]](${this.link})`;
     await embed.setColor("#bd290b");
     embed.setTitle("```[CHALLENGE]```");
     embed.setThumbnail("attachment://icon.png");
-    embed.setDescription(`${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```");
+    embed.setDescription(this.toString());
     return [[embed], [icon]];
   }
 
