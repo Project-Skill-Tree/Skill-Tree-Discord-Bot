@@ -211,7 +211,7 @@ async function drawProfileInfo(canvas, user) {
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.skills.sort((a, b) => {
+  const sortedSkills = user.skillscompleted.sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
@@ -232,9 +232,9 @@ async function drawProfileInfo(canvas, user) {
 
   //draw INFO
   const INFO = `Total XP: ${user.xp}XP\n` +
-    `Completed Skills: ${user.skills.length}\n`+
+    `Completed Skills: ${user.skillscompleted.length}\n`+
     `Current Skills: ${user.skillsinprogress.length}\n` +
-    `Days Tracked: ${0}`;
+    `Days Tracked: ${user.numDaysTracked}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";
   context.fillText(INFO, 190,70);

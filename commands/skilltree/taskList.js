@@ -1,9 +1,10 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
-const {updateTask, authUser, getCurrentTasks, getUser} = require("../../modules/APIHelper");
+const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
 const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
+const {authUser, getUser} = require("../../modules/userAPIHelper");
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING

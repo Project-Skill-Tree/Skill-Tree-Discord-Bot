@@ -1,8 +1,9 @@
-const {getUser, authUser} = require("../../modules/APIHelper");
+
 const {MessageEmbed} = require("discord.js");
 const {splitToN} = require("../../modules/UIHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const ListPage = require("../../objects/listPage");
+const {getUser, authUser} = require("../../modules/userAPIHelper");
 
 /**
  * Profile command, authenticates user and displays their profile

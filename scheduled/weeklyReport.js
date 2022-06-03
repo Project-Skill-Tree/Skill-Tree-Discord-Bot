@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const {getRecentTasks} = require("../modules/APIHelper");
+const {getRecentTasks} = require("../modules/skillAPIHelper");
 const {displayReview} = require("../modules/weeklyReviewRenderer");
 
 exports.run = () => {

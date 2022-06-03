@@ -1,5 +1,6 @@
-const {getUser, authUser, getRecentTasks} = require("../../modules/APIHelper");
+const {getRecentTasks} = require("../../modules/skillAPIHelper");
 const {displayReview} = require("../../modules/weeklyReviewRenderer");
+const {getUser, authUser} = require("../../modules/userAPIHelper");
 
 /**
  * #TODO TEST METHOD - DELETE ON RELEASE

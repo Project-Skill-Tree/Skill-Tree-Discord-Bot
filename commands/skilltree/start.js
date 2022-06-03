@@ -1,5 +1,6 @@
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {startSkill, getAvailableSkills, authUser, skipSkill, revertSkill} = require("../../modules/APIHelper");
+const {startSkill, getAvailableSkills, skipSkill, revertSkill} = require("../../modules/skillAPIHelper");
+const {authUser} = require("../../modules/userAPIHelper");
 
 /**
  * Sends a swipeable list of all the user's available skills

@@ -1,4 +1,4 @@
-const {getUser, authUser} = require("../../modules/APIHelper");
+const {getUser, authUser} = require("../../modules/userAPIHelper");
 const {displayProfile} = require("../../modules/profileRenderer");
 
 /**

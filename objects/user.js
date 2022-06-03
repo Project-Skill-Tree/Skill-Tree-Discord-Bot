@@ -11,16 +11,18 @@ class User {
    * @param skills - list of skills the user has completed
    * @param skillsinprogress - current skill
    * @param items - collected items
+   * @param numDaysTracked - number of days tracked
    * @constructor
    */
-  constructor(name, level, xp, xpHistory, skills, skillsinprogress, items) {
+  constructor(name, level, xp, xpHistory, skillscompleted, skillsinprogress, items, numDaysTracked) {
     this.name = name;
     this.level = level;
     this.xp = xp;
     this.xpHistory = xpHistory;
-    this.skills = skills;
+    this.skillscompleted = skillscompleted;
     this.skillsinprogress = skillsinprogress;
     this.items = items;
+    this.numDaysTracked = numDaysTracked;
   }
 
   /**
@@ -29,10 +31,11 @@ class User {
    * @param data - JSON data for the user
    * @return {User}
    */
-  static create(username, data) {
+  static create(data) {
     const user = data.user;
     const items = data.items;
-    return new User(username, user.level, user.xp, user.xpHistory, user.skillscompleted, user.skillsinprogress, items);
+    return new User(user.username, user.level, user.xp, user.xpHistory,
+      user.skillscompleted, user.skillsinprogress, items, user.numDaysTracked);
   }
 
   getPrevXP() {

@@ -292,4 +292,4 @@ module.exports = {
   YAPT: +10,
   YEKST: +6,
   YEKT: +5,
-}
+};

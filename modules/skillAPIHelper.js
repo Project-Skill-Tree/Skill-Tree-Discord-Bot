@@ -1,8 +1,6 @@
 const axios = require("axios");
 const Skill = require("../objects/skill");
-const User = require("../objects/user");
 const Task = require("../objects/task");
-const {authErrMsg} = require("./authHelper");
 const Item = require("../objects/item");
 const Challenge = require("../objects/challenge");
 const Unlocked = require("../objects/unlocked");
@@ -12,95 +10,9 @@ const Unlocked = require("../objects/unlocked");
 /**
  * Get API authentication key
  */
-function getKey() {
+function getAPIKey() {
   return process.env.API_KEY;
 }
-
-/**
- * Authorise the user, return callback value if they exist in the database,
- * display an error message if the channel is defined and the user is not found
- * @param discordid - Discord ID
- * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
- * @param callback - Callback with param true/false for user found/not
- */
-exports.authUser = function(discordid, channel=null, callback) {
-  axios
-    .get(process.env.API_URL + "users/loginDiscord/", {
-      headers: {
-        api_key: getKey(),
-        discordid: discordid,
-      }
-    }).then(res => {
-      authErrMsg(res.data.id, channel, callback);
-    });
-};
-
-/**
- * Create a user in the database
- * @param discordid
- * @param gender
- * @param difficulty
- * @param dms_enabled
- * @param callback - Callback with param true/false for user found/not
- */
-exports.createUser = function(discordid, gender, difficulty, dms_enabled, callback) {
-  axios
-    .post(process.env.API_URL + "users/registerDiscord/",{
-      discordid: discordid,
-      gender: gender,
-      difficulty: difficulty,
-      dms_enabled:dms_enabled}, {
-      headers: {
-        api_key: getKey(),
-      }
-    }).then(res => {
-      if (res.data.userFound) {
-        callback();
-      }
-    });
-};
-
-/**
- * Updating a user in the database
- * @param userID
- * @param gender
- * @param difficulty
- * @param dms_enabled
- **/
-exports.updateUser =function(userID, gender, difficulty, dms_enabled) {
-  return axios
-    .post(process.env.API_URL + "users/updateUser/", {
-      userid: userID,
-      gender:gender,
-      difficulty: difficulty,
-      dms_enabled: dms_enabled
-    },{
-      headers: {
-        api_key: getKey()
-      }
-    });
-};
-
-/**
- * Get JSON object for user given discord ID
- * @param userID - mongoDB userID
- * @param username - discord username
- * @param callback - method to pass user object to
- */
-exports.getUser = function(userID, username, callback) {
-  axios
-    .get(process.env.API_URL + "users/profile/", {
-      headers: {
-        api_key: getKey(),
-        id: userID
-      }
-    }).then(res => {
-      res.data.user["username"] = username;
-      callback(User.create(username, res.data));
-    }).catch(err => {
-      console.log(err);
-    });
-};
 
 /**
  * Get JSON object containing tasks that the user has accepted from the database
@@ -111,10 +23,10 @@ exports.getCurrentTasks = function(userID,callback) {
   axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
-      api_key: getKey()
+      api_key: getAPIKey()
     }
   }).then((res)=>{
-    const tasks = res.data.map(data => Task.create(data));
+    const tasks = res.data.tasks.map(data => Task.create(data));
     callback(tasks);
   }).catch(res => {
     console.log(res);
@@ -131,11 +43,11 @@ exports.getRecentTasks = function(userID, limit, callback) {
   axios.get(process.env.API_URL + "tasks/recentTasks", {
     headers: {
       userid: userID,
-      api_key: getKey(),
+      api_key: getAPIKey(),
       limit: limit
     }
   }).then((res)=>{
-    const tasks = res.data.map(data => Task.create(data));
+    const tasks = res.data.tasks.map(data => Task.create(data));
     callback(tasks);
   }).catch(res => {
     console.log(res);
@@ -151,10 +63,10 @@ exports.getSkillsInProgress = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/inProgress", {
     headers: {
       userid: userID,
-      api_key: getKey()
+      api_key: getAPIKey()
     }
   }).then((res)=>{
-    const skills = res.data.map(data => Skill.create(data));
+    const skills = res.data.skills.map(data => Skill.create(data));
     callback(skills);
   }).catch(res => {
     console.log(res);
@@ -170,33 +82,14 @@ exports.getAvailableSkills = function(userID, callback) {
   axios.get(process.env.API_URL + "skills/available", {
     headers: {
       id: userID,
-      api_key: getKey()
+      api_key: getAPIKey()
     }
   }).then(res => {
-    const skills = res.data.map(data => Skill.create(data));
+    const skills = res.data.skills.map(data => Skill.create(data));
     callback(skills);
   }).catch(res => {
     console.log(`Error fetching skills: ${res.status}`);
   });
-};
-
-/**
- * Get the JSON object for a skill with a given id from the database
- * @param {string} skillID - SkillID
- * @param callback - Called with JSON parameter for skill object/null
- * @returns Skill or Null
- */
-exports.getSkill = function(skillID, callback) {
-  axios
-    .get(process.env.API_URL + "skills/?id="+skillID, {
-      headers: {
-        api_key: getKey()
-      }
-    }).then(res => {
-      callback(Skill.create(res.data));
-    }).catch(() => {
-      callback(null);
-    });
 };
 
 /**
@@ -211,7 +104,7 @@ exports.startSkill = function(userID, skillID) {
       skillid: skillID
     },{
       headers: {
-        api_key: getKey()
+        api_key: getAPIKey()
       }
     });
 };
@@ -228,7 +121,7 @@ exports.skipSkill = function(userID, skillID) {
       skillid: skillID
     },{
       headers: {
-        api_key: getKey()
+        api_key: getAPIKey()
       }
     });
 };
@@ -245,7 +138,7 @@ exports.revertSkill = function(userID, skillID) {
       skillid: skillID
     },{
       headers: {
-        api_key: getKey()
+        api_key: getAPIKey()
       }
     });
 };
@@ -267,7 +160,7 @@ exports.updateTask = function(userid, task, date, checked, callback) {
       date: date
     },{
       headers: {
-        api_key: getKey()
+        api_key: getAPIKey()
       }
     }).then((res)=>{
       if (res.data.unlocked.length === 0 || !res.data.unlocked.map) return;
@@ -284,40 +177,5 @@ exports.updateTask = function(userid, task, date, checked, callback) {
         }
       });
       callback(levelUp, unlocked);
-    });
-};
-
-/**
- *
- * @param userid - the discord ID of the user
- * @param xp - amount of xp to add
- */
-exports.addXP = function(userid, xp) {
-  return axios
-    .post(process.env.API_URL + "users/addXP", {
-      xp: xp,
-      userid: userid
-    },{
-      headers: {
-        api_key: getKey()
-      }
-    }).then(res => {
-      console.log(res);
-    });
-};
-
-/**
- * @param userid - the discord ID of the user
- * @param xp - amount of xp to add
- */
-exports.updateXPHistory = function(userid, xp) {
-  return axios
-    .post(process.env.API_URL + "users/updateXPHistory", {
-      xp: xp,
-      id: userid
-    },{
-      headers: {
-        api_key: getKey()
-      }
     });
 };
