@@ -30,7 +30,7 @@ Create a folder within your projects directory and run the following inside it:
 
 Once finished:
 
-- In the ASI-DiscordBot subfolder, run `npm install`, which will install the required packages.
+- In the folder from where you ran the git command, run `npm install`, which will install the required packages.
 - Rename `config.js.example` to `config.js`, and give it the required intents and any partials you may require.
 - Rename `.env-example` to `.env` and put in your bot token in it and save.
 
