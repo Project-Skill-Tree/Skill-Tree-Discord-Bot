@@ -30,7 +30,7 @@ exports.run = async (client,message) => {
     }
     //Start the setup
     const settings = getSettings(scope, message);
-    settings[0].start(scope, {}, settings);
+    settings[0].start(null, scope, {}, settings);
   }
   catch (error) {
     // messages in the same channel saying your DMs are disabled

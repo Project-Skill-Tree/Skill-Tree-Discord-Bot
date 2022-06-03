@@ -24,13 +24,16 @@ class Setting {
 
   /**
    * Sends an embedded skill in the chat
+   * @param oldMessage - previous message
    * @param channel - channel to send the message in
    * @param out
    * @param settings
    */
-  async start(channel, out, settings) {
+  async start(oldMessage, channel, out, settings) {
+    if (oldMessage) await oldMessage.delete();
     const index = settings.indexOf(this);
 
+    console.log(this.title);
     const embed = new MessageEmbed()
       .setTitle(this.title)
       .setDescription(this.description)
@@ -45,8 +48,9 @@ class Setting {
 
     if (index === settings.length) return;
 
-    const next = () => {settings[index+1].start(channel, out, settings);};
-
+    const next = function() {
+      settings[index+1].start(message, channel, out, settings);
+    };
     if (this.components) {
       const collector = message.channel.createMessageComponentCollector({time: 60000});
       collector.on("collect", async i => {
