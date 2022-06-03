@@ -30,7 +30,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
 
   //Create listener for button events
   const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === user.id;
-  const collector = msg.createMessageComponentCollector({ filter, time: 30000 });
+  const collector = msg.createMessageComponentCollector({ filter, time: 86000 });
   collector.on("collect", async i => {
     await i.deferUpdate();
     switch (i.customId) {
@@ -151,11 +151,13 @@ exports.createLargeSwipePanel = async function(client, user, channel, list, acti
 
   //Create action listener
   if (action) {
-    const actionFilter = i => i.customId === "action" && i.user.id === user.id;
-    const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 30000});
+    const actionFilter = i => i.customId === "current" && i.user.id === user.id;
+    const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 86000});
     actionCollector.on("collect", async i => {
-      await i.deferUpdate();
-      action(list[currentPage]);
+      if (i.customId === "current") {
+        await i.deferUpdate();
+        action(list[currentPage]);
+      }
     });
   }
 };

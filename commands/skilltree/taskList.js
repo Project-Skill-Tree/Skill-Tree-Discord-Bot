@@ -1,6 +1,5 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
-const {formatFrequency} = require("../../modules/dateHelper.js");
 const {updateTask, authUser, getCurrentTasks} = require("../../modules/APIHelper");
 const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
 
@@ -81,7 +80,7 @@ async function createTaskList(client, message,tasks, userID) {
 
     if (i.isSelectMenu()) {
       const skillTitle = i.values[0];
-      const task = filteredTasks.find(task => task.skill.title === skillTitle);
+      const task = filteredTasks.find(task => `${task.skill.title}${task.skill.level}` === skillTitle);
       task.setChecked(!task.isChecked(date), date);
       updateTask(userID, task, date, task.isChecked(date));
     }
@@ -109,7 +108,7 @@ function createDropDownBox(tasks, date) {
             return {
               label: `${task.skill.title} ${romanise(task.skill.level)}`,
               description: task.skill.goal,
-              value: task.skill.title,
+              value: `${task.skill.title}${task.skill.level}`,
               emoji: task.isChecked(date) ? "✅" : "❌",
             };
           }
@@ -141,9 +140,9 @@ function buildEmbed(tasks, date) {
 function formatTask(task, idx, date) {
   const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
   const levelRoman = romanise(task.skill.level);
-  const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
+  //const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
 
-  return `${checkedEmoji} | **${idx + 1}. ${task.skill.title} ${levelRoman} (${frequencyFormat})**: ${task.skill.goal}`;
+  return `${checkedEmoji} | **${task.skill.title} ${levelRoman} (${task.percentChecked()})**: \n${task.skill.goal}`;
 }
 
 exports.conf = {

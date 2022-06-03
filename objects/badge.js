@@ -8,15 +8,14 @@ const {tint} = require("../modules/UIHelper");
  * Get the badge image
  * @param {?string} iconPath - Path to the badge icon, relative to the /icons/ folder
  * @param {?number} level - Skill level of the badge
- * @param {size} size - size of badge icon
+ * @param {number} size - size of badge icon
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
  */
 exports.getBadgeIcon = async function(iconPath, level, size) {
   const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
-  context.antialias = "default";
-  context.quality = "nearest";
+  context.quality = "good";
   context.imageSmoothingEnabled = false;
 
   await exports.drawBadge(canvas, canvas.width/2, canvas.height/2, size*0.8, iconPath, level);
