@@ -240,7 +240,6 @@ exports.startSkill = function(userID, skillID) {
 exports.updateTask = function(userid, task, date, checked) {
   axios
     .post(process.env.API_URL + "tasks/updateTask", {
-      userid: userid,
       taskid: task.id,
       checked: checked,
       date: date
