@@ -1,10 +1,8 @@
-const {getUser, authUser, setUserLocation} = require("../../modules/userAPIHelper");
-const {displayProfile} = require("../../modules/profileRenderer");
-
 /**
  * Profile command, authenticates user and displays their profile
  *
  */
+const {authUser, setUserLocation} = require("../../modules/userAPIHelper");
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
   authUser(message.author.id, message.channel,(userID) => {
