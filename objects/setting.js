@@ -30,10 +30,8 @@ class Setting {
    * @param settings
    */
   async start(oldMessage, channel, out, settings) {
-    if (oldMessage) await oldMessage.delete();
     const index = settings.indexOf(this);
 
-    console.log(this.title);
     const embed = new MessageEmbed()
       .setTitle(this.title)
       .setDescription(this.description)
@@ -44,7 +42,12 @@ class Setting {
       embed.setFooter(`Completion Status: \n (${index}/${settings.length})`);
     }
 
-    const message = await channel.send({embeds: [embed], components: this.components});
+    let message;
+    if (oldMessage) {
+      message = await oldMessage.edit({embeds: [embed], components: this.components});
+    } else {
+      message = await channel.send({embeds: [embed], components: this.components});
+    }
 
     if (index === settings.length) return;
 
@@ -52,10 +55,18 @@ class Setting {
       settings[index+1].start(message, channel, out, settings);
     };
     if (this.components) {
-      const collector = message.channel.createMessageComponentCollector({time: 60000});
+      const filter = (m) => {
+        return m.message.id === message.id;
+      };
+      const collector = message.channel.createMessageComponentCollector({filter});
       collector.on("collect", async i => {
+
         const choice = i.component.label;
         this.onComplete(choice, out, next);
+        collector.stop();
+        if (!i.deferred) {
+          await i.deferUpdate();
+        }
       });
     }
 

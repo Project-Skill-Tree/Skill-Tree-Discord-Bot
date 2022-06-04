@@ -43,6 +43,7 @@ exports.locationConfirmation = async function(message, locationInfo, callback) {
     callback(locationInfo);
   }, ()=>{});
 };
+
 exports.conf = {
   enabled: true,
   guildOnly: false,

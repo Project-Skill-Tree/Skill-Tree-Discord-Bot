@@ -46,21 +46,22 @@ exports.run = async (client,message) => {
   }
 };
 
-function setupUser(id, gender, difficulty, dms_enabled, timezone) {
-  gender = gender.toLowerCase();
-  difficulty = difficulty.toLowerCase();
+function setupUser(id, out) {
+  console.log(out);
+  out.character.toLowerCase();
+  out.difficulty.toLowerCase();
   authUser(id,null,(userID) => {
     if (userID) {
-      updateUser(userID, gender,difficulty, timezone);
+      updateUser(userID, out.character, out.difficulty, out.dms_enabled, out.timezone);
     } else {
-      createUser(id,gender,difficulty,dms_enabled,timezone);
+      createUser(id, out.character, out.difficulty, out.dms_enabled, out.timezone);
     }
   });
 }
 
 function displayProjectInfo(channel) {
   //information about the project
-  channel.send({embeds: [MessageEmbed()
+  const infoEmbed = new MessageEmbed()
     .setTitle("Information")
     .setDescription(
       `Join the discord server for help,feedback and access to all the latest features and updates: ${Configurations().invite_link}\n
@@ -68,7 +69,8 @@ function displayProjectInfo(channel) {
     <#968766665305231450> : Check out our frequently asked questions \n
     <#953924789494501376> : Want to contribute? Add a role that suits your interests and help develop this project!  \n
     <#954747309143490591> : Have a look at the roadmap and scope of this project \n
-    <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n`)]});
+    <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n`);
+  channel.send({embeds: [infoEmbed]});
 }
 
 function getSettings(channel, message) {
@@ -147,8 +149,8 @@ function getSettings(channel, message) {
           const locationInfo = await timezoneFromLocation(msg.content);
 
           locationConfirmation(message, locationInfo, async (locationInfo) => {
-            complete(locationInfo.utcOffset, out, next);
             timezoneCollector.stop();
+            complete(locationInfo.utcOffset, out, next);
           });
         });
         // fires when the collector is finished collecting
@@ -167,9 +169,7 @@ function getSettings(channel, message) {
         book.send(channel);
         const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
         sword.send(channel);
-        // we  deal with the given information here
-        console.log(out);
-        setupUser(out);
+        setupUser(message.author.id, out);
 
         next();
       }),
