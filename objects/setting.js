@@ -60,7 +60,6 @@ class Setting {
       };
       const collector = message.channel.createMessageComponentCollector({filter});
       collector.on("collect", async i => {
-
         const choice = i.component.label;
         this.onComplete(choice, out, next);
         collector.stop();

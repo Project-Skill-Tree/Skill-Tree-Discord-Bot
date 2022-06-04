@@ -28,9 +28,7 @@ exports.run = async (client,message) => {
       setTimeout(() => instructions_message.delete(),10000);
       message.delete();
     }
-    //Start the setup
-    const settings = getSettings(scope, message);
-    settings[0].start(null, scope, {}, settings);
+    startSetup(message, scope);
   }
   catch (error) {
     // messages in the same channel saying your DMs are disabled
@@ -45,6 +43,21 @@ exports.run = async (client,message) => {
     setTimeout(() => errorMsg.delete(),10000);
   }
 };
+function startSetup(message, scope) {
+  //Validate user exists
+  authUser(message.author.id, message.channel, (userID) => {
+    if (userID) {
+      //Start the setup
+      let settings = getSettings(scope, message, true);
+      settings = settings.filter(s => s.title !== "Set Experience Level");
+      settings[0].start(null, scope, {}, settings);
+    } else {
+      //Start the setup
+      const settings = getSettings(scope, message, false);
+      settings[0].start(null, scope, {}, settings);
+    }
+  });
+}
 
 function setupUser(id, out) {
   out.character.toLowerCase();
@@ -72,7 +85,7 @@ function displayProjectInfo(channel) {
   channel.send({embeds: [infoEmbed]});
 }
 
-function getSettings(channel, message) {
+function getSettings(channel, message, userExists) {
   return [
     //Setup start
     new Setting("Initializing Setup Process",
@@ -87,7 +100,8 @@ function getSettings(channel, message) {
 
     new Setting("Set Experience Level",
       ("Choose one of the following options to optimize Skill Tree to your " +
-      "preferred difficulty level (you can change this later by evoking the `setup` command again)\n\n" +
+      "preferred difficulty level \n" +
+      "(**Warning**: you cannot change this later, but you can skip/revert skills to suit your needs)\n\n" +
       "**1. Easy:**\n This is the beginner level (<3 months of self improvement), " +
       "and will start you at the beginning of the tree\n" +
       "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
@@ -162,13 +176,17 @@ function getSettings(channel, message) {
       (res, out, next)=>{
         out.timezone = res;
 
-        //final result
-        channel.send("**TO HELP YOU START WITH YOUR QUEST \nHERE ARE A FEW ITEMS YOU CAN USE. \nWANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
-        const book = new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
-        book.send(channel);
-        const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
-        sword.send(channel);
-        setupUser(message.author.id, out);
+        if (!userExists) {
+          //final result
+          channel.send("**TO HELP YOU START WITH YOUR QUEST \n" +
+            "HERE ARE A FEW ITEMS YOU CAN USE. \n" +
+            "WANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
+          const book = new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
+          book.send(channel);
+          const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
+          sword.send(channel);
+          setupUser(message.author.id, out);
+        }
 
         next();
       }),

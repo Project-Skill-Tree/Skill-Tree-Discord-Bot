@@ -93,6 +93,25 @@ exports.getAvailableSkills = function(userID, callback) {
 };
 
 /**
+ * Get JSON object containing skills in the given list
+ * @param skills - List of MongoDB skills IDs
+ * @param callback - return JSON data of skills in progress
+ */
+exports.getSkillsInList = function(skills, callback) {
+  axios.get(process.env.API_URL + "skills/getAllInList", {
+    headers: {
+      api_key: getAPIKey(),
+      skills: skills,
+    }
+  }).then((res)=>{
+    const skills = res.data.skills.map(data => Skill.create(data));
+    callback(skills);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+/**
  * Adds the skill to the users active skills
  * @param userID - userID
  * @param skillID - skillID of the skill to start

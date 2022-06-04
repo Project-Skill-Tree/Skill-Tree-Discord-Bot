@@ -89,7 +89,7 @@ const init = async () => {
     const eventName = file.split(".")[0];
     logger.log(`Loading Scheduled Events: ${eventName}. 👌`, "log");
     const event = require(`./scheduled/${file}`);
-    event.run();
+    event.run(client);
   }
 
   // Threads are currently in BETA.

@@ -79,6 +79,18 @@ exports.updateUser = function(userID, gender, difficulty, dms_enabled, timezone)
     });
 };
 
+exports.setUserLocation = function(userID, base) {
+  return axios
+    .post(process.env.API_URL + "users/updateBaseLocation/", {
+      id: userID,
+      baselocation: base,
+    },{
+      headers: {
+        api_key: getAPIKey()
+      }
+    });
+};
+
 /**
  * Get JSON object for user given discord ID
  * @param userID - mongoDB userID
@@ -94,7 +106,46 @@ exports.getUser = function(userID, username, callback) {
       }
     }).then(res => {
       res.data.user["username"] = username;
-      callback(User.create(res.data));
+      callback(User.create(res.data.user));
+    }).catch(err => {
+      console.log(err);
+    });
+};
+
+/**
+ * Get all users
+ * @param timezone - timezone offset of the user
+ * @param callback - method to pass user object to
+ */
+exports.getUsers = function(callback) {
+  axios
+    .get(process.env.API_URL + "users/getAll/", {
+      headers: {
+        api_key: getAPIKey(),
+      }
+    }).then(res => {
+      const users = res.data.users.map(u => User.create(u));
+      callback(users);
+    }).catch(err => {
+      console.log(err);
+    });
+};
+
+/**
+ * Get list of users within a given timezone
+ * @param timezone - timezone offset of the user
+ * @param callback - method to pass user object to
+ */
+exports.getUsersInTimezone = function(timezone, callback) {
+  axios
+    .get(process.env.API_URL + "users/getAllInTimezone/", {
+      headers: {
+        api_key: getAPIKey(),
+        timezone: timezone,
+      }
+    }).then(res => {
+      const users = res.data.users.map(u => User.create(u));
+      callback(users);
     }).catch(err => {
       console.log(err);
     });
