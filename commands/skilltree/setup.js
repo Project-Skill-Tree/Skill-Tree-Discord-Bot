@@ -23,7 +23,7 @@ exports.run = async (client,message) => {
       scope = message.channel;
     } else {
       scope = message.member;
-      //Send warning to user
+      //Send notification reply to user
       const instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
       setTimeout(() => instructions_message.delete(),10000);
       message.delete();
@@ -93,6 +93,7 @@ function getSettings(channel, message) {
       "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
       "and will start you at Meditation II, Journalling II, Exercising II\n" +
       "**3. Hard:**\n The most advanced level (around one year and more of self improvement), "+
+
       "and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I,"),
       new MessageActionRow().addComponents(
         new MessageButton().setCustomId("dif_easy").setLabel("Easy").setStyle("PRIMARY"),

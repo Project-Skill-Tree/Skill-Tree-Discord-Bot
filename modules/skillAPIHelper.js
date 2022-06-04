@@ -73,6 +73,7 @@ exports.getSkillsInProgress = function(userID, callback) {
   });
 };
 
+
 /**
  * Get JSON object containing skills available to a given user from database
  * @param userID - MongoDB userID
@@ -91,6 +92,7 @@ exports.getAvailableSkills = function(userID, callback) {
     console.log(`Error fetching skills: ${res.status}`);
   });
 };
+
 
 /**
  * Adds the skill to the users active skills
@@ -143,6 +145,22 @@ exports.revertSkill = function(userID, skillID) {
     });
 };
 
+/**
+ * Cancels a given skill
+ * @param  userID
+ * @param  callback
+ */
+exports.cancelSkill = function(userID,skillID) {
+  axios
+    .post(process.env.API_URL + "skills/cancelSkill", {
+      userid: userID,
+      skillid: skillID
+    },{
+      headers: {
+        api_key: getAPIKey()
+      }
+    });
+};
 /**
  * Sets the completed state of a user's skill task for a given date
  * @param userid - userID
