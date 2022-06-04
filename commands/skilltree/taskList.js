@@ -86,7 +86,7 @@ async function createTaskList(client, message, tasks, userID) {
       const task = filteredTasks.find(task => `${task.skill.title}${task.skill.level}` === skillTitle);
       task.setChecked(!task.isChecked(date), date);
 
-      updateTask(userID, task, date, task.isChecked(date), (levelUp, unlocked) => {
+      updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
         if (levelUp !== 0) {
           getUser(userID, message.author.username, (user)=>{
             displayLevelUp(user, message.channel);

@@ -47,7 +47,6 @@ exports.run = async (client,message) => {
 };
 
 function setupUser(id, out) {
-  console.log(out);
   out.character.toLowerCase();
   out.difficulty.toLowerCase();
   authUser(id,null,(userID) => {
@@ -88,11 +87,11 @@ function getSettings(channel, message) {
 
     new Setting("Set Experience Level",
       ("Choose one of the following options to optimize Skill Tree to your " +
-      "preferred difficulty level (you can change this later by evoking the `setup` command again)" +
+      "preferred difficulty level (you can change this later by evoking the `setup` command again)\n\n" +
       "**1. Easy:**\n This is the beginner level (<3 months of self improvement), " +
-      "and will start you at Meditation I, Journalling I and Exercising I" +
+      "and will start you at the beginning of the tree\n" +
       "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
-      "and will start you at Meditation II, Journalling II, Exercising II and Social skills I" +
+      "and will start you at Meditation II, Journalling II, Exercising II\n" +
       "**3. Hard:**\n The most advanced level (around one year and more of self improvement), "+
       "and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I,"),
       new MessageActionRow().addComponents(

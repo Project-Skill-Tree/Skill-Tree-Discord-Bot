@@ -63,9 +63,9 @@ exports.dayToDate = function(day) {
     yesterday.setDate(yesterday.getDate() - 1);
     return yesterday;
   } else if (day === "tomorrow") {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() + 1);
-    return yesterday;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
   }
   return new Date();
 };

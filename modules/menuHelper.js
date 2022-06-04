@@ -113,7 +113,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   const msg = await list[0].send(channel);
   let currentPage = 0;
 
-  update(channel, msg, list, currentPage, actions);
+  await update(channel, msg, list, currentPage, actions);
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
@@ -123,6 +123,8 @@ exports.createLargeSwipePanel = async function(client, user, channel,
 
   const collector = msg.createMessageComponentCollector({filter});
   collector.on("collect", async i => {
+    if (!i.isButton()) return;
+
     switch (i.customId) {
       case "first":
         currentPage = 0;
@@ -143,7 +145,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
         break;
     }
     await update(channel, msg, list, currentPage, actions);
-    await i.deferUpdate();
+    if (!i.deferred) await i.deferUpdate();
   });
 
   //Create action listener
@@ -152,8 +154,10 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   const actionFilter = i => i.user.id === user.id;
   const actionCollector = msg.createMessageComponentCollector({actionFilter});
   actionCollector.on("collect", async i => {
+    if (!i.isSelectMenu()) return;
+
     //If action found
-    const action = actions.filter((v) => v.name === i.customId)[0];
+    const action = actions.filter((v) => v.name === i.values[0])[0];
     if (action) {
       const deleteItem = action.action(list[currentPage]);
       //Delete item on action
@@ -191,10 +195,10 @@ async function update(channel, msg, list, currentPage, actions) {
 
   //update embed to show current page
   const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
-  if (msg.attachments.size !== 0) {
+  if (msg.embeds[0].thumbnail.length !== 0) {
     await msg.removeAttachments();
   }
-  msg.edit({embeds: data[0], components: components, files: data[1]});
+  await msg.edit({embeds: data[0], components: components, files: data[1]});
 }
 
 function createRow(currentPage, length) {
@@ -231,6 +235,7 @@ function createDropDownBox(actions) {
       actions.map(
         action => {
           return {
+            customId: action.name,
             label: action.name,
             description: action.description,
             value: action.name,

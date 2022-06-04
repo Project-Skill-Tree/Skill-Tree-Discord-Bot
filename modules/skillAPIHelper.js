@@ -151,13 +151,13 @@ exports.revertSkill = function(userID, skillID) {
  * @param checked - T/F if checked/unchecked
  * @param callback - function to execute on completion
  */
-exports.updateTask = function(userid, task, date, checked, callback) {
+exports.updateTask = function(userid, task, day, checked, callback) {
   axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
       taskid: task.id,
       checked: checked,
-      date: date
+      day: day
     },{
       headers: {
         api_key: getAPIKey()

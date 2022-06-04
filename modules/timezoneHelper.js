@@ -14,7 +14,6 @@ exports.timezoneFromLocation = async function(location) {
   }
 
   try {
-    console.log(`Making new API request for ${location}`);
     const foundLatLon = await axios
       .get(`${geocodeUrlBase}&address=${location}`)
       .then((res) => {
