@@ -33,7 +33,7 @@ exports.run = async (client,message) => {
   catch (error) {
     // messages in the same channel saying your DMs are disabled
     const errorMsg = await message.channel.send(
-      "<@${message.member.id}> Your DMs are Disabled. Please enable them and try again" +
+      `<@${message.member.id}> Your DMs are Disabled. Please enable them and try again` +
       "(You can turn this setting off afterwards, we need to do this to prevent spam)" +
       "**HOW TO ENABLE DMS**```" +
       "1) Right-click server icon\n" +
