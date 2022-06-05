@@ -13,10 +13,11 @@ const {drawBadge} = require("../objects/badge");
  * @param channel - the channel to send the message to
  * @param tasks - tasks to display
  */
-exports.displayReview = async function(user, channel, tasks) {
-  const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), "weekly_review.png");
 
-  return channel.send({content: `<@${user.discordid}>`, files: [reviewImage]});
+exports.displayReview = async function(user, message , tasks) {
+  const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
+
+  return message.reply({files: [reviewImage]});
 };
 
 /**

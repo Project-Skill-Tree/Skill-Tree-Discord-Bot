@@ -15,7 +15,7 @@ exports.run = (client, message) => {
       //Get last 7 days worth of tasks
       getRecentTasks(userID, 7, (tasks) => {
         //Display weekly analytics
-        displayReview(user, message.channel, tasks);
+        displayReview(user, message, tasks);
       });
     });
   });
