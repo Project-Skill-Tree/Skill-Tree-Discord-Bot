@@ -20,7 +20,6 @@ exports.run = (client, message) => {
           name: "CANCEL",
           description: "Cancel the skills",
           action: (skill) => {
-            console.log(skill.id);
             cancelSkill(userID,skill.id);
             return true;
           }
