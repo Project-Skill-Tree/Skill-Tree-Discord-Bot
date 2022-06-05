@@ -56,7 +56,7 @@ async function createTaskList(client, message,tasks, userID) {
   const collector = msg.createMessageComponentCollector({time: 30000 });
 
   collector.on("collect", i => {
-    if (i.user.id !== message.author.id) {
+    if (i.user.id !== message.author.id && date.getDate() === dayToDate("today")) {
       i.reply({ content: "You can't edit someone else's task list!", ephemeral: true });
       return;
     }
