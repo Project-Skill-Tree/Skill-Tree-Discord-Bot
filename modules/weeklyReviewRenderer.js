@@ -219,8 +219,9 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
 
     //Draw completion percentage
     context.font = "25px \"Akira\"";
-    const percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
-    const text = `${percent}%`;
+    let percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
+    percent = isNaN(percent) ? 0 : percent;
+    const text = `${Math.max(percent, 0)}%`;
     const percentMetric = context.measureText(text);
     const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;
     const textWidth = percentMetric.width;
