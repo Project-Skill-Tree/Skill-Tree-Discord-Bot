@@ -6,8 +6,7 @@ const ListPage = require("../../objects/listPage");
 const {getUser, authUser} = require("../../modules/userAPIHelper");
 
 /**
- * Profile command, authenticates user and displays their profile
- *
+ * Inventory command, every item the user has in a swipeable menu
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
