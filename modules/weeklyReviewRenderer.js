@@ -14,9 +14,9 @@ const {drawBadge} = require("../objects/badge");
  * @param tasks - tasks to display
  */
 exports.displayReview = async function(user, channel, tasks) {
-  const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
+  const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), "weekly_review.png");
 
-  return channel.send({files: [reviewImage]});
+  return channel.send({content: `<@${user.discordid}>`, files: [reviewImage]});
 };
 
 /**
@@ -167,10 +167,9 @@ async function drawXP(canvas, user, x, y, w, h) {
  * @param x
  * @param y
  * @param w
- * @param h
  * @return {Promise<void>}
  */
-async function drawTasks(canvas, user, tasks, x, y, w, h) {
+async function drawTasks(canvas, user, tasks, x, y, w) {
   const context = canvas.getContext("2d");
   const pad = 10;
 

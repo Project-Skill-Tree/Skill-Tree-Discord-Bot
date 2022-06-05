@@ -5,8 +5,7 @@ const {createYesNoPanel} = require("../../modules/menuHelper");
 const {authUser, updateTimezone} = require("../../modules/userAPIHelper");
 
 /**
- * Profile command, authenticates user and displays their profile
- *
+ * Timezone command, sets the user's local timezone offset
  */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists

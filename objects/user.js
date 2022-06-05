@@ -5,6 +5,7 @@ class User {
   /**
    * User constructor
    * @param id
+   * @param discordid - discordid of the user
    * @param name - Username
    * @param level - Level of the user
    * @param xp - total XP of the player
@@ -18,9 +19,10 @@ class User {
    * @param baselocation
    * @constructor
    */
-  constructor(id, name, level, xp, xpHistory, skillscompleted, skillsinprogress,
+  constructor(id, discordid, name, level, xp, xpHistory, skillscompleted, skillsinprogress,
     items, numDaysTracked, reminderChannel, timezone, baselocation) {
     this.id = id;
+    this.discordid = discordid;
     this.name = name;
     this.level = level;
     this.xp = xp;
@@ -40,7 +42,7 @@ class User {
    * @param user
    */
   static create(user) {
-    return new User(user._id, user.username, user.level, user.xp, user.xpHistory,
+    return new User(user._id, user.discordid, user.username, user.level, user.xp, user.xpHistory,
       user.skillscompleted, user.skillsinprogress, user.items,
       user.numDaysTracked, user.reminderChannel, user.timezone,
       user.baselocation);

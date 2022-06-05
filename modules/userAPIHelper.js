@@ -79,7 +79,7 @@ exports.updateUser = function(userID, gender, difficulty, dms_enabled, timezone)
     });
 };
 
-exports.setUserLocation = function(userID, base) {
+exports.setUserLocation = function(userID, base, callback) {
   return axios
     .post(process.env.API_URL + "users/updateBaseLocation/", {
       id: userID,
@@ -88,6 +88,8 @@ exports.setUserLocation = function(userID, base) {
       headers: {
         api_key: getAPIKey()
       }
+    }).then(()=>{
+      callback();
     });
 };
 
@@ -114,7 +116,6 @@ exports.getUser = function(userID, username, callback) {
 
 /**
  * Get all users
- * @param timezone - timezone offset of the user
  * @param callback - method to pass user object to
  */
 exports.getUsers = function(callback) {

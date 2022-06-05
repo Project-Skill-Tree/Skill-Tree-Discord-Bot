@@ -64,9 +64,9 @@ function setupUser(id, out) {
   out.difficulty.toLowerCase();
   authUser(id,null,(userID) => {
     if (userID) {
-      updateUser(userID, out.character, out.difficulty, out.dms_enabled, out.timezone);
+      updateUser(userID, out.character, out.difficulty, out.timezone);
     } else {
-      createUser(id, out.character, out.difficulty, out.dms_enabled, out.timezone);
+      createUser(id, out.character, out.difficulty, out.timezone);
     }
   });
 }
@@ -107,7 +107,6 @@ function getSettings(channel, message, userExists) {
       "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
       "and will start you at Meditation II, Journalling II, Exercising II\n" +
       "**3. Hard:**\n The most advanced level (around one year and more of self improvement), "+
-
       "and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I,"),
       new MessageActionRow().addComponents(
         new MessageButton().setCustomId("dif_easy").setLabel("Easy").setStyle("PRIMARY"),
@@ -121,15 +120,16 @@ function getSettings(channel, message, userExists) {
       }),
 
     //DM options
-    new Setting("Enable DM Reminders",
-      "Do you want the bot to remind you of tasks to complete in Direct Messages?",
+    new Setting("Set your base location",
+      "Use `~base` in a server or in your DMs to set your base location. \n" +
+      "This is where weekly reviews and reminders will be sent automatically. \n" +
+      "You can only set your base location after completing your account setup, but" +
+      " you can change it at any point.",
       new MessageActionRow().addComponents(
-        new MessageButton().setCustomId("dm_yes").setLabel("Yes").setStyle("PRIMARY"),
-        new MessageButton().setCustomId("dm_no").setLabel("No").setStyle("PRIMARY")
+        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
       ),
       null,
       (res, out, next) => {
-        out.dms_enabled = res === "Yes";
         next();
       }),
 

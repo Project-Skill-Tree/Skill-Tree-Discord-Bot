@@ -1,13 +1,32 @@
-/**
- * Profile command, authenticates user and displays their profile
- *
- */
 const {authUser, setUserLocation} = require("../../modules/userAPIHelper");
+const {MessageEmbed} = require("discord.js");
+
+/**
+ * Sets a user's "base location" where reminders, weekly reports and more are sent
+ */
 exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
   //Validate user exists
   authUser(message.author.id, message.channel,(userID) => {
     //Get user profile
-    setUserLocation(userID, message.channel.id);
+    let locationID;
+    if (message.channel.type === "DM") {
+      locationID = message.author.id;
+    } else {
+      locationID = message.guild.id;
+    }
+    setUserLocation(userID, locationID, ()=>{
+      let channelName;
+      if (message.channel.type === "DM") {
+        channelName = "your DMs";
+      } else {
+        channelName = `"${message.guild.name}"`;
+      }
+      const baseEmbed = new MessageEmbed()
+        .setColor("#3bffbe")
+        .setTitle("Base Location Set")
+        .setDescription(`Your base location has been set to ${channelName}`);
+      message.channel.send({embeds: [baseEmbed]});
+    });
   });
 };
 

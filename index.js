@@ -39,7 +39,7 @@ client.container = {
   commands,
   aliases,
   slashcmds,
-  levelCache
+  levelCache,
 };
 
 // We're doing real fancy node 8 async/await stuff here, and to do that
