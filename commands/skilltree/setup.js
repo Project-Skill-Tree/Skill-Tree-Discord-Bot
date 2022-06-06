@@ -6,7 +6,7 @@ const Item = require("../../objects/item");
 const {timezoneFromLocation} = require("../../modules/timezoneHelper");
 const {locationConfirmation} = require("./timezone");
 const Setting = require("../../objects/setting");
-
+let scope; // global scope to be used everywhere
 /**
  * Setup user account
  * Page 1. Info page
@@ -18,7 +18,6 @@ const Setting = require("../../objects/setting");
  */
 exports.run = async (client,message) => {
   try {
-    let scope;
     if (message.channel.type === "DM") {
       scope = message.channel;
     } else {
@@ -45,7 +44,7 @@ exports.run = async (client,message) => {
 };
 function startSetup(message, scope) {
   //Validate user exists
-  authUser(message.author.id, message.channel, (userID) => {
+  authUser(message.author.id,null, (userID) => {
     if (userID) {
       //Start the setup
       let settings = getSettings(scope, message, true);
@@ -162,7 +161,7 @@ function getSettings(channel, message, userExists) {
           if (msg.author.id !== message.author.id) return;
           const locationInfo = await timezoneFromLocation(msg.content);
 
-          locationConfirmation(message, locationInfo, async (locationInfo) => {
+          locationConfirmation(scope, locationInfo, async (locationInfo) => {
             timezoneCollector.stop();
             complete(locationInfo.utcOffset, out, next);
           });
@@ -170,7 +169,7 @@ function getSettings(channel, message, userExists) {
         // fires when the collector is finished collecting
         timezoneCollector.on("end", (collected, reason) => {
           if (reason === "time") {
-            message.channel.send("The timezone selector has timed out. Please restart the setup process");
+            scope.send("The timezone selector has timed out. Please restart the setup process");
           }
         });
       },

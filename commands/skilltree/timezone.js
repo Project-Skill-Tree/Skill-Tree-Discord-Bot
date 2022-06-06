@@ -19,11 +19,10 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
 };
 
 
-exports.locationConfirmation = async function(message, locationInfo, callback) {
-  const settings = message.settings;
+exports.locationConfirmation = async function(scope, locationInfo, callback) {
   //Error message
   if (locationInfo === null) {
-    message.channel.send("```Invalid timezone: Please make sure you're using the correct format \n" +
+    scope.send("```Invalid timezone: Please make sure you're using the correct format \n" +
       settings.prefix + exports.help.usage + "```");
     return;
   }

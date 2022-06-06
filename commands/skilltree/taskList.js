@@ -53,8 +53,7 @@ async function createTaskList(client, message, tasks, userID) {
         .setLabel("TODAY")
         .setStyle("SECONDARY")
         .setDisabled(true));
-
-  const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox, row] });
+  const msg = await message.reply({ embeds: [embed], components: [row] });
 
   const collector = msg.createMessageComponentCollector({time: 30000 });
 
