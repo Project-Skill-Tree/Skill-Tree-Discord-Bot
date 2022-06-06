@@ -44,7 +44,8 @@ async function getPages(settings) {
       **TIMEZONE**: Sets your timezone so that tasks calculate days correctly. \
       Setting it correctly will also ensure that weekly reports are sent at the right time. Use \
       \`${settings.prefix}timezone\` to edit this at any point.
-      **BASE LOCATION**: Specify the location where weekly reports and reminders are sent
+      **BASE LOCATION**: Specify the location where weekly reports and reminders are sent. Use \
+      \`${settings.prefix}base\` to edit this at any point.
       
       Note: If you think you have made a mistake, you can edit your settings using \
       the \`${settings.prefix}setup\` command again.
@@ -63,6 +64,7 @@ async function getPages(settings) {
       **FREQUENCY**: The frequency to practice the skill e.g (DAILY).
       **TIME**: The time you need to keep up the skill to complete it, e.g. 2 weeks. \
       Skills require and 80% completion rate (because life gets in the way).
+      **XP**: The amount of XP you will be awarded by completing the skill. 
       
       Note: If the time limit is N/A, the skill must be completed only once \
       and has no time limit. E.g. Plan an activity with family, does not need \
