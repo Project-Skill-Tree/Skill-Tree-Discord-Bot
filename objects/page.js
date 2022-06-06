@@ -1,6 +1,5 @@
 const Swipeable = require("./swipeable");
 const {MessageAttachment, MessageEmbed} = require("discord.js");
-const {imageToBuffer} = require("../modules/UIHelper");
 
 /**
  * Page object to save text and image information for swipeable displays
@@ -11,15 +10,15 @@ class Page extends Swipeable {
    * Page constructor
    * @constructor
    * @param {string} title - short page title
+   * @param {?buffer=} image - optional image path
    * @param {string} text - page content
-   * @param {?string=} imagePath - optional image path
    * @constructor
    */
-  constructor(title, text, imagePath=null) {
+  constructor(title, image, text) {
     super();
     this.title = title;
+    this.image = image;
     this.text = text;
-    this.imagePath = imagePath;
   }
 
   /**
@@ -43,9 +42,8 @@ class Page extends Swipeable {
     embed.setDescription(this.text);
 
     const files = [];
-    if (this.imagePath !== null) {
-      const imageIcon = await imageToBuffer(this.imagePath, 64);
-      const imageFile = new MessageAttachment(imageIcon, "image.png");
+    if (this.image !== null) {
+      const imageFile = new MessageAttachment(this.image, "image.png");
       embed.setThumbnail("attachment://image.png");
       files.push(imageFile);
     }
