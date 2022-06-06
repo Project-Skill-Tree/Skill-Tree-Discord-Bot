@@ -159,7 +159,7 @@ exports.getUsersInTimezone = function(timezone, callback) {
  */
 exports.updateTimezone = function(userID, timezoneoffset) {
   axios
-    .post(process.env.API_URL + "user/updateTimezone", {
+    .post(process.env.API_URL + "users/updateTimezone", {
       id: userID,
       timezone: timezoneoffset
     },{

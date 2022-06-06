@@ -12,21 +12,22 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
   authUser(message.author.id, message.channel,async (userID) => {
     //Get location info
     const locationInfo = await timezoneFromLocation(args.join(" "));
-    exports.locationConfirmation(message, locationInfo, (locationInfo)=>{
+    exports.locationConfirmation(message, message.channel, locationInfo, (locationInfo)=>{
       updateTimezone(userID, locationInfo.utcOffset);
     });
   });
 };
 
 
-exports.locationConfirmation = async function(message,scope,settings, locationInfo, callback) {
+exports.locationConfirmation = async function(message, scope, locationInfo, callback) {
+  const settings = message.settings;
+
   //Error message
   if (locationInfo === null) {
     scope.send("```Invalid timezone: Please make sure you're using the correct format \n" +
       settings.prefix + exports.help.usage + "```");
     return;
   }
-
   //Calculate local time
   const utc = new Date().getTime() + (new Date().getTimezoneOffset() * 60000);
   const daylightSavingOffset = locationInfo.dstOffset ? locationInfo.dstOffset : 0;

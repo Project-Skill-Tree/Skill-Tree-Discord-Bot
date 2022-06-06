@@ -6,7 +6,7 @@ const Item = require("../../objects/item");
 const {timezoneFromLocation} = require("../../modules/timezoneHelper");
 const {locationConfirmation} = require("./timezone");
 const Setting = require("../../objects/setting");
-let scope; // global scope to be used everywhere
+
 /**
  * Setup user account
  * Page 1. Info page
@@ -17,43 +17,39 @@ let scope; // global scope to be used everywhere
  * Page 6. Complete confirmation
  */
 exports.run = async (client,message) => {
-  try {
-    if (message.channel.type === "DM") {
-      scope = message.channel;
-    } else {
-      scope = message.member;
-      //Send notification reply to user
-      const instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
-      setTimeout(() => instructions_message.delete(),10000);
-      message.delete();
-    }
-    startSetup(message, scope);
+  let scope;
+  let instructions_message;
+  if (message.channel.type === "DM") {
+    scope = message.channel;
+  } else {
+    scope = message.member;
+    //Send notification reply to user
+    instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
+    setTimeout(() => instructions_message.delete(),10000);
+    message.delete();
   }
-  catch (error) {
-    // messages in the same channel saying your DMs are disabled
-    const errorMsg = await message.channel.send(
-      `<@${message.member.id}> Your DMs are Disabled. Please enable them and try again` +
-      "(You can turn this setting off afterwards, we need to do this to prevent spam)" +
-      "**HOW TO ENABLE DMS**```" +
-      "1) Right-click server icon\n" +
-      "2) Click on Privacy Settings\n" +
-      "3) Toggle \"Allow direct messages from server members\" on\n" +
-      "4) press Done```");
-    setTimeout(() => errorMsg.delete(),10000);
-  }
+  //Send init message to check chat is available
+  const init = getSettings(scope, message, false)[0];
+  init.sendInitMessage(message, scope, ()=>{
+    if (instructions_message) instructions_message.delete();
+  },
+  (initMessage)=>{
+    startSetup(initMessage, message, scope);
+  });
 };
-function startSetup(message, scope) {
+
+function startSetup(initMessage, message, scope) {
   //Validate user exists
   authUser(message.author.id,null, (userID) => {
     if (userID) {
       //Start the setup
       let settings = getSettings(scope, message, true);
       settings = settings.filter(s => s.title !== "Set Experience Level");
-      settings[0].start(null, scope, {}, settings);
+      settings[1].start(initMessage, scope, {}, settings);
     } else {
       //Start the setup
       const settings = getSettings(scope, message, false);
-      settings[0].start(null, scope, {}, settings);
+      settings[1].start(initMessage, scope, {}, settings);
     }
   });
 }
@@ -74,6 +70,7 @@ function displayProjectInfo(channel) {
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
+    .setColor(`#${Configurations().primary}`)
     .setDescription(
       `Join the discord server for help,feedback and access to all the latest features and updates: ${Configurations().invite_link}\n
     navigate to the following channels to learn more about the project: \n
@@ -84,7 +81,7 @@ function displayProjectInfo(channel) {
   channel.send({embeds: [infoEmbed]});
 }
 
-function getSettings(channel, message, userExists) {
+function getSettings(scope, message, userExists) {
   return [
     //Setup start
     new Setting("Initializing Setup Process",
@@ -118,20 +115,6 @@ function getSettings(channel, message, userExists) {
         next();
       }),
 
-    //DM options
-    new Setting("Set your base location",
-      "Use `~base` in a server or in your DMs to set your base location. \n" +
-      "This is where weekly reviews and reminders will be sent automatically. \n" +
-      "You can only set your base location after completing your account setup, but" +
-      " you can change it at any point.",
-      new MessageActionRow().addComponents(
-        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
-      ),
-      null,
-      (res, out, next) => {
-        next();
-      }),
-
     //Character selection
     new Setting("Choose your Character",
       "Choose the preferred gender of your character" +
@@ -161,7 +144,7 @@ function getSettings(channel, message, userExists) {
           if (msg.author.id !== message.author.id) return;
           const locationInfo = await timezoneFromLocation(msg.content);
 
-          locationConfirmation(msg,scope,Setting,locationInfo, async (locationInfo) => {
+          locationConfirmation(msg, scope, locationInfo, async (locationInfo) => {
             timezoneCollector.stop();
             complete(locationInfo.utcOffset, out, next);
           });
@@ -178,16 +161,30 @@ function getSettings(channel, message, userExists) {
 
         if (!userExists) {
           //final result
-          channel.send("**TO HELP YOU START WITH YOUR QUEST \n" +
+          scope.send("**TO HELP YOU START WITH YOUR QUEST \n" +
             "HERE ARE A FEW ITEMS YOU CAN USE. \n" +
             "WANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
           const book = new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
-          book.send(channel);
+          book.send(scope);
           const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
-          sword.send(channel);
+          sword.send(scope);
           setupUser(message.author.id, out);
         }
 
+        next();
+      }),
+
+    //DM options
+    new Setting("Set your base location",
+      "Use `~base` in a server or in your DMs to set your base location. \n" +
+      "This is where weekly reviews and reminders will be sent automatically. \n" +
+      "You can only set your base location after completing your account setup, but" +
+      " you can change it at any point.",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
+      ),
+      null,
+      (res, out, next) => {
         next();
       }),
 
@@ -203,7 +200,7 @@ function getSettings(channel, message, userExists) {
       // eslint-disable-next-line no-unused-vars
       (res, next, out)=> {
         if (res === "LEARN MORE") {
-          displayProjectInfo(channel);
+          displayProjectInfo(scope);
         }
       }),
   ];

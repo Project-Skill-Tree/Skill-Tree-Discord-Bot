@@ -5,6 +5,7 @@ const geocodeUrlBase = `https://maps.googleapis.com/maps/api/geocode/json?key=${
 const timezoneUrlBase = `https://maps.googleapis.com/maps/api/timezone/json?key=${process.env.GOOGLE_API_KEY}`;
 
 exports.timezoneFromLocation = async function(location) {
+  if (!location) return null;
   location = location
     .replace(/[<>[\]()]/gi, "")// eslint-disable-next-line
     .replace(/[_　]+/gi, " ");
