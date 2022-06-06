@@ -28,32 +28,35 @@ async function getPages(settings) {
   const challengeIcon = await imageToBuffer("icons/chest.png", 300);
   return [
     new Page("Skill Tree", skilltreeLogo,
-      "The Skill Tree gamifies self-improvement with real-life skills,\
-      challenges, items, XP, levels, and more. \nLike a video game skill tree, you\
-      start from a single skill, unlocking new paths as you progress in your\
-      self-improvement journey. It's a competitive habit tracker, designed\
+      "The Skill Tree gamifies self-improvement with real-life skills, \
+      challenges, items, XP, levels, and more. \n\nLike a video game skill tree, you\
+      unlock new paths as you progress in your self-improvement journey. It's a competitive habit tracker, designed \
       so that you can consistently and efficiently progressively overload your habits, \
       without being overwhelmed with knowledge"),
     new Page("Setup", setupLogo,
-      `To use Skill Tree, you need to create an account with \`${settings.prefix}setup\`\
-      , this will automatically be cross compatible with the skill tree app. 
+      `To use Skill Tree, you need to create an account with \`${settings.prefix}setup\`, \
+      this will automatically be cross compatible with the skill tree app. 
       You need to set a few options to use the skill tree: 
       
-      **DM preferences**: Used to send reminders and weekly reports to either your DMs
-       or a server of your choice.
-      **GENDER**: \\*Does not\\* affect your progress in the tree, this is purely for our own analytics.
-      **TIMEZONE**: Sets your timezone so that tasks don't glitch out and set an incorrect day. \
+      **DIFFICULTY**: Sets difficulty level of your starting skills. You can \
+      always change this later with \`${settings.prefix}skip\` to skip or revert skills to match your experience level.
+      **GENDER**: \\*Does not\\* affect your progress in the tree, this is purely for your character design.
+      **TIMEZONE**: Sets your timezone so that tasks calculate days correctly. \
       Setting it correctly will also ensure that weekly reports are sent at the right time. Use \
       \`${settings.prefix}timezone\` to edit this at any point.
-      **DIFFICULTY**: Sets difficulty level of your starting skills. You can \
-       always change this later with \`${settings.prefix}start\` to skip/revert skills to match your needs
-       
+      **BASE LOCATION**: Specify the location where weekly reports and reminders are sent. Use \
+      \`${settings.prefix}base\` to edit this at any point.
+      
       Note: If you think you have made a mistake, you can edit your settings using \
-      the \`${settings.prefix}settings\` command
+      the \`${settings.prefix}setup\` command again.
       `),
     new Page("Skills", badge,
-      `Skills are organised into increasing levels of difficulty as you progress through the tree\
-      They contain:
+      `Skills are organised into increasing levels of difficulty as you progress through the tree.\
+      You can start skills if you have unlocked all of the previous ones for that branch. \
+      Use the \`${settings.prefix}start\` command to start available skills, or \
+      use \`${settings.prefix}skip\` to bypass skills without collecting XP, and \`${settings.prefix}revert\` \
+      to go back to old skills. 
+      Each skill includes
       
       **NAME**: The name of the skill to be completed e.g. mindfulness.
       **LEVEL**: The level of the skill e.g. 3.
@@ -61,6 +64,7 @@ async function getPages(settings) {
       **FREQUENCY**: The frequency to practice the skill e.g (DAILY).
       **TIME**: The time you need to keep up the skill to complete it, e.g. 2 weeks. \
       Skills require and 80% completion rate (because life gets in the way).
+      **XP**: The amount of XP you will be awarded by completing the skill. 
       
       Note: If the time limit is N/A, the skill must be completed only once \
       and has no time limit. E.g. Plan an activity with family, does not need \
@@ -76,10 +80,10 @@ async function getPages(settings) {
       Note: you do not earn XP points by skipping tasks`),
     new Page("Items and Challenges", challengeIcon,
       `Items are designed to provide valuable resources to teach you the concepts you need, \
-      exactly when you need them, and to gamify your Skill Tree experience 
+      exactly when you need them, and to gamify your Skill Tree experience.
       
       Items can either be: 
-      **Skill Items**: they have inherent value (like exclusive videos, PDFs, Guides etc)\
+      **Skill Items**: They have inherent value (like exclusive videos, PDFs, Guides etc)\
        to help with your self improvement journey
       **Game items**: They are cosmetic elements that can be traded and vary in rarity
       
