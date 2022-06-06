@@ -161,7 +161,7 @@ function getSettings(channel, message, userExists) {
           if (msg.author.id !== message.author.id) return;
           const locationInfo = await timezoneFromLocation(msg.content);
 
-          locationConfirmation(scope,Setting,locationInfo, async (locationInfo) => {
+          locationConfirmation(msg,scope,Setting,locationInfo, async (locationInfo) => {
             timezoneCollector.stop();
             complete(locationInfo.utcOffset, out, next);
           });

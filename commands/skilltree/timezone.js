@@ -19,7 +19,7 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
 };
 
 
-exports.locationConfirmation = async function(scope,settings, locationInfo, callback) {
+exports.locationConfirmation = async function(message,scope,settings, locationInfo, callback) {
   //Error message
   if (locationInfo === null) {
     scope.send("```Invalid timezone: Please make sure you're using the correct format \n" +
@@ -36,7 +36,7 @@ exports.locationConfirmation = async function(scope,settings, locationInfo, call
     .setTitle("TIMEZONE")
     .setDescription(`Timezone detected: ${locationInfo.location}? \n`+
       `Your local time should be ${dateAsTime(localTime)}. Is this correct?`);
-  const msg = await message.channel.send({embeds: [timezoneEmbed]});
+  const msg = await scope.send({embeds: [timezoneEmbed]});
   createYesNoPanel(msg, message.author, ()=>{
     callback(locationInfo);
   }, ()=>{});
