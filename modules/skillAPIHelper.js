@@ -54,6 +54,41 @@ exports.getRecentTasks = function(userID, limit, callback) {
   });
 };
 
+/** 
+ * Gets tasks from a skill, if any do exist
+ * @param userID - userID
+ * @param skillID - skillID
+ * @param callback - callback function
+*/
+exports.getTasksFromSkill = function(userID, skillID,callback) {
+  axios.get(process.env.API_URL + "tasks/getTasks", {
+    headers: {
+      userid: userID,
+      api_key: getAPIKey(),
+      skillid: skillID
+    }
+  }).then((res)=>{
+    const tasks = res.data.tasks.map(data => Task.create(data));
+    callback(tasks);
+  }).catch(res => {
+    console.log(res);
+  });
+};
+
+/**
+ * find a task using its ID, and delete it.
+ * @param {*} taskID - ID of the task to delete 
+ */
+exports.deleteTask = function(taskID) {
+  axios.post(process.env.API_URL + "tasks/deleteTask", {
+    taskid:taskID
+  },{
+    headers: {
+      api_key: getAPIKey()
+    }
+  });
+};
+
 /**
  * Get JSON object containing skills that the user has accepted from the database
  * @param userID - MongoDB userID
@@ -131,7 +166,7 @@ exports.startSkill = function(userID, skillID) {
 };
 
 /**
- * Adds the skill to the users active skills
+ * skips the skill to the next skill in the branch
  * @param userID - userID
  * @param skillID - skillID of the skill to start
  */
@@ -148,7 +183,7 @@ exports.skipSkill = function(userID, skillID) {
 };
 
 /**
- * Adds the skill to the users active skills
+ * Goes to the previous skill in the branch
  * @param userID - userID
  * @param skillID - skillID of the skill to start
  */

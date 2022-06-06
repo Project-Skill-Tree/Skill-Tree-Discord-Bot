@@ -15,7 +15,7 @@ exports.run = async (client, message) => {
     //Get tasks
     getCurrentTasks(userID,(tasks)=>{
       if (tasks.length === 0) {
-        message.channel.send("```No Current tasks, go to ~skills to start a skill```");
+        message.channel.send("```No Current tasks, go to `~start` to start a skill```");
       } else {
         //Show tasks in embed
         createTaskList(client, message, tasks, userID);

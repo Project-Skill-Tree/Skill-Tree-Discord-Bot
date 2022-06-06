@@ -1,5 +1,5 @@
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {getSkillsInProgress,cancelSkill} = require("../../modules/skillAPIHelper");
+const {getSkillsInProgress,cancelSkill,getTasksFromSkill,deleteTask} = require("../../modules/skillAPIHelper");
 const {authUser} = require("../../modules/userAPIHelper");
 
 /**
@@ -21,6 +21,7 @@ exports.run = (client, message) => {
           description: "Cancel the skills",
           action: (skill) => {
             cancelSkill(userID,skill.id);
+            getTasksFromSkill(userID,skill.id,tasks => tasks.map(task => deleteTask(task.id)));
             return true;
           }
         }], true);
