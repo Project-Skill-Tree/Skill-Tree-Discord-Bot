@@ -1,7 +1,10 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
-const {updateTask, authUser, getCurrentTasks} = require("../../modules/APIHelper");
+const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
 const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
+const {displayLevelUp} = require("../../modules/profileRenderer");
+const {authUser, getUser} = require("../../modules/userAPIHelper");
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
@@ -12,7 +15,7 @@ exports.run = async (client, message) => {
     //Get tasks
     getCurrentTasks(userID,(tasks)=>{
       if (tasks.length === 0) {
-        message.channel.send("```No Current tasks, go to ~skills to start a skill```");
+        message.channel.send("```No Current tasks, go to `~start` to start a skill```");
       } else {
         //Show tasks in embed
         createTaskList(client, message, tasks, userID);
@@ -31,7 +34,7 @@ exports.run = async (client, message) => {
  * @param userID
  * @return {Promise<void>}
  */
-async function createTaskList(client, message,tasks, userID) {
+async function createTaskList(client, message, tasks, userID) {
   let day = "today";
   let date = dayToDate(day);
 
@@ -50,8 +53,7 @@ async function createTaskList(client, message,tasks, userID) {
         .setLabel("TODAY")
         .setStyle("SECONDARY")
         .setDisabled(true));
-
-  const msg = await message.channel.send({ embeds: [embed], components: [dropDownBox, row] });
+  const msg = await message.reply({ embeds: [embed], components: [dropDownBox,row] });
 
   const collector = msg.createMessageComponentCollector({time: 30000 });
 
@@ -82,7 +84,15 @@ async function createTaskList(client, message,tasks, userID) {
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => `${task.skill.title}${task.skill.level}` === skillTitle);
       task.setChecked(!task.isChecked(date), date);
-      updateTask(userID, task, date, task.isChecked(date));
+
+      updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
+        if (levelUp !== 0) {
+          getUser(userID, message.author.username, (user)=>{
+            displayLevelUp(user, message.channel);
+          });
+        }
+        createLargeSwipePanel(client, message.author, message.channel, unlocked);
+      });
     }
 
     // Send the same embed, but with the updated values of the tasks array.
@@ -126,10 +136,18 @@ function buildEmbed(tasks, date) {
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
   const dailyTasks = tasks.filter(task => task.skill.interval === "day");
   const otherTasks = tasks.filter(task => task.skill.interval !== "day");
+  //TODO: challenges
+  //const challengeTasks = tasks.filter(task => task.challenge !== undefined);
+
   let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx, date)).join("\n");
   let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length, date)).join("\n");
+  //let challengeTaskStrings = challengeTasks.map((task, idx) => {
+  //  formatTask(task, idx + dailyTaskStrings.length + challengeTaskStrings.length, date);
+  //}).join("\n");
+
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
   if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
+  //if (challengeTaskStrings.length === 0) { challengeTaskStrings = "No challenges available";}
   return new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")

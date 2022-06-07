@@ -1,5 +1,5 @@
-const {getUser, authUser} = require("../../modules/APIHelper");
-const {displayProfile} = require("../../modules/ProfileRenderer");
+const {getUser, authUser} = require("../../modules/userAPIHelper");
+const {displayProfile} = require("../../modules/profileRenderer");
 
 /**
  * Profile command, authenticates user and displays their profile

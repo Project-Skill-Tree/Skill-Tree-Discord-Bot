@@ -16,7 +16,7 @@ const ranks = [
  * @param {number} level - Current level of the user
  * @returns {number} - XP required to level up
  */
-exports.calcXP = function(level) {
+exports.calcXPToLevelUp = function(level) {
   return 50 * (1.02^level);
 };
 
@@ -29,7 +29,7 @@ exports.calcXP = function(level) {
 exports.calcTotalXP = function(level, xp) {
   let sum = 0;
   for (let i = 0; i < level; i++) {
-    sum += this.calcXP(i);
+    sum += this.calcXPToLevelUp(i);
   }
   sum += xp;
   return sum;

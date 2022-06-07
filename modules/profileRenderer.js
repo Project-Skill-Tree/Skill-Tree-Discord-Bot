@@ -1,7 +1,8 @@
-const {MessageAttachment, MessageEmbed} = require("discord.js");
+const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
 const XPHandler = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
+const XPHelper = require("./XPHelper");
 
 /** @module ProfileRenderer */
 
@@ -13,10 +14,19 @@ const {drawBadge} = require("../objects/badge");
 exports.displayProfile = async function(user, channel) {
   //Generate profile
   const profileImage = new MessageAttachment(await getProfileImage(user), "profile.png");
-  //Get inventory
-  const itemMenu = createItemMenu(user);
+  return channel.send({files: [profileImage]});
+};
 
-  return channel.send({embeds: [itemMenu], files: [profileImage]});
+/**
+ * Sends an embedded level-up page, including level, character, xp
+ * @param user - User object
+ * @param channel - the channel to send the message to
+ */
+exports.displayLevelUp = async function(user, channel) {
+  //Generate profile
+  const profileImage = new MessageAttachment(await getLevelUpProfileImage(user), "profile.png");
+
+  return channel.send({files: [profileImage]});
 };
 
 /**
@@ -32,7 +42,8 @@ async function getProfileImage(user) {
   context.imageSmoothingEnabled = true;
   context.font = "30px \"Akira\"";
 
-  const color = XPHandler.getColor(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const color = XPHandler.getColor(level);
   context.shadowColor = color;
 
   //Draw background
@@ -60,6 +71,50 @@ async function getProfileImage(user) {
 }
 
 /**
+ * Generate the level-up profile card for this user
+ * @param user - Skill tree user object
+ * @return {Promise<Buffer>} buffer -
+ */
+async function getLevelUpProfileImage(user) {
+  const canvas = Canvas.createCanvas(600, 200);
+  const context = canvas.getContext("2d");
+
+  //Canvas settings
+  context.imageSmoothingEnabled = true;
+  context.font = "30px \"Akira\"";
+
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const color = XPHandler.getColor(level);
+  context.shadowColor = color;
+
+  //Draw background
+  const background = await Canvas.loadImage("./assets/backgrounds/bg2.png");
+  context.drawImage(background, 0, 0, background.width, background.height);
+
+  //Extract RGB values from rank colour, then set alpha to 0.1
+  //Used for tinting the background
+  const [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
+  context.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.1)`;
+  context.fillRect(0, 0, 600, 200);
+
+  await drawProfile(canvas, user,80, 140, 130);
+  await drawXP(canvas, user,190,130, 380, 30);
+
+  const metric = context.measureText(user.name);
+  const width = metric.width;
+
+  context.shadowBlur = 10;
+  context.fillStyle = "rgba(255,255,255,1)";
+  context.fillText(user.name, 380 - width*0.5, 40, 300);
+  context.font = "60px \"Akira\"";
+  context.fillText("LEVEL UP", 230, 100, 300);
+  context.shadowBlur = 0;
+
+  //return final buffer
+  return canvas.toBuffer();
+}
+
+/**
  * Draw character and level
  * @param canvas - canvas object
  * @param user - user object
@@ -75,12 +130,13 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   context.fillRect(0, 0, profileX*2, 200);
 
   //Draw character
-  const characterPath = XPHandler.getCharacter(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const characterPath = XPHandler.getCharacter(level);
   const character = await Canvas.loadImage("./assets/characters/"+characterPath);
   const iconSizeRatio = Math.min(profileWidth / character.width, profileHeight / character.height);
 
   //Draw with glow
-  context.shadowColor = XPHandler.getColor(user.level);
+  context.shadowColor = XPHandler.getColor(level);
   context.shadowBlur = 15;
 
   context.drawImage(character,
@@ -92,13 +148,12 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   context.shadowBlur = 0;
 
   //Draw user's level
-  const LVL = `LVL: ${user.level}`;
+  const LVL = `LVL: ${level}`;
   context.font = "20px \"Akira\"";
-  context.fillStyle = XPHandler.getColor(user.level);
+  context.fillStyle = "white";
   context.shadowBlur = 10;
-
   const textWidth = context.measureText(LVL).width;
-  context.fillText(LVL, profileX - textWidth*0.5,190);
+  context.fillText(LVL, profileX - textWidth*0.5,180);
   context.shadowBlur = 0;
 }
 
@@ -114,11 +169,13 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
  */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
-  const maxXP = XPHandler.calcXP(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
+  const maxXP = XPHelper.calcXPToLevelUp(level);
 
   // Fill with gradient
-  context.fillStyle = XPHandler.getColor(this.level);
-  context.fillRect(x,y,w*Math.min(user.xp, maxXP)/maxXP,h);
+  context.fillStyle = XPHandler.getColor(level);
+  context.fillRect(x,y,w*Math.min(excessXP, maxXP)/maxXP,h);
 
   //Draw XP bar outline
   context.strokeStyle = "rgba(255, 255, 255, 0.7)";
@@ -129,7 +186,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Draw XP text
   context.font = "15px \"Akira\"";
-  const xpText = `${user.xp}XP / ${maxXP}XP`;
+  const xpText = `${excessXP}XP / ${maxXP}XP`;
   const textWidth = context.measureText(xpText).width;
 
   //Draw XP text outline
@@ -160,7 +217,7 @@ async function drawProfileInfo(canvas, user) {
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.skills.sort((a, b) => {
+  const sortedSkills = user.skillscompleted.sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
@@ -181,29 +238,10 @@ async function drawProfileInfo(canvas, user) {
 
   //draw INFO
   const INFO = `Total XP: ${user.xp}XP\n` +
-    `Completed Skills: ${user.skills.length}\n`+
+    `Completed Skills: ${user.skillscompleted.length}\n`+
     `Current Skills: ${user.skillsinprogress.length}\n` +
-    `Days Tracked: ${0}`;
+    `Days Tracked: ${user.numDaysTracked}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";
   context.fillText(INFO, 190,70);
-}
-
-/**
- * Create embedded inventory
- * @param user
- * @return {MessageEmbed}
- */
-function createItemMenu(user) {
-  let items;
-  if (user.items.length === 0) {
-    items = "```Empty```";
-  } else {
-    //Create item text with emoji and URL-linked name
-    items = user.items.map(item => `${item.emoji} [${item.name}](${item.link})`).join("\n");
-  }
-  return new MessageEmbed()
-    .setTitle("INVENTORY 🎒")
-    .setColor("#1071E5")
-    .setDescription(items);
 }

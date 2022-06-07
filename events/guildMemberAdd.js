@@ -5,6 +5,7 @@ const configurations = require("../modules/botConfigurations.js");
 
 
 module.exports = (client,member) => {
+  return;
   logger.log(`[MEMBER JOIN] ${member} joined the guild ${member.guild.id}`);
   const embed = new MessageEmbed()
     .setTitle("Welcome to Skill Tree")

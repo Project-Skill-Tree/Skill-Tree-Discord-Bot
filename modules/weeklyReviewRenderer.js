@@ -1,6 +1,6 @@
 const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
-const XPHandler = require("./XPHelper");
+const XPHelper = require("./XPHelper");
 const {romanise} = require("./romanNumeralHelper");
 const {drawBadge} = require("../objects/badge");
 
@@ -13,10 +13,11 @@ const {drawBadge} = require("../objects/badge");
  * @param channel - the channel to send the message to
  * @param tasks - tasks to display
  */
-exports.displayReview = async function(user, channel, tasks) {
+
+exports.displayReview = async function(user, message , tasks) {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
-  return channel.send({files: [reviewImage]});
+  return message.reply({files: [reviewImage]});
 };
 
 /**
@@ -42,7 +43,7 @@ async function getWeeklyReview(user, tasks) {
   await drawHeaderFooter(canvas);
 
   await drawXP(canvas, user,20, 150, 360, 30);
-  await drawTasks(canvas, user, tasks,0,190,400,200);
+  await drawTasks(canvas, user, tasks,0,190,400,550);
 
   //return final buffer
   return canvas.toBuffer();
@@ -69,6 +70,7 @@ async function drawHeaderFooter(canvas) {
   context.fillStyle = "rgba(255,255,255,1)";
   const title = "WEEKLY REPORT";
   const headerWidth = context.measureText(title).width;
+
   context.fillText(title, 200 - headerWidth*0.5, 70);
   context.shadowBlur = 20;
   context.fillRect(0,120,400,3);
@@ -105,15 +107,15 @@ async function drawHeaderFooter(canvas) {
  */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
-  const maxXP = XPHandler.calcXP(user.level);
-
-  const prevLevel = user.level;
-  const prevXP = user.xp * 0.5;
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
+  const maxXP = XPHelper.calcXPToLevelUp(level);
 
   //Add extra text to show increase
   context.font = "16px \"Akira\"";
-  //TODO: fix xp change not being calculated with real values
-  const xpIncrease = XPHandler.calcTotalXP(user.level, user.xp) - XPHandler.calcTotalXP(prevLevel, prevXP);
+  const prevXP = user.getPrevXP();
+  const prevLevel = XPHelper.calcLevelFromXP(prevXP);
+  const xpIncrease = user.xp - prevXP;
   const increaseText = `+ ${xpIncrease} XP`;
   const increaseTextWidth = context.measureText(increaseText).width;
   const XPwidth = w - increaseTextWidth - 10;
@@ -122,18 +124,18 @@ async function drawXP(canvas, user, x, y, w, h) {
   context.fillText(increaseText, x + XPwidth + 10, y + h - 10, increaseTextWidth);
 
   // Fill with lighter gradient for newXP
-  const color = XPHandler.getColor(user.level);
+  const color = XPHelper.getColor(level);
   let [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
   red = Math.floor(Math.min(red * 2, 254));
   green = Math.floor(Math.min(green * 2, 254));
   blue = Math.floor(Math.min(blue * 2, 254));
 
   context.fillStyle = `rgba(${red}, ${green}, ${blue}, 1.0)`;
-  context.fillRect(x,y,XPwidth*Math.min(user.xp, maxXP)/maxXP,h);
+  context.fillRect(x,y,XPwidth*Math.min(excessXP, maxXP)/maxXP,h);
 
   //Fill to show last level XP
-  if (prevLevel === user.level) {
-    context.fillStyle = XPHandler.getColor(user.level);
+  if (prevLevel === level) {
+    context.fillStyle = XPHelper.getColor(level);
     context.fillRect(x,y,XPwidth*Math.min(prevXP, maxXP)/maxXP,h);
   }
 
@@ -146,7 +148,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Draw XP text
   context.font = "15px \"Akira\"";
-  const xpText = `${user.xp}XP / ${maxXP}XP`;
+  const xpText = `${excessXP}XP / ${maxXP}XP`;
   const textWidth = context.measureText(xpText).width;
 
   //Draw XP text outline
@@ -168,26 +170,24 @@ async function drawXP(canvas, user, x, y, w, h) {
  * @param x
  * @param y
  * @param w
- * @param h
  * @return {Promise<void>}
  */
-async function drawTasks(canvas, user, tasks, x, y, w, h) {
+async function drawTasks(canvas, user, tasks, x, y, w) {
   const context = canvas.getContext("2d");
   const pad = 10;
 
   //Sort tasks in descending order of level and then XP
   const taskList = tasks.sort((a, b) => {
-    return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
-  });
-
-  let maxSize = 0;
-  for (let i = 0; i < taskList.length; i++) {
-    maxSize = Math.max(maxSize, taskList[i].data.length);
-  }
+    if (b.skill.level !== a.skill.level) { //sort by level
+      return (b.skill.level - a.skill.level);
+    } else { // if that fails: sort by xp
+      return b.skill.xp - a.skill.xp;
+    }
+  }).splice(0,6);
 
   //Width of one task
-  const tHeight = (h - pad*2) / taskList.length;
-  const tWidth = (w - pad*2 - tHeight - 10) / maxSize;
+  const tHeight = 90;
+  const tWidth = (w - pad*2 - tHeight - 10) / 7;
   const size = Math.min(tHeight, tWidth) - 4;
 
   //draw tasks
@@ -221,8 +221,9 @@ async function drawTasks(canvas, user, tasks, x, y, w, h) {
 
     //Draw completion percentage
     context.font = "25px \"Akira\"";
-    const percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
-    const text = `${percent}%`;
+    let percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
+    percent = isNaN(percent) ? 0 : percent;
+    const text = `${Math.max(percent, 0)}%`;
     const percentMetric = context.measureText(text);
     const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;
     const textWidth = percentMetric.width;

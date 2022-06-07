@@ -9,27 +9,40 @@ const {imageToBuffer} = require("../modules/UIHelper");
 class Item extends Swipeable {
   /**
    * Create Item object
+   * @param id - mongoDB objectID
    * @param {string} name - Item name (e.g. GUIDE TO SELF IMPROVEMENT)
    * @param {string} link - The link to the item resource
    * @param {?string=} emoji - the emoiji to display with the item
    * @constructor
    */
-  constructor(name, link, emoji=null) {
+  constructor(id, name, link, emoji=null) {
     super();
+    this.id = id;
     this.name = name;
     this.link = link;
     this.emoji = emoji;
   }
 
   /**
+   * Create Item object from json data
+   * @param data - JSON data for the item
+   * @return {Item}
+   */
+  static create(data) {
+    return new Item(data._id,
+      data.name,
+      data.link,
+      data.emoji);
+  }
+
+  /**
    * Sends an embedded item in the chat
-   * @param client
    * @param channel
    */
-  async send(client, channel) {
-    const icon = new MessageAttachment(await imageToBuffer("icons/chest.png", 64), "icon.png");
-    const embed = this.update(new MessageEmbed());
-    channel.send({embeds: [embed], files: [icon]});
+  async send(channel) {
+    const data = await this.update(new MessageEmbed());
+
+    return channel.send({embeds: data[0], files: data[1]});
   }
 
   /**
@@ -37,16 +50,32 @@ class Item extends Swipeable {
    * @param embed - embed to update
    * @return embed - updated embed
    */
-  update(embed) {
+  async update(embed) {
+    const icon = new MessageAttachment(await this.getIcon(), "icon.png");
+
+    await embed.setColor("#1071E5");
+    embed.setTitle("```[ITEM FOUND]```");
+    embed.setThumbnail("attachment://icon.png");
+    embed.setDescription(this.toString());
+    return [[embed], [icon]];
+  }
+
+  /**
+   * Convert item to a string
+   * @return {string}
+   */
+  toString() {
     let description = `+ [${this.name}](${this.link})`;
     if (this.emoji != null) description += ` (${this.emoji})`;
+    return description;
+  }
 
-    embed.setColor("#1071E5");
-    embed.setTitle("```[ITEM(S) FOUND]```");
-    embed.setThumbnail("attachment://icon.png");
-    embed.setDescription(description);
-    embed.setTimestamp();
-    return embed;
+  getName() {
+    return this.name;
+  }
+
+  async getIcon() {
+    return imageToBuffer("icons/chest.png", 200);
   }
 }
 
