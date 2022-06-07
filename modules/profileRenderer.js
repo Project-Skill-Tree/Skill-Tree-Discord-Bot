@@ -1,4 +1,4 @@
-const {MessageAttachment, MessageEmbed} = require("discord.js");
+const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
 const XPHandler = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
@@ -13,10 +13,19 @@ const {drawBadge} = require("../objects/badge");
 exports.displayProfile = async function(user, channel) {
   //Generate profile
   const profileImage = new MessageAttachment(await getProfileImage(user), "profile.png");
-  //Get inventory
-  const itemMenu = createItemMenu(user);
+  return channel.send({files: [profileImage]});
+};
 
-  return channel.send({embeds: [itemMenu], files: [profileImage]});
+/**
+ * Sends an embedded level-up page, including level, character, xp
+ * @param user - User object
+ * @param channel - the channel to send the message to
+ */
+exports.displayLevelUp = async function(user, channel) {
+  //Generate profile
+  const profileImage = new MessageAttachment(await getLevelUpProfileImage(user), "profile.png");
+
+  return channel.send({files: [profileImage]});
 };
 
 /**
@@ -60,6 +69,49 @@ async function getProfileImage(user) {
 }
 
 /**
+ * Generate the level-up profile card for this user
+ * @param user - Skill tree user object
+ * @return {Promise<Buffer>} buffer -
+ */
+async function getLevelUpProfileImage(user) {
+  const canvas = Canvas.createCanvas(600, 200);
+  const context = canvas.getContext("2d");
+
+  //Canvas settings
+  context.imageSmoothingEnabled = true;
+  context.font = "30px \"Akira\"";
+
+  const color = XPHandler.getColor(user.level);
+  context.shadowColor = color;
+
+  //Draw background
+  const background = await Canvas.loadImage("./assets/backgrounds/bg2.png");
+  context.drawImage(background, 0, 0, background.width, background.height);
+
+  //Extract RGB values from rank colour, then set alpha to 0.1
+  //Used for tinting the background
+  const [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
+  context.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.1)`;
+  context.fillRect(0, 0, 600, 200);
+
+  await drawProfile(canvas, user,80, 140, 130);
+  await drawXP(canvas, user,190,130, 380, 30);
+
+  const metric = context.measureText(user.name);
+  const width = metric.width;
+
+  context.shadowBlur = 10;
+  context.fillStyle = "rgba(255,255,255,1)";
+  context.fillText(user.name, 380 - width*0.5, 40, 300);
+  context.font = "60px \"Akira\"";
+  context.fillText("LEVEL UP", 230, 100, 300);
+  context.shadowBlur = 0;
+
+  //return final buffer
+  return canvas.toBuffer();
+}
+
+/**
  * Draw character and level
  * @param canvas - canvas object
  * @param user - user object
@@ -94,11 +146,10 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   //Draw user's level
   const LVL = `LVL: ${user.level}`;
   context.font = "20px \"Akira\"";
-  context.fillStyle = XPHandler.getColor(user.level);
+  context.fillStyle = "white";
   context.shadowBlur = 10;
-
   const textWidth = context.measureText(LVL).width;
-  context.fillText(LVL, profileX - textWidth*0.5,190);
+  context.fillText(LVL, profileX - textWidth*0.5,180);
   context.shadowBlur = 0;
 }
 
@@ -160,7 +211,7 @@ async function drawProfileInfo(canvas, user) {
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.skills.sort((a, b) => {
+  const sortedSkills = user.skillscompleted.sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
@@ -181,29 +232,10 @@ async function drawProfileInfo(canvas, user) {
 
   //draw INFO
   const INFO = `Total XP: ${user.xp}XP\n` +
-    `Completed Skills: ${user.skills.length}\n`+
+    `Completed Skills: ${user.skillscompleted.length}\n`+
     `Current Skills: ${user.skillsinprogress.length}\n` +
-    `Days Tracked: ${0}`;
+    `Days Tracked: ${user.numDaysTracked}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";
   context.fillText(INFO, 190,70);
-}
-
-/**
- * Create embedded inventory
- * @param user
- * @return {MessageEmbed}
- */
-function createItemMenu(user) {
-  let items;
-  if (user.items.length === 0) {
-    items = "```Empty```";
-  } else {
-    //Create item text with emoji and URL-linked name
-    items = user.items.map(item => `${item.emoji} [${item.name}](${item.link})`).join("\n");
-  }
-  return new MessageEmbed()
-    .setTitle("INVENTORY 🎒")
-    .setColor("#1071E5")
-    .setDescription(items);
 }

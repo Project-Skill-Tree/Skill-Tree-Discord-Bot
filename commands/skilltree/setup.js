@@ -1,8 +1,11 @@
 /* eslint-disable no-case-declarations */
 const { MessageEmbed, MessageActionRow, MessageButton} = require("discord.js");
-const { createUser, updateUser, authUser} = require("../../modules/APIHelper");
+const { createUser, updateUser, authUser} = require("../../modules/userAPIHelper");
 const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
+const {timezoneFromLocation} = require("../../modules/timezoneHelper");
+const {locationConfirmation} = require("./timezone");
+const Setting = require("../../objects/setting");
 
 /**
  * Setup user account
@@ -10,146 +13,199 @@ const Item = require("../../objects/item");
  * Page 2. Set experience level (beginner/intermeditae/expert)
  * Page 3. DM reminders
  * Page 4. Choose your character (male/female)
- * Page 5. Complete confirmation
+ * Page 5. Select your timezone
+ * Page 6. Complete confirmation
  */
 exports.run = async (client,message) => {
-  //Start setup
-  startSetup(client, message);
+  let scope;
+  let instructions_message;
+  if (message.channel.type === "DM") {
+    scope = message.channel;
+  } else {
+    scope = message.member;
+    //Send notification reply to user
+    instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
+    setTimeout(() => instructions_message.delete(),10000);
+    message.delete();
+  }
+  //Send init message to check chat is available
+  const init = getSettings(scope, message, false)[0];
+  init.sendInitMessage(message, scope, ()=>{
+    if (instructions_message) instructions_message.delete();
+  },
+  (initMessage)=>{
+    startSetup(initMessage, message, scope);
+  });
 };
 
-function setupUser(id, gender, difficulty, dms_enabled) {
-  gender = gender.toLowerCase();
-  difficulty = difficulty.toLowerCase();
-  createUser(id,gender,difficulty,dms_enabled,()=>{ //creates the user
-    authUser(id,null,(userID) => {
-      updateUser(userID,gender,difficulty);
-    });
+function startSetup(initMessage, message, scope) {
+  //Validate user exists
+  authUser(message.author.id,null, (userID) => {
+    if (userID) {
+      //Start the setup
+      let settings = getSettings(scope, message, true);
+      settings = settings.filter(s => s.title !== "Set Experience Level");
+      settings[1].start(initMessage, scope, {}, settings);
+    } else {
+      //Start the setup
+      const settings = getSettings(scope, message, false);
+      settings[1].start(initMessage, scope, {}, settings);
+    }
   });
 }
 
-async function startSetup(client, message) {
-  //initial embed
-  const initEmbed = new MessageEmbed()
-    .setTitle("Initializing Setup Process")
-    .setDescription("Answer the following questions to set up your Skill Tree account")
-    .setColor(`#${Configurations().primary}`)
-    .setFooter("Completion Status: \n (1/5)");
-  //Difficulty embed
-  const difficultyEmbed = new MessageEmbed()
-    .setTitle("Set Experience Level")
-    .setColor(`#${Configurations().primary}`)
-    .setDescription("Choose one of the following options to optimize Skill Tree to your preferred difficulty level (you can change this later by evoking the `setup` command again)")
-    .addField("1. Easy", "This is the beginner level (<3 months of self improvement), and will start you at Meditation I, Journalling I and Exercising I")
-    .addField("2. Medium", "This is the intermediate level (<6 months of self improvement), and will start you at Meditation II, Journalling II, Exercising II and Social skills I")
-    .addField("3. Hard", "The most advanced level (around one year and more of self improvement), and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I")
-    .setFooter("Completion Status: \n (2/5) ");
-  //enable DMs embed
-  const dmEmbed = new MessageEmbed()
-    .setTitle("Enable DM Reminders")
-    .setColor(`#${Configurations().primary}`)
-    .setDescription("Do you want the bot to remind you of tasks to complete in Direct Messages?")
-    .setFooter("Completion Status: \n (3/5) ");
-  //TODO: get Gender of the player
-  const characterEmbed = new MessageEmbed()
-    .setTitle("3️Choose your Character")
-    .setColor(`#${Configurations().primary}`)
-    .setDescription("Choose the preferred gender of your character")
-    .setFooter("Completion Status: \n (4/5) ");
-  //help and information embed
-  const finalEmbed = new MessageEmbed()
-    .setTitle(":white_check_mark: Complete")
-    .setColor(`#${Configurations().primary}`)
-    .setDescription(`Your Skill Tree account is completely configured! check ~guide to understand how you can use skill tree \n Press "Learn More" to join the discord server and to get information about the project 
-    `)
-    .setFooter("Completion Status: \n (5/5) ");
+function setupUser(id, out) {
+  out.character.toLowerCase();
+  out.difficulty.toLowerCase();
+  authUser(id,null,(userID) => {
+    if (userID) {
+      updateUser(userID, out.character, out.difficulty, out.timezone);
+    } else {
+      createUser(id, out.character, out.difficulty, out.timezone);
+    }
+  });
+}
 
+function displayProjectInfo(channel) {
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
     .setColor(`#${Configurations().primary}`)
-    .setDescription(`
-    Join the discord server for help,feedback and access to all the latest features and updates: ${Configurations().invite_link}\n
+    .setDescription(
+      `Join the discord server for help,feedback and access to all the latest features and updates: ${Configurations().invite_link}\n
     navigate to the following channels to learn more about the project: \n
     <#968766665305231450> : Check out our frequently asked questions \n
     <#953924789494501376> : Want to contribute? Add a role that suits your interests and help develop this project!  \n
     <#954747309143490591> : Have a look at the roadmap and scope of this project \n
     <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n`);
-  let scope,initMessage,dmMessage,finalMessage,difficultyLevel, enabledDMs,userGender,characterMessage;
-  // ORDER: initEmbed -> difficultyEmbed -> DmEmbed -> genderEmbed -> finalEmbed -> infoEmbed
-  try {
-    if (message.channel.type === "DM") { 
-      initMessage = await message.channel.send({embeds: [initEmbed]});
-      scope = message.channel;
-    }
-    else {
-      initMessage = await message.member.send({embeds: [initEmbed]});
-      scope = message.member;
-      const instructions_message = await message.reply(":thumbsup: Message with further instruction has been sent to your DMs!");
-      setTimeout(() => instructions_message.delete(),10000);
-      message.delete();
-    }
-  }
-  catch (error) {
-    // messages in the same channel saying your DMs are disabled
-    message.channel.send(`<@${message.member.id}> Your DMs are Disabled. Please enable them and try again`);
-    message.channel.send("**HOW TO ENABLE DMS** ```\n\n 1) Right-click server icon \n 2) Click on Privacy Settings \n 3) Toggle \"Allow direct messages from server members on\" \n 4) press Done```");
-    return;
-  }
-
-  //sends chain message of interaction
-  const difficultyRow = new MessageActionRow().addComponents(
-    new MessageButton().setCustomId("dif_easy").setLabel("Easy").setStyle("PRIMARY"),
-    new MessageButton().setCustomId("dif_medium").setLabel("Medium").setStyle("PRIMARY"),
-    new MessageButton().setCustomId("dif_hard").setLabel("Hard").setStyle("PRIMARY")
-  );
-  const difMessage = await scope.send({embeds: [difficultyEmbed],components: [difficultyRow]});
-  const dmRow = new MessageActionRow().addComponents(
-    new MessageButton().setCustomId("dm_yes").setLabel("Yes").setStyle("PRIMARY"),
-    new MessageButton().setCustomId("dm_no").setLabel("No").setStyle("PRIMARY")
-  );
-  const finalRow = new MessageActionRow().addComponents(
-    new MessageButton().setCustomId("final_button").setLabel("Learn More").setStyle("PRIMARY"),
-  );
-  const characterRow = new MessageActionRow().addComponents(
-    new MessageButton().setCustomId("character_male").setStyle("PRIMARY").setEmoji("🙍🏻‍♂️").setLabel("Male"),
-    new MessageButton().setCustomId("character_female").setStyle("PRIMARY").setEmoji("🙍🏻‍♀️").setLabel("Female")
-  );
-  const collector = difMessage.channel.createMessageComponentCollector({time: 60000});
-  collector.on("collect", async i =>{
-    const choice = i.component.customId.split("_")[0];
-    switch (choice) {
-      case "dif":
-        initMessage.delete();
-        difMessage.delete();
-        dmMessage = await scope.send({embeds: [dmEmbed], components: [dmRow]});
-        difficultyLevel = i.component.label;
-        break;
-      case "dm":
-        dmMessage.delete();
-        enabledDMs = i.component.label === "Yes";
-        characterMessage = await scope.send({embeds: [characterEmbed],components: [characterRow]});
-        break;
-      case "character":
-        userGender = i.component.label;
-        characterMessage.delete();
-        finalMessage = await scope.send({embeds: [finalEmbed],components: [finalRow]});
-        scope.send("**TO HELP YOU START WITH YOUR QUEST \nHERE ARE A FEW ITEMS YOU CAN USE. \nWANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
-        const book = new Item("SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
-        book.send(client, scope);
-        const sword = new Item("RUSTY SWORD","", "🗡");
-        sword.send(client,scope);
-        // we  deal with the given information here 
-        setupUser(message.author.id,userGender,difficultyLevel,enabledDMs);
-        break;
-      case "final":
-        scope.send({embeds: [infoEmbed]});
-        finalMessage.edit({embeds: [finalEmbed],components:[]});
-        break;
-    }
-  });
-
-
+  channel.send({embeds: [infoEmbed]});
 }
+
+function getSettings(scope, message, userExists) {
+  return [
+    //Setup start
+    new Setting("Initializing Setup Process",
+      "Answer the following questions to set up your Skill Tree account",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("continue").setLabel("CONTINUE").setStyle("PRIMARY")
+      ),
+      null,
+      (res, out, next)=>{
+        next();
+      }),
+
+    new Setting("Set Experience Level",
+      ("Choose one of the following options to optimize Skill Tree to your " +
+      "preferred difficulty level \n" +
+      "(**Warning**: you cannot change this later, but you can skip/revert skills to suit your needs)\n\n" +
+      "**1. Easy:**\n This is the beginner level (<3 months of self improvement), " +
+      "and will start you at the beginning of the tree\n" +
+      "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
+      "and will start you at Meditation II, Journalling II, Exercising II\n" +
+      "**3. Hard:**\n The most advanced level (around one year and more of self improvement), "+
+      "and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I,"),
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("dif_easy").setLabel("Easy").setStyle("PRIMARY"),
+        new MessageButton().setCustomId("dif_medium").setLabel("Medium").setStyle("PRIMARY"),
+        new MessageButton().setCustomId("dif_hard").setLabel("Hard").setStyle("PRIMARY")
+      ),
+      null,
+      (res, out, next)=>{
+        out.difficulty = res;
+        next();
+      }),
+
+    //Character selection
+    new Setting("Choose your Character",
+      "Choose the preferred gender of your character" +
+      "(Purely aesthetic, this will not affect the skills you have available)",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("character_male").setStyle("PRIMARY").setEmoji("🙍🏻‍♂️").setLabel("Male"),
+        new MessageButton().setCustomId("character_female").setStyle("PRIMARY").setEmoji("🙍🏻‍♀️").setLabel("Female")
+      ),
+      null,
+      (res, out, next) => {
+        out.character = res;
+        next();
+      }),
+
+    //Timezone selection
+    new Setting("Specify your timezone",
+      "Write your timezone in the format:\n" +
+      "<timezone> or <location> or <timecode> (e.g EST / london / GMT+5)\n"+
+      "(Warning: you must complete this within 60 seconds, otherwise you will need to restart the setup process)",
+      null,
+      (thismessage, complete, next, out)=>{
+        //Filter and parse location messages
+        const filter = (m) => m.author.id === message.author.id;
+        const timezoneCollector = thismessage.channel.createMessageCollector({filter, time: 60000});
+        timezoneCollector.on("collect", async (msg) => {
+
+          if (msg.author.id !== message.author.id) return;
+          const locationInfo = await timezoneFromLocation(msg.content);
+
+          locationConfirmation(msg, scope, locationInfo, async (locationInfo) => {
+            timezoneCollector.stop();
+            complete(locationInfo.utcOffset, out, next);
+          });
+        });
+        // fires when the collector is finished collecting
+        timezoneCollector.on("end", (collected, reason) => {
+          if (reason === "time") {
+            scope.send("The timezone selector has timed out. Please restart the setup process");
+          }
+        });
+      },
+      (res, out, next)=>{
+        out.timezone = res;
+
+        if (!userExists) {
+          //final result
+          scope.send("**TO HELP YOU START WITH YOUR QUEST \n" +
+            "HERE ARE A FEW ITEMS YOU CAN USE. \n" +
+            "WANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
+          const book = new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
+          book.send(scope);
+          const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
+          sword.send(scope);
+          setupUser(message.author.id, out);
+        }
+
+        next();
+      }),
+
+    //DM options
+    new Setting("Set your base location",
+      "Use `~base` in a server or in your DMs to set your base location. \n" +
+      "This is where weekly reviews and reminders will be sent automatically. \n" +
+      "You can only set your base location after completing your account setup, but" +
+      " you can change it at any point.",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
+      ),
+      null,
+      (res, out, next) => {
+        next();
+      }),
+
+    //Final message
+    new Setting(":white_check_mark: Complete",
+      "Your Skill Tree account is completely configured! "+
+        "check ~guide to understand how you can use skill tree \n Press \"Learn More\"" +
+        "to join the discord server and to get information about the project",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("complete_learnmore").setStyle("PRIMARY").setLabel("LEARN MORE"),
+      ),
+      null,
+      // eslint-disable-next-line no-unused-vars
+      (res, next, out)=> {
+        if (res === "LEARN MORE") {
+          displayProjectInfo(scope);
+        }
+      }),
+  ];
+}
+
 exports.conf = {
   enabled: true,
   guildOnly: false,

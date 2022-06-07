@@ -1,5 +1,5 @@
 const Page = require("../../objects/page");
-const {createLargeSwipePanel} = require("../../modules/createSwipePanel");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {imageToBuffer} = require("../../modules/UIHelper");
 const {getBadgeIcon} = require("../../objects/badge");
 

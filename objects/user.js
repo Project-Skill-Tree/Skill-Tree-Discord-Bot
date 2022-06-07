@@ -4,33 +4,56 @@
 class User {
   /**
    * User constructor
+   * @param id
+   * @param discordid - discordid of the user
    * @param name - Username
    * @param level - Level of the user
-   * @param xp - current XP of the player. XP is not counted continuously, it's reset to 0 when the user levels up
-   * @param skills - list of skills the user has completed
+   * @param xp - total XP of the player
+   * @param xpHistory - Weekly XP History of the player
+   * @param skillscompleted - all completed skills
    * @param skillsinprogress - current skill
    * @param items - collected items
+   * @param numDaysTracked - number of days tracked
+   * @param reminderChannel - user's reminder channel
+   * @param timezone - timezone command
+   * @param baselocation
    * @constructor
    */
-  constructor(name, level, xp, skills, skillsinprogress, items) {
+  constructor(id, discordid, name, level, xp, xpHistory, skillscompleted, skillsinprogress,
+    items, numDaysTracked, reminderChannel, timezone, baselocation) {
+    this.id = id;
+    this.discordid = discordid;
     this.name = name;
     this.level = level;
     this.xp = xp;
-    this.skills = skills;
+    this.xpHistory = xpHistory;
+    this.skillscompleted = skillscompleted;
     this.skillsinprogress = skillsinprogress;
     this.items = items;
+    this.numDaysTracked = numDaysTracked;
+    this.reminderChannel = reminderChannel;
+    this.timezone = timezone;
+    this.baselocation = baselocation;
   }
 
   /**
    * Create User object from JSON data
-   * @param username - discord username of this user
-   * @param data - JSON data for the user
    * @return {User}
+   * @param user
    */
-  static create(username, data) {
-    const user = data.user;
-    const items = data.items;
-    return new User(username, user.level, user.xp, user.skillscompleted, user.skillsinprogress, items);
+  static create(user) {
+    return new User(user._id, user.discordid, user.username, user.level, user.xp, user.xpHistory,
+      user.skillscompleted, user.skillsinprogress, user.items,
+      user.numDaysTracked, user.reminderChannel, user.timezone,
+      user.baselocation);
+  }
+
+  getPrevXP() {
+    const prevXP = this.xpHistory.splice(-1);
+    if (prevXP === undefined) {
+      return 0;
+    }
+    return prevXP;
   }
 }
 

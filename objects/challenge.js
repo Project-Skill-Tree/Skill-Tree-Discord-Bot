@@ -8,27 +8,40 @@ const {imageToBuffer} = require("../modules/UIHelper");
  */
 class Challenge extends Swipeable {
   /**
+   * @param id - mongoDB objectID
    * @param challenge - The challenge description
    * @param {number} xp - The xp to be awarded on completion
    * @param {?string=} link - The link to the item resource (default: null)
    * @constructor
    */
-  constructor(challenge, xp, link=null) {
+  constructor(id, challenge, xp, link=null) {
     super();
+    this.id = id;
     this.challenge = challenge;
     this.xp = xp;
     this.link = link;
   }
+
+  /**
+   * Create challenge object from json data
+   * @param data - JSON data for the challenge
+   * @return {Challenge}
+   */
+  static create(data) {
+    return new Challenge(data._id,
+      data.challenge,
+      data.xp,
+      data.link);
+  }
+
   /**
    * Sends an embedded challenge to the chat
-   * @param client
    * @param channel
    */
-  async send(client, channel) {
-    const icon = new MessageAttachment(await imageToBuffer("icons/challenge.png", 100), "icon.png");
-    const embed = this.update(new MessageEmbed());
+  async send(channel) {
+    const data = await this.update(new MessageEmbed());
 
-    channel.send({ embeds: [embed], files: [icon]});
+    return channel.send({ embeds: data[0], files: data[1]});
   }
 
   /**
@@ -36,16 +49,28 @@ class Challenge extends Swipeable {
    * @param embed - embed to update
    * @return embed - updated embed
    */
-  update(embed) {
-    let link = "";
+  async update(embed) {
     //Add link if one exists
-    if (this.link) link = `[[LINK]](${this.link})`;
-    embed.setColor("#bd290b");
-    embed.setTitle("[CHALLENGE]");
+    const icon = new MessageAttachment(await this.getIcon(), "icon.png");
+    await embed.setColor("#bd290b");
+    embed.setTitle("```[CHALLENGE]```");
     embed.setThumbnail("attachment://icon.png");
-    embed.setDescription(`${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```");
-    embed.setTimestamp();
-    return embed;
+    embed.setDescription(this.toString());
+    return [[embed], [icon]];
+  }
+
+  getName() {
+    return "CHALLENGE";
+  }
+
+  toString() {
+    let link = "";
+    if (this.link) link = `[[LINK]](${this.link})`;
+    return `${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```";
+  }
+
+  async getIcon() {
+    return imageToBuffer("icons/challenge.png", 200);
   }
 }
 
