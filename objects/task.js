@@ -28,6 +28,8 @@ class Task {
    * @return {boolean|*}
    */
   isChecked(date) {
+    console.log(getDaysBetweenDates(this.startDate, date));
+    console.log(this.data);
     const index = getDaysBetweenDates(this.startDate, date);
     const checked = this.data[index];
     return (checked == null) ? false : checked;

@@ -1,7 +1,7 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
-const {dayToDate, getAbsDate} = require("../../modules/dateHelper");
+const {dayToDate, getAbsDate, getDaysBetweenDates} = require("../../modules/dateHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
 const {authUser, getUser} = require("../../modules/userAPIHelper");
@@ -35,6 +35,7 @@ exports.run = async (client, message) => {
  * @return {Promise<void>}
  */
 async function createTaskList(client, message, tasks, userID) {
+  const dayCreated = new Date();
   let day = "today";
   let date = dayToDate(day);
 
@@ -55,11 +56,15 @@ async function createTaskList(client, message, tasks, userID) {
         .setDisabled(true));
   const msg = await message.reply({ embeds: [embed], components: [dropDownBox,row] });
 
-  const collector = msg.createMessageComponentCollector({time: 30000 });
+  const collector = msg.createMessageComponentCollector({time: 120000});
 
   collector.on("collect", i => {
-    if (i.user.id !== message.author.id && date.getDate() === dayToDate("today")) {
+    if (i.user.id !== message.author.id) {
       i.reply({ content: "You can't edit someone else's task list!", ephemeral: true });
+      return;
+    }
+    if (getDaysBetweenDates(dayCreated, new Date()) !== 0) {
+      i.reply({ content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true });
       return;
     }
 

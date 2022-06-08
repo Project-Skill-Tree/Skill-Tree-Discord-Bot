@@ -29,7 +29,7 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
 
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === user.id;
-  const collector = msg.createMessageComponentCollector({filter});
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     await i.deferUpdate();
     msg.delete();
@@ -75,7 +75,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
 
   //Create listener for button events
   const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === user.id;
-  const collector = msg.createMessageComponentCollector({filter});
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     await i.deferUpdate();
     switch (i.customId) {
@@ -121,7 +121,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
     || i.customId === "first"
     || i.customId === "last") && i.user.id === user.id;
 
-  const collector = msg.createMessageComponentCollector({filter});
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
 
@@ -152,7 +152,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   if (actions == null) return;
 
   const actionFilter = i => i.user.id === user.id;
-  const actionCollector = msg.createMessageComponentCollector({actionFilter});
+  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
 

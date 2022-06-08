@@ -202,7 +202,7 @@ exports.revertSkill = function(userID, skillID) {
 /**
  * Cancels a given skill
  * @param  userID
- * @param  callback
+ * @param skillID
  */
 exports.cancelSkill = function(userID,skillID) {
   axios
@@ -215,11 +215,12 @@ exports.cancelSkill = function(userID,skillID) {
       }
     });
 };
+
 /**
  * Sets the completed state of a user's skill task for a given date
  * @param userid - userID
  * @param task
- * @param date - "today" or "yesterday"
+ * @param day
  * @param checked - T/F if checked/unchecked
  * @param callback - function to execute on completion
  */

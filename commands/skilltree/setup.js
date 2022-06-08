@@ -55,11 +55,9 @@ function startSetup(initMessage, message, scope) {
 }
 
 function setupUser(id, userSettings) {
-  userSettings.character.toLowerCase();
-  userSettings.difficulty.toLowerCase();
   authUser(id,null,(userID) => {
     if (userID) {
-      updateUser(userID, userSettings.character, userSettings.difficulty, userSettings.timezone, userSettings.baselocation);
+      updateUser(userID, userSettings.character, userSettings.timezone, userSettings.baselocation);
     } else {
       createUser(id, userSettings.character, userSettings.difficulty, userSettings.timezone, userSettings.baselocation);
     }
@@ -123,7 +121,7 @@ function getSettings(scope, message, userExists) {
       ),
       null,
       (res, userSettings, next)=>{
-        userSettings.difficulty = res;
+        userSettings.difficulty = res.toLowerCase();
         next();
       }),
 
@@ -137,7 +135,7 @@ function getSettings(scope, message, userExists) {
       ),
       null,
       (res, userSettings, next) => {
-        userSettings.character = res;
+        userSettings.character = res.toLowerCase();
         next();
       }),
 
@@ -158,18 +156,19 @@ function getSettings(scope, message, userExists) {
 
           locationConfirmation(msg, scope, locationInfo, async (locationInfo) => {
             timezoneCollector.stop();
-            complete(locationInfo.utcOffset, userSettings, next);
+            userSettings.timezone = locationInfo.utcOffset;
+            complete("OK", userSettings, next);
           });
         });
         // fires when the collector is finished collecting
         timezoneCollector.on("end", (collected, reason) => {
           if (reason === "time") {
             scope.send("The timezone selector has timed out. Please restart the setup process");
+            timezoneCollector.stop();
           }
         });
       },
       (res, userSettings, next)=>{
-        userSettings.timezone = res;
         next();
       }),
 
@@ -183,7 +182,7 @@ function getSettings(scope, message, userExists) {
       ),
       null,
       (res, userSettings, next) => {
-        res.baselocation = locationID;
+        userSettings.baselocation = locationID;
 
         if (!userExists) {
           //final result
@@ -194,8 +193,8 @@ function getSettings(scope, message, userExists) {
           book.send(scope);
           const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
           sword.send(scope);
-          setupUser(message.author.id, userSettings);
         }
+        setupUser(message.author.id, userSettings);
         next();
       }),
 

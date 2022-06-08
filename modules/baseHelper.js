@@ -1,8 +1,7 @@
 const {getSettings} = require("./functions");
 
 exports.getBaseLocation = async function(client, baselocation) {
-  //TODO: Potential for sharding to break this?? cache not shared
-  const guildID = client.guilds.cache.get(baselocation);
+  const guildID = client.guilds.fetch(baselocation);
   //Check for guild first
   if (guildID) {
     const botChannel = getSettings(guildID).botChannel.replace(/[<#>]/gi, "");

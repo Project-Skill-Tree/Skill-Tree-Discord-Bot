@@ -54,7 +54,7 @@ class Setting {
       initMessage.delete();
     }
 
-    const collector = initMessage.channel.createMessageComponentCollector();
+    const collector = initMessage.channel.createMessageComponentCollector({time: 120000});
     collector.on("collect", async i => {
       callback(initMessage);
       collector.stop();
@@ -97,14 +97,14 @@ class Setting {
       const filter = (m) => {
         return m.message.id === message.id;
       };
-      const collector = message.channel.createMessageComponentCollector({filter});
+      const collector = message.channel.createMessageComponentCollector({filter, time: 120000});
       collector.on("collect", async i => {
-        const choice = i.component.label;
-        this.onComplete(choice, userSettings, next);
-        if (!i.deferred) {
+        try {
           await i.deferUpdate();
-        }
+        } catch (e) {} // eslint-disable-line no-empty
+        const choice = i.component.label;
         collector.stop();
+        this.onComplete(choice, userSettings, next);
       });
     }
 
