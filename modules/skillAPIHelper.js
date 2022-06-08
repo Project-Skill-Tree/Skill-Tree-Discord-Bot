@@ -54,27 +54,6 @@ exports.getRecentTasks = function(userID, limit, callback) {
   });
 };
 
-/** 
- * Gets tasks from a skill, if any do exist
- * @param userID - userID
- * @param skillID - skillID
- * @param callback - callback function
-*/
-exports.getTasksFromSkill = function(userID, skillID,callback) {
-  axios.get(process.env.API_URL + "tasks/getTasks", {
-    headers: {
-      userid: userID,
-      api_key: getAPIKey(),
-      skillid: skillID
-    }
-  }).then((res)=>{
-    const tasks = res.data.tasks.map(data => Task.create(data));
-    callback(tasks);
-  }).catch(res => {
-    console.log(res);
-  });
-};
-
 /**
  * find a task using its ID, and delete it.
  * @param {*} taskID - ID of the task to delete 
@@ -156,7 +135,7 @@ exports.getSkillsInList = function(skills, callback) {
 exports.startSkill = function(userID, skillID) {
   axios
     .post(process.env.API_URL + "skills/startSkill", {
-      id: userID,
+      userid: userID,
       skillid: skillID
     },{
       headers: {
@@ -173,7 +152,7 @@ exports.startSkill = function(userID, skillID) {
 exports.skipSkill = function(userID, skillID) {
   axios
     .post(process.env.API_URL + "skills/skipSkill", {
-      id: userID,
+      userid: userID,
       skillid: skillID
     },{
       headers: {
@@ -190,7 +169,7 @@ exports.skipSkill = function(userID, skillID) {
 exports.revertSkill = function(userID, skillID) {
   axios
     .post(process.env.API_URL + "skills/revertSkill", {
-      id: userID,
+      userid: userID,
       skillid: skillID
     },{
       headers: {
