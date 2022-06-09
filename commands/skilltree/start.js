@@ -1,5 +1,5 @@
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {startSkill, getAvailableSkills, skipSkill, revertSkill} = require("../../modules/skillAPIHelper");
+const {startSkill, skipSkill, revertSkill, getAvailable} = require("../../modules/skillAPIHelper");
 const {authUser} = require("../../modules/userAPIHelper");
 
 /**
@@ -9,7 +9,7 @@ exports.run = (client, message) => {
   //Validate user exists
   authUser(message.author.id, message.channel,(userID) => {
     //Get available skills
-    getAvailableSkills(userID, skills => { // gets available,not started skills
+    getAvailable(userID, skills => { // gets available,not started skills
       if (skills.length === 0) {
         message.channel.send("```You have no available skills. Use ~tasks to see what skills you have started```");
         return;
@@ -37,7 +37,7 @@ exports.run = (client, message) => {
             revertSkill(userID, skill.id);
             return true;
           }
-        }], true);
+        }]);
     });
   });
 };

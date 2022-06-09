@@ -93,15 +93,24 @@ exports.getSkillsInProgress = function(userID, callback) {
  * @param userID - MongoDB userID
  * @param callback - function to run, passes list of skills
  */
-exports.getAvailableSkills = function(userID, callback) {
-  axios.get(process.env.API_URL + "skills/available", {
+exports.getAvailable = function(userID, callback) {
+  axios.get(process.env.API_URL + "users/getAvailable", {
     headers: {
       id: userID,
       api_key: getAPIKey()
     }
   }).then(res => {
-    const skills = res.data.skills.map(data => Skill.create(data));
-    callback(skills);
+    const available = res.data.available.map(val => {
+      switch (val.type) {
+        case "Skill":
+          return new Unlocked(Skill.create(val));
+        case "Item":
+          return new Unlocked(Item.create(val));
+        case "Challenge":
+          return new Unlocked(Challenge.create(val));
+      }
+    });
+    callback(available);
   }).catch(res => {
     console.log(`Error fetching skills: ${res.status}`);
   });
@@ -130,13 +139,13 @@ exports.getSkillsInList = function(skills, callback) {
 /**
  * Adds the skill to the users active skills
  * @param userID - userID
- * @param skillID - skillID of the skill to start
+ * @param toStart - Object to start, either Skill or Challenge
  */
-exports.startSkill = function(userID, skillID) {
+exports.start = function(userID, toStart) {
   axios
     .post(process.env.API_URL + "skills/startSkill", {
       userid: userID,
-      skillid: skillID
+      skillid: toStart.id
     },{
       headers: {
         api_key: getAPIKey()

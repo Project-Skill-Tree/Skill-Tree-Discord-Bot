@@ -9,7 +9,7 @@ exports.run = (client, message) => {
   //Validate user exists
   authUser(message.author.id, message.channel,(userID) => {
     //Get ongoing skills
-    getSkillsInProgress(userID, skills => { // gets available,not started skills
+    getSkillsInProgress(userID, skills => { // gets in progress skills
       if (skills.length === 0) {
         message.channel.send("```You have no on-going skills. Use ~start to see what skills you have started```");
         return;
@@ -23,7 +23,7 @@ exports.run = (client, message) => {
             cancelSkill(userID,skill.id);
             return true;
           }
-        }], true);
+        }]);
     });
   });
 };
