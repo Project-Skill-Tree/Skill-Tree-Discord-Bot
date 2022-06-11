@@ -13,7 +13,7 @@ const XPHelper = require("./XPHelper");
  */
 exports.displayProfile = async function(user, channel) {
   //Generate profile
-  const profileImage = new MessageAttachment(await getProfileImage(user), "profile.png");
+  const profileImage = new MessageAttachment(await exports.getProfileImage(user), "profile.png");
   return channel.send({files: [profileImage]});
 };
 
@@ -34,7 +34,7 @@ exports.displayLevelUp = async function(user, channel) {
  * @param user - Skill tree user object
  * @return {Promise<Buffer>} buffer -
  */
-async function getProfileImage(user) {
+exports.getProfileImage = async function(user) {
   const canvas = Canvas.createCanvas(600, 200);
   const context = canvas.getContext("2d");
 
@@ -68,7 +68,7 @@ async function getProfileImage(user) {
 
   //return final buffer
   return canvas.toBuffer();
-}
+};
 
 /**
  * Generate the level-up profile card for this user
