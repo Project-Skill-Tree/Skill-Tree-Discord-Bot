@@ -17,7 +17,7 @@ const ranks = [
  * @returns {number} - XP required to level up
  */
 exports.calcXPToLevelUp = function(level) {
-  return 50 * (1.02^level);
+  return Math.floor(50 * Math.pow(1.02, level));
 };
 
 /**
@@ -83,7 +83,7 @@ exports.calcXPFromLevel = function(level) {
  * @returns {number} - XP required to level up
  */
 exports.calcLevelFromXP = function(xp) {
-  return Math.floor(Math.log(0.00039*xp + 1) / Math.log(1.02));
+  return Math.floor(Math.log(1/2550*xp + 1) / Math.log(1.02));
 };
 
 /**

@@ -6,6 +6,7 @@ const Item = require("../../objects/item");
 const {timezoneFromLocation} = require("../../modules/timezoneHelper");
 const {locationConfirmation} = require("./timezone");
 const Setting = require("../../objects/setting");
+const Unlocked = require("../../objects/unlocked");
 
 /**
  * Setup user account
@@ -163,7 +164,11 @@ function getSettings(scope, message, userExists) {
         // fires when the collector is finished collecting
         timezoneCollector.on("end", (collected, reason) => {
           if (reason === "time") {
-            scope.send("The timezone selector has timed out. Please restart the setup process");
+            scope
+              .send("The timezone selector has timed out. Please restart the setup process")
+              .then(msg => {
+                setTimeout(() => msg.delete(), 10000);
+              });
             timezoneCollector.stop();
           }
         });
@@ -185,13 +190,15 @@ function getSettings(scope, message, userExists) {
         userSettings.baselocation = locationID;
 
         if (!userExists) {
-          //final result
-          scope.send("**TO HELP YOU START WITH YOUR QUEST \n" +
-            "HERE ARE A FEW ITEMS YOU CAN USE. \n" +
-            "WANDER CAUTIOUSLY, BRAVE ADVENTURER!**");
-          const book = new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙");
+          const confirmationEmbed = new MessageEmbed()
+            .setColor(`#${Configurations().primary}`)
+            .setTitle("WELCOME TO THE SKILL TREE")
+            .setDescription("To begin your quest, here are a few items you can use!");
+          message.channel.send({embeds: [confirmationEmbed]});
+          const book = new Unlocked(new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "" +
+            "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙"));
           book.send(scope);
-          const sword = new Item(-1, "RUSTY SWORD", "", "🗡");
+          const sword = new Unlocked(new Item(-1, "RUSTY SWORD", "", "🗡"));
           sword.send(scope);
         }
         setupUser(message.author.id, userSettings);

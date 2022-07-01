@@ -3,6 +3,7 @@ const Canvas = require("canvas");
 const XPHandler = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
 const XPHelper = require("./XPHelper");
+const Skill = require("../objects/skill");
 
 /** @module ProfileRenderer */
 
@@ -172,7 +173,6 @@ async function drawXP(canvas, user, x, y, w, h) {
   const level = XPHelper.calcLevelFromXP(user.xp);
   const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
   const maxXP = XPHelper.calcXPToLevelUp(level);
-
   // Fill with gradient
   context.fillStyle = XPHandler.getColor(level);
   context.fillRect(x,y,w*Math.min(excessXP, maxXP)/maxXP,h);
@@ -217,7 +217,7 @@ async function drawProfileInfo(canvas, user) {
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.skillscompleted.sort((a, b) => {
+  const sortedSkills = user.completed.filter(obj => obj instanceof Skill).sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
@@ -238,8 +238,8 @@ async function drawProfileInfo(canvas, user) {
 
   //draw INFO
   const INFO = `Total XP: ${user.xp}XP\n` +
-    `Completed Skills: ${user.skillscompleted.length}\n`+
-    `Current Skills: ${user.skillsinprogress.length}\n` +
+    `Completed: ${user.completed.length}\n`+
+    `In Progress: ${user.inprogress.length}\n` +
     `Days Tracked: ${user.numDaysTracked}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";

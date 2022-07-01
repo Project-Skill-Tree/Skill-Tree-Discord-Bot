@@ -1,5 +1,6 @@
 const Skill = require("./skill");
 const {getDaysBetweenDates} = require("../modules/dateHelper");
+const Challenge = require("./challenge");
 
 /**
  * Task Object
@@ -7,15 +8,15 @@ const {getDaysBetweenDates} = require("../modules/dateHelper");
 class Task {
   /**
    * @param id - taskID
-   * @param skill - skill to reference
+   * @param child - the child object of this task (skill or challenge)
    * @param data - task data
    * @param startDate - task start date
    * @param completed - T/F if this task has completed
    * @constructor
    */
-  constructor(id, skill, data, startDate, completed) {
+  constructor(id, child, data, startDate, completed) {
     this.id = id;
-    this.skill = skill;
+    this.child = child;
     this.data = data;
     this.startDate = startDate;
     this.completed = completed;
@@ -64,7 +65,13 @@ class Task {
    * @return {Task}
    */
   static create(data) {
-    return new Task(data._id, Skill.create(data.skillID), data.data, new Date(data.startDate), data.completed);
+    let child;
+    if (data.skillID) {
+      child = Skill.create(data.skillID);
+    } else {
+      child = Challenge.create(data.challengeID);
+    }
+    return new Task(data._id, child, data.data, new Date(data.startDate), data.completed);
   }
 }
 

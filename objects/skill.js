@@ -15,6 +15,7 @@ class Skill extends Swipeable {
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
+   * @param goals
    * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
@@ -24,7 +25,7 @@ class Skill extends Swipeable {
    * @param children - child skills
    * @constructor
    */
-  constructor(id, title, level, goal,
+  constructor(id, title, level, goal, goals,
     frequency, interval, timelimit, xp,
     icon,requires, children=[]) {
     super();
@@ -32,6 +33,7 @@ class Skill extends Swipeable {
     this.title = title;
     this.level = level;
     this.goal = goal;
+    this.goals = goals;
     this.interval = interval;
     this.timelimit = timelimit;
     this.frequency = frequency;
@@ -51,6 +53,7 @@ class Skill extends Swipeable {
       data.title,
       data.level,
       data.goal,
+      data.goals,
       data.frequency,
       data.interval,
       data.timelimit,
@@ -90,7 +93,7 @@ class Skill extends Swipeable {
   }
 
   toString() {
-    return "**GOAL:** \n`" + `${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` + "`" +
+    return "**GOAL:** \n`" + `${this.goals.join("\n")} (${formatFrequency(this.frequency, this.interval)})` + "`" +
     "\n**TIME:** `" + `${this.timelimit} days` + "`" +
     "\n**XP:** `" + `${this.xp}XP` + "`";
   }

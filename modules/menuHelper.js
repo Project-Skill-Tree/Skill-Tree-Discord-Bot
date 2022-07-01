@@ -30,18 +30,23 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === user.id;
   const collector = msg.createMessageComponentCollector({filter, time: 120000});
-  collector.on("collect", async i => {
-    await i.deferUpdate();
-    msg.delete();
-    switch (i.customId) {
-      case "yes":
-        onYes();
-        break;
-      case "no":
-        onNo();
-        break;
-      default: break;
-    }
+  await new Promise( (resolve, reject) => {
+    collector.on("collect", async i => {
+      await i.deferUpdate();
+      msg.delete();
+      switch (i.customId) {
+        case "yes":
+          await onYes();
+          resolve();
+          break;
+        case "no":
+          await onNo();
+          reject(new Error("\"No\" selected"));
+          break;
+        default:
+          break;
+      }
+    });
   });
 };
 
@@ -109,7 +114,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
 exports.createLargeSwipePanel = async function(client, user, channel,
-  list, actions = null) {
+  list, actions = null, refresh=null) {
   const msg = await list[0].send(channel);
   let currentPage = 0;
 
@@ -125,6 +130,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   collector.on("collect", async i => {
     if (!i.isButton()) return;
 
+    await i.deferUpdate();
     switch (i.customId) {
       case "first":
         currentPage = 0;
@@ -145,8 +151,8 @@ exports.createLargeSwipePanel = async function(client, user, channel,
         break;
     }
     await update(channel, msg, list, currentPage, actions);
-    if (!i.deferred) await i.deferUpdate();
   });
+
 
   //Create action listener
   if (actions == null) return;
@@ -155,13 +161,19 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
+    await i.deferUpdate();
 
     //If action found
     const action = actions.filter((v) => v.name === i.values[0])[0];
     if (action) {
-      const deleteItem = action.action(list[currentPage]);
+      const deleteItem = await action.action(list[currentPage]);
       //Delete item on action
       if (deleteItem) {
+        if (refresh) {
+          msg.delete();
+          refresh();
+          return;
+        }
         const toRemove = list[currentPage];
         list = list.filter(i => i !== toRemove);
         //Set page index
@@ -169,8 +181,9 @@ exports.createLargeSwipePanel = async function(client, user, channel,
         await update(channel, msg, list, currentPage, actions);
       }
     }
-    await i.deferUpdate();
   });
+
+  return msg;
 };
 
 async function update(channel, msg, list, currentPage, actions) {

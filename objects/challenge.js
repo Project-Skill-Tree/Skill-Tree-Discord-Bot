@@ -9,15 +9,19 @@ const {imageToBuffer} = require("../modules/UIHelper");
 class Challenge extends Swipeable {
   /**
    * @param id - mongoDB objectID
-   * @param challenge - The challenge description
+   * @param title - title of the challenge
+   * @param goal - The goal description
+   * @param goals - List of goal descriptions
    * @param {number} xp - The xp to be awarded on completion
    * @param {?string=} link - The link to the item resource (default: null)
    * @constructor
    */
-  constructor(id, challenge, xp, link=null) {
+  constructor(id, title, goal, goals, xp, link=null) {
     super();
     this.id = id;
-    this.challenge = challenge;
+    this.title = title;
+    this.goal = goal;
+    this.goals = goals;
     this.xp = xp;
     this.link = link;
   }
@@ -29,7 +33,9 @@ class Challenge extends Swipeable {
    */
   static create(data) {
     return new Challenge(data._id,
-      data.challenge,
+      data.title,
+      data.goal,
+      data.goals,
       data.xp,
       data.link);
   }
@@ -60,13 +66,13 @@ class Challenge extends Swipeable {
   }
 
   getName() {
-    return "CHALLENGE";
+    return this.title;
   }
 
   toString() {
     let link = "";
-    if (this.link) link = `[[LINK]](${this.link})`;
-    return `${this.challenge} ` + link + "\n```diff\n"+`+${this.xp}` +"XP```";
+    if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;
+    return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" + link + "\n```diff\n"+`+${this.xp}` +"XP```";
   }
 
   async getIcon() {

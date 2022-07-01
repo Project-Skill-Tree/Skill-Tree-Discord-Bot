@@ -73,20 +73,20 @@ exports.deleteTask = function(taskID) {
  * @param userID - MongoDB userID
  * @param callback - return JSON data of skills in progress
  */
-exports.getSkillsInProgress = function(userID, callback) {
-  axios.get(process.env.API_URL + "skills/inProgress", {
+exports.getInProgress = function(userID, callback) {
+  axios.get(process.env.API_URL + "users/getInProgress", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
   }).then((res)=>{
-    const skills = res.data.skills.map(data => Skill.create(data));
-    callback(skills);
+    const skills = res.data.skills.map(val => Skill.create(val));
+    const challenges = res.data.challenges.map(val => Challenge.create(val));
+    callback(skills.concat(challenges));
   }).catch(res => {
     console.log(res);
   });
 };
-
 
 /**
  * Get JSON object containing skills available to a given user from database
@@ -96,57 +96,56 @@ exports.getSkillsInProgress = function(userID, callback) {
 exports.getAvailable = function(userID, callback) {
   axios.get(process.env.API_URL + "users/getAvailable", {
     headers: {
-      id: userID,
+      userid: userID,
       api_key: getAPIKey()
     }
   }).then(res => {
-    const available = res.data.available.map(val => {
-      switch (val.type) {
-        case "Skill":
-          return new Unlocked(Skill.create(val));
-        case "Item":
-          return new Unlocked(Item.create(val));
-        case "Challenge":
-          return new Unlocked(Challenge.create(val));
-      }
-    });
-    callback(available);
+    const skills = res.data.skills.map(val => Skill.create(val));
+    const challenges = res.data.challenges.map(val => Challenge.create(val));
+    callback(skills.concat(challenges));
   }).catch(res => {
+    console.log(res);
     console.log(`Error fetching skills: ${res.status}`);
   });
 };
 
-
 /**
- * Get JSON object containing skills in the given list
- * @param skills - List of MongoDB skills IDs
- * @param callback - return JSON data of skills in progress
+ * Get JSON object containing all skills and challenges found in the given list
+ * @param list - List of MongoDB Object IDs
+ * @param callback - return skill/challenge objects
  */
-exports.getSkillsInList = function(skills, callback) {
-  axios.get(process.env.API_URL + "skills/getAllInList", {
+exports.getAllInList = function(list, callback) {
+  axios.get(process.env.API_URL + "inList", {
     headers: {
       api_key: getAPIKey(),
-      skills: skills,
+      list: list,
     }
   }).then((res)=>{
-    const skills = res.data.skills.map(data => Skill.create(data));
-    callback(skills);
+    const objs = res.data.list.map(val => {
+      switch (val.type) {
+        case "Skill":
+          return Skill.create(val);
+        case "Challenge":
+          return Challenge.create(val);
+      }
+    });
+    callback(objs);
   }).catch(res => {
     console.log(res);
   });
 };
 
 /**
- * Adds the skill to the users active skills
+ * Adds the skill/challenge to the users inprogress
  * @param userID - userID
  * @param toStart - Object to start, either Skill or Challenge
  */
-exports.start = function(userID, toStart) {
-  axios
-    .post(process.env.API_URL + "skills/startSkill", {
+exports.start = async function(userID, toStart) {
+  await axios
+    .post(process.env.API_URL + "users/start", {
       userid: userID,
-      skillid: toStart.id
-    },{
+      tostart: toStart.id
+    }, {
       headers: {
         api_key: getAPIKey()
       }
@@ -154,33 +153,33 @@ exports.start = function(userID, toStart) {
 };
 
 /**
- * skips the skill to the next skill in the branch
+ * Skips the skill/challenge to the next skill in the branch
  * @param userID - userID
- * @param skillID - skillID of the skill to start
+ * @param toSkip - object to skip
  */
-exports.skipSkill = function(userID, skillID) {
-  axios
-    .post(process.env.API_URL + "skills/skipSkill", {
+exports.skip = async function(userID, toSkip) {
+  await axios
+    .post(process.env.API_URL + "users/skip", {
       userid: userID,
-      skillid: skillID
-    },{
+      toskip: toSkip.id
+    }, {
       headers: {
         api_key: getAPIKey()
       }
-    });
+    }).then(res);
 };
 
 /**
  * Goes to the previous skill in the branch
  * @param userID - userID
- * @param skillID - skillID of the skill to start
+ * @param toRevert - object to revert
  */
-exports.revertSkill = function(userID, skillID) {
-  axios
-    .post(process.env.API_URL + "skills/revertSkill", {
+exports.revert = async function(userID, toRevert) {
+  await axios
+    .post(process.env.API_URL + "users/revert", {
       userid: userID,
-      skillid: skillID
-    },{
+      torevert: toRevert.id
+    }, {
       headers: {
         api_key: getAPIKey()
       }
@@ -190,13 +189,13 @@ exports.revertSkill = function(userID, skillID) {
 /**
  * Cancels a given skill
  * @param  userID
- * @param skillID
+ * @param toCancel - object to cancel
  */
-exports.cancelSkill = function(userID,skillID) {
+exports.cancel = function(userID, toCancel) {
   axios
-    .post(process.env.API_URL + "skills/cancelSkill", {
+    .post(process.env.API_URL + "users/cancel", {
       userid: userID,
-      skillid: skillID
+      tocancel: toCancel.id
     },{
       headers: {
         api_key: getAPIKey()
@@ -224,19 +223,10 @@ exports.updateTask = function(userid, task, day, checked, callback) {
         api_key: getAPIKey()
       }
     }).then((res)=>{
-      if (res.data.unlocked.length === 0 || !res.data.unlocked.map) return;
-
       const levelUp = res.data.levelUp;
-      const unlocked = res.data.unlocked.map(val => {
-        switch (val.type) {
-          case "Skill":
-            return new Unlocked(Skill.create(val));
-          case "Item":
-            return new Unlocked(Item.create(val));
-          case "Challenge":
-            return new Unlocked(Challenge.create(val));
-        }
-      });
-      callback(levelUp, unlocked);
+      const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
+      const items = res.data.items.map(val => new Unlocked(Item.create(val)));
+      const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
+      callback(levelUp, [].concat(skills, items, challenges));
     });
 };

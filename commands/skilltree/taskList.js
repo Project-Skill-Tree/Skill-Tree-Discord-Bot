@@ -5,6 +5,8 @@ const {dayToDate, getAbsDate, getDaysBetweenDates} = require("../../modules/date
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
 const {authUser, getUser} = require("../../modules/userAPIHelper");
+const Challenge = require("../../objects/challenge");
+const Skill = require("../../objects/skill");
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
@@ -15,7 +17,11 @@ exports.run = async (client, message) => {
     //Get tasks
     getCurrentTasks(userID,(tasks)=>{
       if (tasks.length === 0) {
-        message.channel.send("```No Current tasks, go to `~start` to start a skill```");
+        message.channel
+          .send("```No Current tasks, go to `~start` to start a skill```")
+          .then(msg => {
+            setTimeout(() => msg.delete(), 10000);
+          });
       } else {
         //Show tasks in embed
         createTaskList(client, message, tasks, userID);
@@ -87,7 +93,7 @@ async function createTaskList(client, message, tasks, userID) {
 
     if (i.isSelectMenu()) {
       const skillTitle = i.values[0];
-      const task = filteredTasks.find(task => `${task.skill.title}${task.skill.level}` === skillTitle);
+      const task = filteredTasks.find(task => task.child.getName() === skillTitle);
       task.setChecked(!task.isChecked(date), date);
 
       updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
@@ -121,9 +127,9 @@ function createDropDownBox(tasks, date) {
         tasks.map(
           task => {
             return {
-              label: `${task.skill.title} ${romanise(task.skill.level)}`,
-              description: task.skill.goal,
-              value: `${task.skill.title}${task.skill.level}`,
+              label: task.child.getName(),
+              description: task.child.goal,
+              value: task.child.getName(),
               emoji: task.isChecked(date) ? "✅" : "❌",
             };
           }
@@ -139,33 +145,37 @@ function buildEmbed(tasks, date) {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
-  const dailyTasks = tasks.filter(task => task.skill.interval === "day");
-  const otherTasks = tasks.filter(task => task.skill.interval !== "day");
-  //TODO: challenges
-  //const challengeTasks = tasks.filter(task => task.challenge !== undefined);
+  const challengeTasks = tasks.filter(task => task.child instanceof Challenge);
+  const dailyTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval === "day");
+  const otherTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval !== "day");
 
-  let dailyTaskStrings = dailyTasks.map((task, idx) => formatTask(task, idx, date)).join("\n");
-  let otherTaskStrings = otherTasks.map((task, idx) => formatTask(task, idx + dailyTaskStrings.length, date)).join("\n");
-  //let challengeTaskStrings = challengeTasks.map((task, idx) => {
-  //  formatTask(task, idx + dailyTaskStrings.length + challengeTaskStrings.length, date);
-  //}).join("\n");
+  let dailyTaskStrings = dailyTasks.map((task) => formatTask(task, date)).join("\n");
+  let otherTaskStrings = otherTasks.map((task) => formatTask(task, date)).join("\n");
+  let challengeTaskStrings = challengeTasks.map((task) => formatTask(task, date)).join("\n");
 
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
   if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
-  //if (challengeTaskStrings.length === 0) { challengeTaskStrings = "No challenges available";}
+  if (challengeTaskStrings.length === 0) { challengeTaskStrings = "No challenges available";}
   return new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
     .setColor("#1071E5")
     .addField("Daily Tasks", dailyTaskStrings)
-    .addField("Ongoing", otherTaskStrings);
+    .addField("Other", otherTaskStrings)
+    .addField("Challenges", challengeTaskStrings);
 }
 
-function formatTask(task, idx, date) {
-  const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
-  const levelRoman = romanise(task.skill.level);
-  //const frequencyFormat = formatFrequency(task.skill.frequency, task.skill.interval);
+function formatTask(task, date) {
+  if (task.child instanceof Challenge) {
+    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
+    return `${checkedEmoji} | **${task.child.title} (UNCOMPLETE)**: \n${task.child.goal}`;
+  }
+  if (task.child instanceof Skill) {
+    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
+    const levelRoman = romanise(task.child.level);
 
-  return `${checkedEmoji} | **${task.skill.title} ${levelRoman} (${task.percentChecked()})**: \n${task.skill.goal}`;
+    return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked()})**: \n${task.child.goal}`;
+  }
+  return "";
 }
 
 exports.conf = {

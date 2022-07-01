@@ -155,7 +155,7 @@ exports.getUsersInTimezone = function(timezone, callback) {
  * @param userID
  * @param {number} timezoneoffset - hours difference to GMT (-14 to +12)
  */
-exports.updateTimezone = function(userID, timezoneoffset) {
+exports.updateTimezone = function(userID, timezoneoffset, callback) {
   axios
     .post(process.env.API_URL + "users/updateTimezone", {
       id: userID,
@@ -164,6 +164,8 @@ exports.updateTimezone = function(userID, timezoneoffset) {
       headers: {
         api_key: getAPIKey()
       }
+    }).then(()=>{
+      callback();
     });
 };
 
@@ -182,7 +184,7 @@ exports.addXP = function(userid, xp) {
         api_key: getAPIKey()
       }
     }).then(res => {
-      console.log(res);
+      //console.log(res);
     });
 };
 
