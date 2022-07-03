@@ -108,13 +108,15 @@ function getSettings(scope, message, userExists) {
     new Setting("Set Experience Level",
       ("Choose one of the following options to optimize Skill Tree to your " +
       "preferred difficulty level \n" +
-      "(**Warning**: you cannot change this later, but you can skip/revert skills to suit your needs)\n\n" +
-      "**1. Easy:**\n This is the beginner level (<3 months of self improvement), " +
-      "and will start you at the beginning of the tree\n" +
-      "**2. Medium:**\n This is the intermediate level (<6 months of self improvement), "+
-      "and will start you at Meditation II, Journalling II, Exercising II\n" +
-      "**3. Hard:**\n The most advanced level (around one year and more of self improvement), "+
-      "and will start you at Meditation III, Journalling III, Exercising III, Social skills II and Reading I,"),
+      "(**Warning**: you cannot change this later, but you can skip/revert skills to suit your needs)\n" +
+      "TIP: Remember, ego is the enemy. Start small so you can build consistency\n\n"+
+      "**Easy:**\n This is the beginner level (<3 months of self improvement), " +
+      "and will start you at Meditation I (2 mins/day) and Journaling I (intro prompts) \n\n" +
+      "**Medium:**\n This is the intermediate level (<6 months of self improvement), "+
+      "and will start you at Meditation II (5 mins/day), Journalling II (basic prompts), Exercising II (4x/week)\n\n" +
+      "**Hard:**\n The most advanced level (around one year and more of self improvement), "+
+      "and will start you at Meditation III (10 mins/day), Journalling III (advanced prompts), " +
+      "Exercising III (5x/week), Social skills II (basic) and Reading I (10 mins/day),"),
       new MessageActionRow().addComponents(
         new MessageButton().setCustomId("dif_easy").setLabel("Easy").setStyle("PRIMARY"),
         new MessageButton().setCustomId("dif_medium").setLabel("Medium").setStyle("PRIMARY"),
@@ -128,7 +130,7 @@ function getSettings(scope, message, userExists) {
 
     //Character selection
     new Setting("Choose your Character",
-      "Choose the preferred gender of your character" +
+      "Choose the preferred gender of your character " +
       "(Purely aesthetic, this will not affect the skills you have available)",
       new MessageActionRow().addComponents(
         new MessageButton().setCustomId("character_male").setStyle("PRIMARY").setEmoji("🙍🏻‍♂️").setLabel("Male"),
@@ -194,7 +196,8 @@ function getSettings(scope, message, userExists) {
             .setColor(`#${Configurations().primary}`)
             .setTitle("WELCOME TO THE SKILL TREE")
             .setDescription("To begin your quest, here are a few items you can use!");
-          message.channel.send({embeds: [confirmationEmbed]});
+          scope.send({embeds: [confirmationEmbed]});
+
           const book = new Unlocked(new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "" +
             "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙"));
           book.send(scope);

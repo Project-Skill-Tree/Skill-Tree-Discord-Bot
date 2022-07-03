@@ -31,8 +31,15 @@ function startMenu(client, message, userID) {
         name: "START",
         description: "Start a skill and add it to your current skills",
         action: async (toStart) => {
-          await start(userID, toStart);
-          console.log("start");
+          const res = await start(userID, toStart);
+          if (res === 201) {
+            message.channel
+              .send("```Error: A maximum of 25 skills/challenges can be active at any one time. Please "+`${message.settings.prefix}cancel` +" ongoing skills```")
+              .then(msg => {
+                setTimeout(() => msg.delete(), 10000);
+              });
+            return false;
+          }
           return true;
         }
       },{
@@ -80,7 +87,6 @@ function startMenu(client, message, userID) {
           return true;
         }
       }], () => {
-        console.log("end");
         startMenu(client, message, userID);
       });
   });

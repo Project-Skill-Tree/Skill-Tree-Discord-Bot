@@ -150,7 +150,7 @@ exports.start = async function(userID, toStart) {
         api_key: getAPIKey()
       }
     });
-  console.log(res.data);
+  return res.status;
 };
 
 /**
@@ -159,7 +159,7 @@ exports.start = async function(userID, toStart) {
  * @param toSkip - object to skip
  */
 exports.skip = async function(userID, toSkip) {
-  const res = await axios
+  return await axios
     .post(process.env.API_URL + "users/skip", {
       userid: userID,
       toskip: toSkip.id
@@ -168,7 +168,6 @@ exports.skip = async function(userID, toSkip) {
         api_key: getAPIKey()
       }
     });
-  console.log(res.data);
 };
 
 /**

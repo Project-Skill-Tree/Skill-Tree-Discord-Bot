@@ -1,7 +1,7 @@
 const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
 const {romanise} = require("../../modules/romanNumeralHelper");
 const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
-const {dayToDate, getAbsDate, getDaysBetweenDates} = require("../../modules/dateHelper");
+const {dayToDate, getAbsDate, getDaysBetweenDates, formatFrequency} = require("../../modules/dateHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
 const {authUser, getUser} = require("../../modules/userAPIHelper");
@@ -98,11 +98,13 @@ async function createTaskList(client, message, tasks, userID) {
 
       updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
         if (levelUp !== 0) {
-          getUser(userID, message.author.username, (user)=>{
+          getUser(userID, message.author.username, (user) => {
             displayLevelUp(user, message.channel);
           });
         }
-        createLargeSwipePanel(client, message.author, message.channel, unlocked);
+        if (unlocked.length !== 0) {
+          createLargeSwipePanel(client, message.author, message.channel, unlocked);
+        }
       });
     }
 
@@ -170,10 +172,17 @@ function formatTask(task, date) {
     return `${checkedEmoji} | **${task.child.title} (UNCOMPLETE)**: \n${task.child.goal}`;
   }
   if (task.child instanceof Skill) {
-    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
+    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:" : ":x:";
     const levelRoman = romanise(task.child.level);
 
-    return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked()})**: \n${task.child.goal}`;
+    const freq = formatFrequency(task.child.frequency, task.child.interval);
+    if (freq === "DAILY") {
+      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked()})**: \n${task.child.goal}`;
+    } else {
+      const numForPeriod = task.numCheckedInInterval();
+      const daysLeft = task.daysLeftInterval();
+      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
+    }
   }
   return "";
 }

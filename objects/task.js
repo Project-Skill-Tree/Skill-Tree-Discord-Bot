@@ -1,5 +1,5 @@
 const Skill = require("./skill");
-const {getDaysBetweenDates} = require("../modules/dateHelper");
+const {getDaysBetweenDates, intervalToInt} = require("../modules/dateHelper");
 const Challenge = require("./challenge");
 
 /**
@@ -31,7 +31,7 @@ class Task {
   isChecked(date) {
     const index = getDaysBetweenDates(this.startDate, date);
     const checked = this.data[index];
-    return (checked == null) ? false : checked;
+    return checked ? checked : false;
   }
 
   /**
@@ -42,8 +42,14 @@ class Task {
    * @return {boolean|*}
    */
   setChecked(checked, date) {
-    const index = getDaysBetweenDates(this.startDate, date);
+    const index = Math.abs(getDaysBetweenDates(this.startDate, date));
     this.data[index] = checked;
+    //Write all nonexistant data as false
+    for (let i = 0; i < this.data.length; i++) {
+      if (this.data[i] === undefined) {
+        this.data[i] = false;
+      }
+    }
   }
 
   /**
@@ -57,8 +63,52 @@ class Task {
     //That sets the length to the correct value to calculate the percentage
     const date = new Date();
     this.setChecked(this.isChecked(date), date);
-    return `${Math.round(100 * this.data.filter(v => v).length / this.data.length)}%`;
+    let data;
+    if (this.child instanceof Skill) {
+      data = [...this.data]; //only check the last <timelimit> days
+      data = data.splice(-this.child.timelimit);
+    } else { //challenge has no time limit
+      data = this.data;
+    }
+    return `${Math.round(100 * data.filter(Boolean).length / data.length)}%`;
   }
+
+  numCheckedInInterval() {
+    //Set current value in case there was a long gap between tasks
+    //Data only stores the most recent set, so we need to set the current date to
+    //the value at isChecked true if true, false if false, and false if not found.
+    //That sets the length to the correct value to calculate the percentage
+    const date = new Date();
+    this.setChecked(this.isChecked(date), date);
+    let data;
+    const interval = intervalToInt(this.child.interval);
+    const frequency = this.child.frequency;
+    if (this.child instanceof Skill) {
+      data = [...this.data]; //only check the last <timelimit> days
+      data = data.splice(-interval);
+    } else { //challenge has no time limit
+      data = this.data;
+    }
+    return `${data.length}/${frequency}`;
+  }
+
+  daysLeftInterval() {
+    //Set current value in case there was a long gap between tasks
+    //Data only stores the most recent set, so we need to set the current date to
+    //the value at isChecked true if true, false if false, and false if not found.
+    //That sets the length to the correct value to calculate the percentage
+    const date = new Date();
+    this.setChecked(this.isChecked(date), date);
+
+    //Split goals into equal sections covering the time limit for the given frequency
+    const blockSize = ((this.child.frequency / intervalToInt(this.child.interval)) * this.child.timelimit) / this.child.goals.length;
+    const curIntervalLength = this.data.length - Math.floor(this.data.length / blockSize) * blockSize;
+    const daysLeft = intervalToInt(this.child.interval) - curIntervalLength;
+
+
+    return `${daysLeft} day(s) left`;
+  }
+
   /**
    * Create Task object from json data
    * @param data - JSON data for the task

@@ -232,7 +232,7 @@ async function drawProfileInfo(canvas, user) {
       await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, null, null);
     } else {
       //Draw skill badge
-      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.icon, skill.level);
+      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.getIconName(), skill.level);
     }
   }
 

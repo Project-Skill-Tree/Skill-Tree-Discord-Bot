@@ -20,14 +20,12 @@ class Skill extends Swipeable {
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
-   * @param {string} icon - image path for the icon to be displayed, relative to "/icons/" folder
    * @param requires - required skills
    * @param children - child skills
    * @constructor
    */
   constructor(id, title, level, goal, goals,
-    frequency, interval, timelimit, xp,
-    icon,requires, children=[]) {
+    frequency, interval, timelimit, xp,requires, children=[]) {
     super();
     this.id = id;
     this.title = title;
@@ -40,7 +38,6 @@ class Skill extends Swipeable {
     this.xp = xp;
     this.requires = requires;
     this.children = children;
-    this.icon = icon;
   }
 
   /**
@@ -58,7 +55,6 @@ class Skill extends Swipeable {
       data.interval,
       data.timelimit,
       data.xp,
-      data.icon,
       data.requires,
       data.children);
   }
@@ -102,8 +98,12 @@ class Skill extends Swipeable {
     return `${this.title} ${romanise(this.level)}`;
   }
 
+  getIconName() {
+    return `${this.title.toLowerCase().replace(" ", "-")}.png`;
+  }
+
   async getIcon() {
-    return getBadgeIcon(this.icon, this.level, 300);
+    return getBadgeIcon(this.getIconName(), this.level, 300);
   }
 }
 

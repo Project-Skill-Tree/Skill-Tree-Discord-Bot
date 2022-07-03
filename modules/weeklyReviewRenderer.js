@@ -236,7 +236,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
       //Draw skill badge
       drawBadge(canvas, x + pad + tHeight * 0.5,
         y + pad + tHeight * index + tHeight * 0.5,
-        tHeight, task.child.icon, task.child.level);
+        tHeight, task.child.getIconName(), task.child.level);
 
       //Draw day completion chart
       context.shadowBlur = 0;
