@@ -32,6 +32,7 @@ function startMenu(client, message, userID) {
         description: "Start a skill and add it to your current skills",
         action: async (toStart) => {
           await start(userID, toStart);
+          console.log("start");
           return true;
         }
       },{
@@ -79,6 +80,7 @@ function startMenu(client, message, userID) {
           return true;
         }
       }], () => {
+        console.log("end");
         startMenu(client, message, userID);
       });
   });
