@@ -42,9 +42,10 @@ exports.run = async (client, message) => {
  * @return {Promise<void>}
  */
 async function createTaskList(client, message, tasks, userID, timezoneOffset) {
-  const dayCreated = new Date(new Date().getTime() + timezoneOffset*3600000);
+  const UTC = new Date(Date.parse(new Date().toUTCString()));
+  const dayCreated = new Date(UTC.getTime() + timezoneOffset*3600000);
   let day = "today";
-  let date = dayToDate(day);
+  let date = dayToDate(day, timezoneOffset);
 
   const embed = buildEmbed(tasks, date, timezoneOffset);
   const dropDownBox = createDropDownBox(tasks, date);
@@ -78,7 +79,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
 
     if (i.isButton()) {
       day = i.customId; //today or yesterday
-      date = dayToDate(day);
+      date = dayToDate(day, timezoneOffset);
       if (i.customId === "today") {
         row.components[0].setStyle("PRIMARY").setDisabled(false);
         row.components[1].setStyle("SECONDARY").setDisabled(true);
@@ -111,7 +112,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
     }
 
     // Send the same embed, but with the updated values of the tasks array.
-    const embed = buildEmbed(filteredTasks, date, timezoneOffset);
+    const embed = buildEmbed(filteredTasks, date);
     const dropDownBox = createDropDownBox(filteredTasks, date);
     const components = [];
     if (dropDownBox != null) {
@@ -145,8 +146,7 @@ function createDropDownBox(tasks, date) {
 }
 
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(tasks, oldDate, timezoneOffset) {
-  const date = new Date(oldDate.getTime() + timezoneOffset*3600000);
+function buildEmbed(tasks, date) {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
@@ -180,10 +180,10 @@ function formatTask(task, date) {
 
     const freq = formatFrequency(task.child.frequency, task.child.interval);
     if (freq === "DAILY") {
-      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked()})**: \n${task.child.goal}`;
+      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date)})**: \n${task.child.goal}`;
     } else {
-      const numForPeriod = task.numCheckedInInterval();
-      const daysLeft = task.daysLeftInterval();
+      const numForPeriod = task.numCheckedInInterval(date);
+      const daysLeft = task.daysLeftInterval(date);
       return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
     }
   }

@@ -53,17 +53,21 @@ exports.formatFrequency = function(frequency, interval) {
  * Today -> new Date()
  * Yesterday -> new Date() - 1
  * @param day - written day [yesterday, today, tomorrow]
+ * @param timezoneOffset
  * @return {Date} - date object
  */
-exports.dayToDate = function(day) {
-  const date = new Date();
+exports.dayToDate = function(day, timezoneOffset=null) {
+  let date = new Date(Date.parse(new Date().toUTCString()));
+  if (timezoneOffset != null) {
+    date = new Date(date.getTime() + timezoneOffset*3600000);
+  }
   if (day === "today") {
     return date;
   } else if (day === "yesterday") {
-    date.setDate(date.getDate() - 1);
+    date.setUTCDate(date.getUTCDate() - 1);
     return date;
   } else if (day === "tomorrow") {
-    date.setDate(date.getDate() + 1);
+    date.setUTCDate(date.getUTCDate() + 1);
     return date;
   }
   return date;

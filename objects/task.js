@@ -56,12 +56,11 @@ class Task {
    * Returns the percentage of checked tasks
    * @return {string}
    */
-  percentChecked() {
+  percentChecked(date) {
     //Set current value in case there was a long gap between tasks
     //Data only stores the most recent set, so we need to set the current date to
     //the value at isChecked true if true, false if false, and false if not found.
     //That sets the length to the correct value to calculate the percentage
-    const date = new Date();
     this.setChecked(this.isChecked(date), date);
     let data;
     if (this.child instanceof Skill) {
@@ -73,12 +72,11 @@ class Task {
     return `${Math.round(100 * data.filter(Boolean).length / data.length)}%`;
   }
 
-  numCheckedInInterval() {
+  numCheckedInInterval(date) {
     //Set current value in case there was a long gap between tasks
     //Data only stores the most recent set, so we need to set the current date to
     //the value at isChecked true if true, false if false, and false if not found.
     //That sets the length to the correct value to calculate the percentage
-    const date = new Date();
     this.setChecked(this.isChecked(date), date);
     let data;
     const interval = intervalToInt(this.child.interval);
@@ -92,12 +90,11 @@ class Task {
     return `${data.length}/${frequency}`;
   }
 
-  daysLeftInterval() {
+  daysLeftInterval(date) {
     //Set current value in case there was a long gap between tasks
     //Data only stores the most recent set, so we need to set the current date to
     //the value at isChecked true if true, false if false, and false if not found.
     //That sets the length to the correct value to calculate the percentage
-    const date = new Date();
     this.setChecked(this.isChecked(date), date);
 
     //Split goals into equal sections covering the time limit for the given frequency
