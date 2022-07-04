@@ -56,18 +56,17 @@ exports.formatFrequency = function(frequency, interval) {
  * @return {Date} - date object
  */
 exports.dayToDate = function(day) {
+  const date = new Date();
   if (day === "today") {
-    return new Date();
+    return date;
   } else if (day === "yesterday") {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday;
+    date.setDate(date.getDate() - 1);
+    return date;
   } else if (day === "tomorrow") {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
+    date.setDate(date.getDate() + 1);
+    return date;
   }
-  return new Date();
+  return date;
 };
 
 /**

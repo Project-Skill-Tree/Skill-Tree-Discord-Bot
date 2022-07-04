@@ -15,7 +15,7 @@ exports.run = async (client, message) => {
   //Validate user exists
   authUser(message.author.id, message.channel, (userID) => {
     //Get tasks
-    getCurrentTasks(userID,(tasks)=>{
+    getCurrentTasks(userID,(tasks, timezoneOffset)=>{
       if (tasks.length === 0) {
         message.channel
           .send("```No Current tasks, go to `~start` to start a skill```")
@@ -24,7 +24,7 @@ exports.run = async (client, message) => {
           });
       } else {
         //Show tasks in embed
-        createTaskList(client, message, tasks, userID);
+        createTaskList(client, message, tasks, userID, timezoneOffset);
       }
     });
   });
@@ -38,14 +38,15 @@ exports.run = async (client, message) => {
  * @param message
  * @param tasks
  * @param userID
+ * @param timezoneOffset
  * @return {Promise<void>}
  */
-async function createTaskList(client, message, tasks, userID) {
-  const dayCreated = new Date();
+async function createTaskList(client, message, tasks, userID, timezoneOffset) {
+  const dayCreated = new Date(new Date().getTime() + timezoneOffset*3600000);
   let day = "today";
   let date = dayToDate(day);
 
-  const embed = buildEmbed(tasks, date);
+  const embed = buildEmbed(tasks, date, timezoneOffset);
   const dropDownBox = createDropDownBox(tasks, date);
 
   const row = new MessageActionRow()
@@ -69,7 +70,8 @@ async function createTaskList(client, message, tasks, userID) {
       i.reply({ content: "You can't edit someone else's task list!", ephemeral: true });
       return;
     }
-    if (getDaysBetweenDates(dayCreated, new Date()) !== 0) {
+    if (getDaysBetweenDates(dayCreated,
+      new Date(new Date().getTime() + timezoneOffset*3600000)) !== 0) {
       i.reply({ content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true });
       return;
     }
@@ -109,7 +111,7 @@ async function createTaskList(client, message, tasks, userID) {
     }
 
     // Send the same embed, but with the updated values of the tasks array.
-    const embed = buildEmbed(filteredTasks, date);
+    const embed = buildEmbed(filteredTasks, date, timezoneOffset);
     const dropDownBox = createDropDownBox(filteredTasks, date);
     const components = [];
     if (dropDownBox != null) {
@@ -143,7 +145,8 @@ function createDropDownBox(tasks, date) {
 }
 
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(tasks, date) {
+function buildEmbed(tasks, oldDate, timezoneOffset) {
+  const date = new Date(oldDate.getTime() + timezoneOffset*3600000);
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;

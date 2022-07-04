@@ -27,7 +27,8 @@ exports.getCurrentTasks = function(userID,callback) {
     }
   }).then((res)=>{
     const tasks = res.data.tasks.map(data => Task.create(data));
-    callback(tasks);
+    const timezoneoffset = res.data.timezoneoffset;
+    callback(tasks, timezoneoffset);
   }).catch(res => {
     console.log(res);
   });
