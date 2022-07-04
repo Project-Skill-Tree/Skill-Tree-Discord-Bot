@@ -13,7 +13,13 @@ exports.run = (client, message, args, level) => { // eslint-disable-line no-unus
     //Get location info
     const locationInfo = await timezoneFromLocation(args.join(" "));
     exports.locationConfirmation(message, message.channel, locationInfo, (locationInfo)=>{
-      updateTimezone(userID, locationInfo.utcOffset);
+      updateTimezone(userID, locationInfo.utcOffset, ()=>{
+        const confirmationEmbed = new MessageEmbed()
+          .setColor("#3bffbe")
+          .setTitle("TIMEZONE")
+          .setDescription("Timezone updated successfully");
+        message.channel.send({embeds: [confirmationEmbed]});
+      });
     });
   });
 };
@@ -24,8 +30,12 @@ exports.locationConfirmation = async function(message, scope, locationInfo, call
 
   //Error message
   if (locationInfo === null) {
-    scope.send("```Invalid timezone: Please make sure you're using the correct format \n" +
-      settings.prefix + exports.help.usage + "```");
+    scope
+      .send("```Invalid timezone: Please make sure you're using the correct format \n" +
+      settings.prefix + exports.help.usage + "```")
+      .then(msg => {
+        setTimeout(() => msg.delete(), 10000);
+      });
     return;
   }
   //Calculate local time

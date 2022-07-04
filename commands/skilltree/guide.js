@@ -63,7 +63,7 @@ async function getPages(settings) {
       **GOAL**: The success condition for the skill. e.g. Meditate for 2 minutes.
       **FREQUENCY**: The frequency to practice the skill e.g (DAILY).
       **TIME**: The time you need to keep up the skill to complete it, e.g. 2 weeks. \
-      Skills require and 80% completion rate (because life gets in the way).
+      Skills require and **80%** completion rate (because life gets in the way).
       **XP**: The amount of XP you will be awarded by completing the skill. 
       
       Note: If the time limit is N/A, the skill must be completed only once \

@@ -1,8 +1,9 @@
 const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
-const XPHandler = require("./XPHelper");
-const {romanise} = require("./romanNumeralHelper");
+const XPHelper = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
+const Skill = require("../objects/skill");
+const Challenge = require("../objects/challenge");
 
 /** @module WeeklyReviewRenderer */
 
@@ -70,6 +71,7 @@ async function drawHeaderFooter(canvas) {
   context.fillStyle = "rgba(255,255,255,1)";
   const title = "WEEKLY REPORT";
   const headerWidth = context.measureText(title).width;
+
   context.fillText(title, 200 - headerWidth*0.5, 70);
   context.shadowBlur = 20;
   context.fillRect(0,120,400,3);
@@ -106,14 +108,15 @@ async function drawHeaderFooter(canvas) {
  */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
-  const maxXP = XPHandler.calcXP(user.level);
-
-  const prevLevel = user.level;
-  const prevXP = user.xp * 0.5;
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
+  const maxXP = XPHelper.calcXPToLevelUp(level);
 
   //Add extra text to show increase
   context.font = "16px \"Akira\"";
-  const xpIncrease = user.xp - user.getPrevXP();
+  const prevXP = user.getPrevXP();
+  const prevLevel = XPHelper.calcLevelFromXP(prevXP);
+  const xpIncrease = user.xp - prevXP;
   const increaseText = `+ ${xpIncrease} XP`;
   const increaseTextWidth = context.measureText(increaseText).width;
   const XPwidth = w - increaseTextWidth - 10;
@@ -122,18 +125,18 @@ async function drawXP(canvas, user, x, y, w, h) {
   context.fillText(increaseText, x + XPwidth + 10, y + h - 10, increaseTextWidth);
 
   // Fill with lighter gradient for newXP
-  const color = XPHandler.getColor(user.level);
+  const color = XPHelper.getColor(level);
   let [red, green, blue] = color.substring(color.indexOf("(") + 1, color.lastIndexOf(")")).split(/,\s*/);
   red = Math.floor(Math.min(red * 2, 254));
   green = Math.floor(Math.min(green * 2, 254));
   blue = Math.floor(Math.min(blue * 2, 254));
 
   context.fillStyle = `rgba(${red}, ${green}, ${blue}, 1.0)`;
-  context.fillRect(x,y,XPwidth*Math.min(user.xp, maxXP)/maxXP,h);
+  context.fillRect(x,y,XPwidth*Math.min(excessXP, maxXP)/maxXP,h);
 
   //Fill to show last level XP
-  if (prevLevel === user.level) {
-    context.fillStyle = XPHandler.getColor(user.level);
+  if (prevLevel === level) {
+    context.fillStyle = XPHelper.getColor(level);
     context.fillRect(x,y,XPwidth*Math.min(prevXP, maxXP)/maxXP,h);
   }
 
@@ -146,7 +149,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Draw XP text
   context.font = "15px \"Akira\"";
-  const xpText = `${user.xp}XP / ${maxXP}XP`;
+  const xpText = `${excessXP}XP / ${maxXP}XP`;
   const textWidth = context.measureText(xpText).width;
 
   //Draw XP text outline
@@ -176,10 +179,14 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
 
   //Sort tasks in descending order of level and then XP
   const taskList = tasks.sort((a, b) => {
-    if (b.skill.level !== a.skill.level) { //sort by level
-      return (b.skill.level - a.skill.level);
+    //sort challenges by xp instead of level
+    if (a.child.level === undefined || b.child.level === undefined) {
+      return b.child.xp - a.child.xp;
+    }
+    if (b.child.level !== a.child.level) { //sort by level
+      return (b.child.level - a.child.level);
     } else { // if that fails: sort by xp
-      return b.skill.xp - a.skill.xp;
+      return b.child.xp - a.child.xp;
     }
   }).splice(0,6);
 
@@ -187,70 +194,167 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
   const tHeight = 90;
   const tWidth = (w - pad*2 - tHeight - 10) / 7;
   const size = Math.min(tHeight, tWidth) - 4;
-
-  //draw tasks
-  await taskList.map(async (task, index) => {
-    //Draw task icon
-    drawBadge(canvas, x + pad + tHeight*0.5,
-      y + pad + tHeight * index + tHeight*0.5,
-      tHeight, task.skill.icon, task.skill.level);
-
-    //Draw day completion chart
+  taskList.length = 0;
+  if (taskList.length === 0) {
+    //draw challenge icon
+    const challenge = await Canvas.loadImage("./assets/characters/character6.png");
+    const challengeSizeRatio = Math.min(300 / challenge.width, 300 / challenge.height);
+    context.shadowColor = "#000000";
+    context.shadowBlur = 30;
+    context.drawImage(challenge,
+      x + pad + w*0.5 - challenge.width * challengeSizeRatio*0.5,
+      y + pad + 150 - challenge.height * challengeSizeRatio*0.5,
+      challenge.width * challengeSizeRatio,
+      challenge.height * challengeSizeRatio);
     context.shadowBlur = 0;
-    context.strokeStyle = "rgba(0,0,0,0)";
-    context.fillStyle = "rgba(20, 20, 20, 1.0)";
-    //x (startX) + tHeight (size of icon) + pad (padding) + 5
-    context.fillRect(
-      x + tHeight + pad + 5,
-      y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,
-      w - pad*2 - tHeight,
-      size + 15);
-    const dateIndex = new Date();
-    for (let i = 0; i < 7; i++) {
-      if (task.isChecked(dateIndex)) context.fillStyle = "rgba(108, 199, 78,0.8)";
-      else context.fillStyle = "rgba(102, 102, 102, 0.6)";
-      context.fillRect(
-        x + w - pad - tWidth*(i+1) + 2,
-        y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
-        size,
-        size);
-      dateIndex.setDate(dateIndex.getDate() - 1);
-    }
 
-    //Draw completion percentage
-    context.font = "25px \"Akira\"";
-    let percent = Math.floor(100 * task.data.filter(Boolean).length / task.data.length);
-    percent = isNaN(percent) ? 0 : percent;
-    const text = `${Math.max(percent, 0)}%`;
-    const percentMetric = context.measureText(text);
-    const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;
-    const textWidth = percentMetric.width;
-
+    const text = "Things don't always \n" +
+      "go our way, son \n\n" +
+      "But what's important is \n" +
+      "continuing the journey.\n\n" +
+      "Use the start command to \n" +
+      "continue levelling up";
+    context.font = "18px \"Akira\"";
     context.strokeStyle = "rgba(0,0,0,1.0)";
-    context.lineWidth = 3;
+    context.lineWidth = 5;
     context.strokeText(text,
-      x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
-      y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+      x + pad + 10,
+      y + pad + 350,
+      w - pad*2 - 10);
     context.lineWidth = 1;
     context.fillStyle = "rgba(255, 255, 255, 1.0)";
     context.fillText(text,
-      x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
-      y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+      x + pad + 10,
+      y + pad + 350,
+      w - pad*2 - 10);
+    return;
+  }
+  //draw tasks
+  await taskList.map(async (task, index) => {
+    //SKILL
+    if (task.child instanceof Skill) {
+      //Draw skill badge
+      drawBadge(canvas, x + pad + tHeight * 0.5,
+        y + pad + tHeight * index + tHeight * 0.5,
+        tHeight, task.child.getIconName(), task.child.level);
 
-    const title = `${task.skill.title} ${romanise(task.skill.level)}`;
+      //Draw day completion chart
+      context.shadowBlur = 0;
+      context.strokeStyle = "rgba(0,0,0,0)";
+      context.fillStyle = "rgba(20, 20, 20, 1.0)";
+      //x (startX) + tHeight (size of icon) + pad (padding) + 5
+      context.fillRect(
+        x + tHeight + pad + 5,
+        y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,
+        w - pad*2 - tHeight,
+        size + 15);
+      const dateIndex = new Date();
+      let numChecked = 0;
+      for (let i = 0; i < 7; i++) {
+        if (dateIndex < task.startDate) context.fillStyle = "rgba(20, 20, 20, 1.0)";
+        else if (task.isChecked(dateIndex)) {
+          context.fillStyle = "rgba(108, 199, 78,0.8)";
+          numChecked += 1;
+        }
+        else context.fillStyle = "rgba(102, 102, 102, 0.6)";
+        context.fillRect(
+          x + w - pad - tWidth*(i+1) + 2,
+          y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
+          size,
+          size);
+        dateIndex.setDate(dateIndex.getDate() - 1);
+      }
+
+      //Draw completion percentage
+      context.font = "25px \"Akira\"";
+      let percent = Math.floor(100 *  numChecked / Math.min(task.data.length, 7));
+      percent = isNaN(percent) ? 0 : percent;
+      const text = `${Math.max(percent, 0)}%`;
+      const percentMetric = context.measureText(text);
+      const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;
+      const textWidth = percentMetric.width;
+
+      context.strokeStyle = "rgba(0,0,0,1.0)";
+      context.lineWidth = 3;
+      context.strokeText(text,
+        x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
+        y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+      context.lineWidth = 1;
+      context.fillStyle = "rgba(255, 255, 255, 1.0)";
+      context.fillText(text,
+        x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
+        y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+
+    //CHALLENGE
+    } else if (task.child instanceof Challenge) {
+      //draw challenge icon
+      const challenge = await Canvas.loadImage("./assets/icons/challenge.png");
+      const challengeSizeRatio = Math.min(tHeight / challenge.width, tHeight / challenge.height);
+      context.drawImage(challenge,
+        x + pad,
+        y + pad + tHeight * index,
+        challenge.width * challengeSizeRatio,
+        challenge.height * challengeSizeRatio);
+
+      //Draw day completion chart
+      context.shadowBlur = 0;
+      context.strokeStyle = "rgba(0,0,0,0)";
+      context.fillStyle = "rgba(20, 20, 20, 1.0)";
+      //x (startX) + tHeight (size of icon) + pad (padding) + 5
+      context.fillRect(
+        x + tHeight + pad + 5,
+        y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,
+        w - pad*2 - tHeight,
+        size + 15);
+      const goalSize = (w - pad*2 - tHeight) / task.child.goals.length - 5;
+      for (let i = 0; i < task.child.goals.length; i++) {
+        if (i < task.data.filter(Boolean).length) context.fillStyle = "rgba(108, 199, 78,0.8)";
+        else context.fillStyle = "rgba(102, 102, 102, 0.6)";
+        context.fillRect(
+          x + tHeight + pad + i*(goalSize+5) + 2,
+          y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
+          goalSize,
+          size);
+      }
+
+      //Draw completion percentage
+      context.font = "25px \"Akira\"";
+      let percent = Math.floor(100 * task.data.filter(Boolean).length / task.child.goals.length);
+      percent = isNaN(percent) ? 0 : percent;
+      const text = `${Math.max(percent, 0)}%`;
+      const percentMetric = context.measureText(text);
+      const textHeight = percentMetric.actualBoundingBoxAscent + percentMetric.actualBoundingBoxDescent;
+      const textWidth = percentMetric.width;
+
+      context.strokeStyle = "rgba(0,0,0,1.0)";
+      context.lineWidth = 3;
+      context.strokeText(text,
+        x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
+        y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+      context.lineWidth = 1;
+      context.fillStyle = "rgba(255, 255, 255, 1.0)";
+      context.fillText(text,
+        x + w * 0.5 + tHeight*0.5 - textWidth*0.5,
+        y + pad + tHeight*index + tHeight*0.5 + textHeight*0.5);
+    }
+
+    //Draw title
+    const title = task.child.getName();
     const titleMetric = context.measureText(title);
     const titleHeight = titleMetric.actualBoundingBoxAscent + titleMetric.actualBoundingBoxDescent;
-    const titleWidth = titleMetric.width;
+    const titleWidth = Math.min(titleMetric.width, w - pad*2 - tHeight);
 
     context.strokeStyle = "rgba(0,0,0,1.0)";
     context.lineWidth = 3;
     context.strokeText(title,
       x + w * 0.5 + tHeight*0.5 - titleWidth*0.5,
-      y + pad + tHeight*index + titleHeight*0.5);
+      y + pad + tHeight*index + titleHeight*0.5,
+      w - pad*2 - tHeight);
     context.lineWidth = 1;
     context.fillStyle = "rgba(255, 255, 255, 1.0)";
     context.fillText(title,
       x + w * 0.5 + tHeight*0.5 - titleWidth*0.5,
-      y + pad + tHeight*index + titleHeight*0.5);
+      y + pad + tHeight*index + titleHeight*0.5,
+      w - pad*2 - tHeight);
   });
 }

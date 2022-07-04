@@ -2,6 +2,8 @@ const {MessageAttachment} = require("discord.js");
 const Canvas = require("canvas");
 const XPHandler = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
+const XPHelper = require("./XPHelper");
+const Skill = require("../objects/skill");
 
 /** @module ProfileRenderer */
 
@@ -12,7 +14,7 @@ const {drawBadge} = require("../objects/badge");
  */
 exports.displayProfile = async function(user, channel) {
   //Generate profile
-  const profileImage = new MessageAttachment(await getProfileImage(user), "profile.png");
+  const profileImage = new MessageAttachment(await exports.getProfileImage(user), "profile.png");
   return channel.send({files: [profileImage]});
 };
 
@@ -33,7 +35,7 @@ exports.displayLevelUp = async function(user, channel) {
  * @param user - Skill tree user object
  * @return {Promise<Buffer>} buffer -
  */
-async function getProfileImage(user) {
+exports.getProfileImage = async function(user) {
   const canvas = Canvas.createCanvas(600, 200);
   const context = canvas.getContext("2d");
 
@@ -41,7 +43,8 @@ async function getProfileImage(user) {
   context.imageSmoothingEnabled = true;
   context.font = "30px \"Akira\"";
 
-  const color = XPHandler.getColor(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const color = XPHandler.getColor(level);
   context.shadowColor = color;
 
   //Draw background
@@ -66,7 +69,7 @@ async function getProfileImage(user) {
 
   //return final buffer
   return canvas.toBuffer();
-}
+};
 
 /**
  * Generate the level-up profile card for this user
@@ -81,7 +84,8 @@ async function getLevelUpProfileImage(user) {
   context.imageSmoothingEnabled = true;
   context.font = "30px \"Akira\"";
 
-  const color = XPHandler.getColor(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const color = XPHandler.getColor(level);
   context.shadowColor = color;
 
   //Draw background
@@ -127,12 +131,13 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   context.fillRect(0, 0, profileX*2, 200);
 
   //Draw character
-  const characterPath = XPHandler.getCharacter(user.level);
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const characterPath = XPHandler.getCharacter(level);
   const character = await Canvas.loadImage("./assets/characters/"+characterPath);
   const iconSizeRatio = Math.min(profileWidth / character.width, profileHeight / character.height);
 
   //Draw with glow
-  context.shadowColor = XPHandler.getColor(user.level);
+  context.shadowColor = XPHandler.getColor(level);
   context.shadowBlur = 15;
 
   context.drawImage(character,
@@ -144,7 +149,7 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
   context.shadowBlur = 0;
 
   //Draw user's level
-  const LVL = `LVL: ${user.level}`;
+  const LVL = `LVL: ${level}`;
   context.font = "20px \"Akira\"";
   context.fillStyle = "white";
   context.shadowBlur = 10;
@@ -165,11 +170,12 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
  */
 async function drawXP(canvas, user, x, y, w, h) {
   const context = canvas.getContext("2d");
-  const maxXP = XPHandler.calcXP(user.level);
-
+  const level = XPHelper.calcLevelFromXP(user.xp);
+  const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
+  const maxXP = XPHelper.calcXPToLevelUp(level);
   // Fill with gradient
-  context.fillStyle = XPHandler.getColor(this.level);
-  context.fillRect(x,y,w*Math.min(user.xp, maxXP)/maxXP,h);
+  context.fillStyle = XPHandler.getColor(level);
+  context.fillRect(x,y,w*Math.min(excessXP, maxXP)/maxXP,h);
 
   //Draw XP bar outline
   context.strokeStyle = "rgba(255, 255, 255, 0.7)";
@@ -180,7 +186,7 @@ async function drawXP(canvas, user, x, y, w, h) {
 
   //Draw XP text
   context.font = "15px \"Akira\"";
-  const xpText = `${user.xp}XP / ${maxXP}XP`;
+  const xpText = `${excessXP}XP / ${maxXP}XP`;
   const textWidth = context.measureText(xpText).width;
 
   //Draw XP text outline
@@ -211,7 +217,7 @@ async function drawProfileInfo(canvas, user) {
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.skillscompleted.sort((a, b) => {
+  const sortedSkills = user.completed.filter(obj => obj instanceof Skill).sort((a, b) => {
     return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
   });
 
@@ -226,14 +232,14 @@ async function drawProfileInfo(canvas, user) {
       await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, null, null);
     } else {
       //Draw skill badge
-      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.icon, skill.level);
+      await drawBadge(canvas, 558, 5 + 32 + 64 * i, 60, skill.getIconName(), skill.level);
     }
   }
 
   //draw INFO
   const INFO = `Total XP: ${user.xp}XP\n` +
-    `Completed Skills: ${user.skillscompleted.length}\n`+
-    `Current Skills: ${user.skillsinprogress.length}\n` +
+    `Completed: ${user.completed.length}\n`+
+    `In Progress: ${user.inprogress.length}\n` +
     `Days Tracked: ${user.numDaysTracked}`;
   context.font = "20px \"Tahoma\"";
   context.fillStyle = "rgba(255, 255, 255, 0.8)";

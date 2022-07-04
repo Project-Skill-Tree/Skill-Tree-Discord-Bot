@@ -10,7 +10,7 @@ class ListPage extends Swipeable {
    * Page constructor
    * @constructor
    * @param {string} title - short page title
-   * @param {*[]} list - page content
+   * @param {Object[]} list - page content
    * @constructor
    */
   constructor(title, list) {

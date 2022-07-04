@@ -49,13 +49,18 @@ exports.run = (client, message, args, level) => {
       .addComponents(
         new MessageButton()
           .setLabel("SKILL TREE DISCORD")
-          .setEmoji("968869023913754634")
+          .setEmoji("984814194207653898")
           .setStyle("LINK")
           .setURL("https://discord.gg/qTvJTTyr2F"),
         new MessageButton()
+          .setLabel("PATREON")
+          .setStyle("LINK")
+          .setEmoji("984812444130115634")
+          .setURL("https://www.patreon.com/project_skilltree"),
+        new MessageButton()
           .setLabel("FEEDBACK")
           .setStyle("LINK")
-          .setEmoji("968868932486303794")
+          .setEmoji("984816056629604362")
           .setURL("https://forms.gle/dF1vcGV3NEMcd5Zm6"));
 
     message.channel.send({content: `${codeBlock("asciidoc", output)}`, components: [buttons]});

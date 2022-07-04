@@ -31,19 +31,19 @@ exports.authUser = function(discordid, channel=null, callback) {
 /**
  * Create a user in the database
  * @param discordid
- * @param gender
+ * @param character
  * @param difficulty
- * @param dms_enabled
  * @param timezone - timezone offset of the user
+ * @param baselocation
  * @param callback - Callback with param true/false for user found/not
  */
-exports.createUser = function(discordid, gender, difficulty, dms_enabled, timezone, callback) {
+exports.createUser = function(discordid, character, difficulty, timezone, baselocation, callback) {
   axios
     .post(process.env.API_URL + "users/registerDiscord/",{
       discordid: discordid,
-      gender: gender,
+      character: character,
       difficulty: difficulty,
-      dms_enabled:dms_enabled,
+      baselocation: baselocation,
       timezone: timezone,
     }, {
       headers: {
@@ -59,19 +59,17 @@ exports.createUser = function(discordid, gender, difficulty, dms_enabled, timezo
 /**
  * Updating a user in the database
  * @param userID
- * @param gender
- * @param difficulty
- * @param dms_enabled
+ * @param character
  * @param timezone - timezone offset of the user
+ * @param baselocation
  **/
-exports.updateUser = function(userID, gender, difficulty, dms_enabled, timezone) {
+exports.updateUser = function(userID, character, timezone, baselocation) {
   return axios
     .post(process.env.API_URL + "users/updateUser/", {
       userid: userID,
-      gender:gender,
-      difficulty: difficulty,
-      dms_enabled: dms_enabled,
+      character:character,
       timezone: timezone,
+      baselocation: baselocation,
     },{
       headers: {
         api_key: getAPIKey()
@@ -157,7 +155,7 @@ exports.getUsersInTimezone = function(timezone, callback) {
  * @param userID
  * @param {number} timezoneoffset - hours difference to GMT (-14 to +12)
  */
-exports.updateTimezone = function(userID, timezoneoffset) {
+exports.updateTimezone = function(userID, timezoneoffset, callback) {
   axios
     .post(process.env.API_URL + "users/updateTimezone", {
       id: userID,
@@ -166,6 +164,8 @@ exports.updateTimezone = function(userID, timezoneoffset) {
       headers: {
         api_key: getAPIKey()
       }
+    }).then(()=>{
+      callback();
     });
 };
 
@@ -184,7 +184,7 @@ exports.addXP = function(userid, xp) {
         api_key: getAPIKey()
       }
     }).then(res => {
-      console.log(res);
+      //console.log(res);
     });
 };
 

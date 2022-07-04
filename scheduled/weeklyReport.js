@@ -1,8 +1,8 @@
 const cron = require("node-cron");
-const {getRecentTasks, getSkillsInList} = require("../modules/skillAPIHelper");
+const {getRecentTasks, getAllInList} = require("../modules/skillAPIHelper");
 const {displayReview} = require("../modules/weeklyReviewRenderer");
 const {getUsersInTimezone} = require("../modules/userAPIHelper");
-const {getSettings} = require("../modules/functions");
+const {getBaseLocation} = require("../modules/baseHelper");
 
 exports.run = (client) => {
   //Schedule a job every sunday
@@ -15,25 +15,25 @@ exports.run = (client) => {
       //exit if no users found
       if (users.length === 0) return;
 
-      //Get unique skills from users as list
-      const skillIDs = Array.from(
+      //Get unique skills/challenges from users as list
+      const objIDs = Array.from(
         users
-          .map(u => u.skillsinprogress) //get skills from users
+          .map(u => u.inprogress) //get skills from users
           .flat() //convert to one big list
           .reduce((set, e) => set.add(e), new Set()) //only unique items
       );
-      getSkillsInList(skillIDs, async (skills) => {
+      getAllInList(objIDs, async (objs) => {
         //Map skills for indexing
-        const skillIDMap = new Map(
-          skills.map(skill => {
-            return [skill.id, skill];
+        const IDMap = new Map(
+          objs.map(obj => {
+            return [obj.id, obj];
           }),
         );
         for (let i = 0; i < users.length; i++) {
           const user = users[i];
 
-          //Get skill objects for user's skillsinprogress
-          user.skillsinprogress = user.skillsinprogress.map(s => skillIDMap.get(s.id));
+          //Get skill/challenge objects for user's inprogress
+          user.inprogress = user.inprogress.map(s => IDMap.get(s.id));
 
           //Get last 7 days worth of tasks
           getRecentTasks(user.id, 7, async (tasks) => {
@@ -82,21 +82,4 @@ function getCurrentOffset() {
     return null;
   }
   return offset;
-}
-
-async function getBaseLocation(client, baselocation) {
-  //TODO: Potential for sharding to break this?? cache not shared
-  const guildID = client.guilds.cache.get(baselocation);
-  //Check for guild first
-  if (guildID) {
-    const botChannel = getSettings(guildID).botChannel.replace(/[<#>]/gi, "");
-    const channel = await client.channels.fetch(botChannel);
-    if (channel) return channel;
-    return null;
-  } else {
-    //if that fails check for user
-    const user = await client.users.fetch(baselocation);
-    if (user) return user;
-    return null;
-  }
 }

@@ -162,9 +162,9 @@ exports.codeBlock = function(str) {
 
 /**
  * Split array into chunks of size n
- * @param {*[]} arr
+ * @param {Object[]} arr
  * @param {number} chunkSize
- * @return {*[]}
+ * @return {Object[]}
  */
 exports.splitToN = function(arr, chunkSize) {
   const res = [];

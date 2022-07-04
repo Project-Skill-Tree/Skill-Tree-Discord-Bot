@@ -54,7 +54,7 @@ class Setting {
       initMessage.delete();
     }
 
-    const collector = initMessage.channel.createMessageComponentCollector();
+    const collector = initMessage.channel.createMessageComponentCollector({time: 120000});
     collector.on("collect", async i => {
       callback(initMessage);
       collector.stop();
@@ -65,10 +65,10 @@ class Setting {
    * Sends an embedded skill in the chat
    * @param oldMessage - previous message
    * @param channel - channel to send the message in
-   * @param out
-   * @param settings
+   * @param userSettings - {} list of current user settings
+   * @param settings - list of setting objects
    */
-  async start(oldMessage, channel, out, settings) {
+  async start(oldMessage, channel, userSettings, settings) {
     const index = settings.indexOf(this);
 
     const embed = new MessageEmbed()
@@ -91,25 +91,25 @@ class Setting {
     if (index === settings.length) return;
 
     const next = function() {
-      settings[index+1].start(message, channel, out, settings);
+      settings[index+1].start(message, channel, userSettings, settings);
     };
     if (this.components) {
       const filter = (m) => {
         return m.message.id === message.id;
       };
-      const collector = message.channel.createMessageComponentCollector({filter});
+      const collector = message.channel.createMessageComponentCollector({filter, time: 120000});
       collector.on("collect", async i => {
-        const choice = i.component.label;
-        this.onComplete(choice, out, next);
-        collector.stop();
-        if (!i.deferred) {
+        try {
           await i.deferUpdate();
-        }
+        } catch (e) {} // eslint-disable-line no-empty
+        const choice = i.component.label;
+        collector.stop();
+        this.onComplete(choice, userSettings, next);
       });
     }
 
     if (this.filter) {
-      this.filter(message, this.onComplete, next, out);
+      this.filter(message, this.onComplete, next, userSettings);
     }
   }
 }

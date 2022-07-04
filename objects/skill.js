@@ -15,30 +15,29 @@ class Skill extends Swipeable {
    * @param {string} title - Skill title (READING)
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
+   * @param goals
    * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
    * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
    * @param {number} timelimit - The number of days for which you need to maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
-   * @param {string} icon - image path for the icon to be displayed, relative to "/icons/" folder
    * @param requires - required skills
    * @param children - child skills
    * @constructor
    */
-  constructor(id, title, level, goal,
-    frequency, interval, timelimit, xp,
-    icon,requires, children=[]) {
+  constructor(id, title, level, goal, goals,
+    frequency, interval, timelimit, xp,requires, children=[]) {
     super();
     this.id = id;
     this.title = title;
     this.level = level;
     this.goal = goal;
+    this.goals = goals;
     this.interval = interval;
     this.timelimit = timelimit;
     this.frequency = frequency;
     this.xp = xp;
     this.requires = requires;
     this.children = children;
-    this.icon = icon;
   }
 
   /**
@@ -51,11 +50,11 @@ class Skill extends Swipeable {
       data.title,
       data.level,
       data.goal,
+      data.goals,
       data.frequency,
       data.interval,
       data.timelimit,
       data.xp,
-      data.icon,
       data.requires,
       data.children);
   }
@@ -90,7 +89,7 @@ class Skill extends Swipeable {
   }
 
   toString() {
-    return "**GOAL:** \n`" + `${this.goal.join("\n")} (${formatFrequency(this.frequency, this.interval)})` + "`" +
+    return "**GOAL:** \n`" + `${this.goals.join("\n")} (${formatFrequency(this.frequency, this.interval)})` + "`" +
     "\n**TIME:** `" + `${this.timelimit} days` + "`" +
     "\n**XP:** `" + `${this.xp}XP` + "`";
   }
@@ -99,8 +98,12 @@ class Skill extends Swipeable {
     return `${this.title} ${romanise(this.level)}`;
   }
 
+  getIconName() {
+    return `${this.title.toLowerCase().replace(" ", "-")}.png`;
+  }
+
   async getIcon() {
-    return getBadgeIcon(this.icon, this.level, 300);
+    return getBadgeIcon(this.getIconName(), this.level, 300);
   }
 }
 

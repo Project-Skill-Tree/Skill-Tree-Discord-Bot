@@ -25,12 +25,12 @@ exports.conf = {
   enabled: true,
   guildOnly: false,
   aliases: [],
-  permLevel: "User"
+  permLevel: "Bot Admin"
 };
 
 exports.help = {
   name: "weekly",
   category: "Skill Tree",
-  description: "Displays your weekly report",
+  description: "Displays a weekly report for testing",
   usage: "weekly"
 };

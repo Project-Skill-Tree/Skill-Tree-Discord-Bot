@@ -1,5 +1,5 @@
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {getSkillsInProgress,cancelSkill,getTasksFromSkill,deleteTask} = require("../../modules/skillAPIHelper");
+const {getInProgress, cancel} = require("../../modules/skillAPIHelper");
 const {authUser} = require("../../modules/userAPIHelper");
 
 /**
@@ -9,22 +9,25 @@ exports.run = (client, message) => {
   //Validate user exists
   authUser(message.author.id, message.channel,(userID) => {
     //Get ongoing skills
-    getSkillsInProgress(userID, skills => { // gets available,not started skills
+    getInProgress(userID, skills => { // gets in progress skills
       if (skills.length === 0) {
-        message.channel.send("```You have no on-going skills. Use ~start to see what skills you have started```");
+        message.channel
+          .send("```You have no ongoing skills. Use ~start to see which skills are available to you```")
+          .then(msg => {
+            setTimeout(() => msg.delete(), 10000);
+          });
         return;
       }
       //Create panel showing skills
       createLargeSwipePanel(client, message.author, message.channel, skills, 
         [{
           name: "CANCEL",
-          description: "Cancel the skills",
+          description: "Cancel the skill",
           action: (skill) => {
-            cancelSkill(userID,skill.id);
-            getTasksFromSkill(userID,skill.id,tasks => tasks.map(task => deleteTask(task.id)));
+            cancel(userID, skill);
             return true;
           }
-        }], true);
+        }]);
     });
   });
 };
