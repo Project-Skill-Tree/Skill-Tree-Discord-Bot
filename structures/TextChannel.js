@@ -1,5 +1,6 @@
 const { TextChannel, MessagePayload } = require("discord.js");
-const resources = require("../utils/resources");
+const resources = require("../modules/resources");
+
 module.exports.run = () => {
   TextChannel.prototype.send = async function (options) {
     const { GuildMember, User } = require("discord.js");
