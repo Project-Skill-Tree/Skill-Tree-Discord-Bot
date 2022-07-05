@@ -1,5 +1,5 @@
 const { MessageComponentInteraction, MessagePayload } = require("discord.js");
-const resources = require("../utils/resources");
+const resources = require("../modules/resources");
 
 module.exports.run = () => {
   MessageComponentInteraction.prototype.reply = async function (options) {
