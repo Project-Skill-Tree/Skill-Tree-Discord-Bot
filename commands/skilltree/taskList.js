@@ -101,7 +101,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       task.setChecked(!task.isChecked(date), date);
 
       updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
-        if (levelUp !== 0) {
+        if (levelUp) {
           getUser(userID, message.author.username, (user) => {
             displayLevelUp(user, message.channel);
           });

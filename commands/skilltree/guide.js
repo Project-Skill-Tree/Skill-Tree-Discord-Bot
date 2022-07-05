@@ -44,8 +44,8 @@ async function getPages(settings) {
       **TIMEZONE**: Sets your timezone so that tasks calculate days correctly. \
       Setting it correctly will also ensure that weekly reports are sent at the right time. Use \
       \`${settings.prefix}timezone\` to edit this at any point.
-      **BASE LOCATION**: Specify the location where weekly reports and reminders are sent. Use \
-      \`${settings.prefix}base\` to edit this at any point.
+      **BASE LOCATION**: Set the location where weekly reports are sent. Use \
+      \`${settings.prefix}base\` in the server or DM where you'd like to set your base.
       
       Note: If you think you have made a mistake, you can edit your settings using \
       the \`${settings.prefix}setup\` command again.
