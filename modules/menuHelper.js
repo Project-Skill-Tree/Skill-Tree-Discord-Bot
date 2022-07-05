@@ -41,9 +41,10 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
           break;
         case "no":
           await onNo();
-          reject(new Error("\"No\" selected"));
+          resolve();
           break;
         default:
+          reject(new Error("Invalid option in yes/no panel"));
           break;
       }
     });
