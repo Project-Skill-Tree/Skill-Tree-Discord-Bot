@@ -47,7 +47,7 @@ class Challenge extends Swipeable {
   async send(message) {
     const data = await this.update(new MessageEmbed());
 
-    return message.reply({ embeds: data[0], files: data[1]});
+    return await message.reply({ embeds: data[0], files: data[1]});
   }
 
   /**
