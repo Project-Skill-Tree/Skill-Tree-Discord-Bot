@@ -87,7 +87,7 @@ class Task {
     } else { //challenge has no time limit
       data = this.data;
     }
-    return `${data.length}/${frequency}`;
+    return `${data.filter(Boolean).length}/${frequency}`;
   }
 
   daysLeftInterval(date) {
@@ -98,10 +98,9 @@ class Task {
     this.setChecked(this.isChecked(date), date);
 
     //Split goals into equal sections covering the time limit for the given frequency
-    const blockSize = ((this.child.frequency / intervalToInt(this.child.interval)) * this.child.timelimit) / this.child.goals.length;
+    const blockSize = intervalToInt(this.child.interval);
     const curIntervalLength = this.data.length - Math.floor(this.data.length / blockSize) * blockSize;
     const daysLeft = intervalToInt(this.child.interval) - curIntervalLength;
-
 
     return `${daysLeft} day(s) left`;
   }
