@@ -56,8 +56,7 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
  * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
- * @param {User} user - User who sent the message
- * @param {Channel} channel - Discord channel to send to
+ * @param {User} message - Message from the user
  * @param {Swipeable[]} list - List of swipeable objects
  */
 exports.createSwipePanel = async function(client, message, list) {
@@ -107,11 +106,11 @@ exports.createSwipePanel = async function(client, message, list) {
  * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
- * @param {User} user - User who sent the message
- * @param {Channel} channel - Discord channel
+ * @param {User} message - Message from the user
  * @param {Swipeable[]} list - List of swipeable objects
  * @param {?{}=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
+ * @param refresh - action to happen on update
  */
 exports.createLargeSwipePanel = async function(client, message,
   list, actions = null, refresh=null) {
@@ -208,7 +207,7 @@ async function update(message, msg, list, currentPage, actions) {
 
   //update embed to show current page
   const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
-  if (msg.embeds[0].thumbnail.length !== 0) {
+  if (msg.embeds[0].thumbnail !== null && msg.embeds[0].thumbnail.length !== 0) {
     await msg.removeAttachments();
   }
   await msg.edit({embeds: data[0], components: components, files: data[1]});
