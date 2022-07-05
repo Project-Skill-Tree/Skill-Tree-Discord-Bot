@@ -63,7 +63,10 @@ function startMenu(client, message, userID) {
               });
             return true;
           }
-          await skip(userID, toSkip);
+          const unlocked = await skip(userID, toSkip);
+          if (unlocked.length !== 0) {
+            createLargeSwipePanel(client, message, unlocked);
+          }
           return true;
         }
       },{
@@ -84,10 +87,11 @@ function startMenu(client, message, userID) {
             .setDescription("WARNING: This will revert to the previous skill, " +
               "removing its parent skill from your completed/ongoing skills. " +
               "You will need to skip or complete it again to show it in your profile." +
-              "\n(This will not affect XP or ongoing/completed skills unlocked by the parent)");
+              "\n(This will not affect XP or ongoing/completed skills unlocked by the parent).\n\n" +
+              "Do you wish to continue?");
           const msg = await message.channel.send({embeds: [embed]});
           await createYesNoPanel(msg,
-            message.client,
+            message.author,
             async () => {
               await revert(userID, toRevert);
             },

@@ -29,7 +29,7 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
 
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === user.id;
-  const collector = msg.createMessageComponentCollector({filter, time: 120000});
+  const collector = msg.createMessageComponentCollector({filter, time: 240000});
   await new Promise( (resolve, reject) => {
     collector.on("collect", async i => {
       await i.deferUpdate();

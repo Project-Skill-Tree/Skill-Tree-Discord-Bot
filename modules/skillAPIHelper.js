@@ -160,7 +160,7 @@ exports.start = async function(userID, toStart) {
  * @param toSkip - object to skip
  */
 exports.skip = async function(userID, toSkip) {
-  return await axios
+  const res = await axios
     .post(process.env.API_URL + "users/skip", {
       userid: userID,
       toskip: toSkip.id
@@ -169,6 +169,10 @@ exports.skip = async function(userID, toSkip) {
         api_key: getAPIKey()
       }
     });
+  const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
+  const items = res.data.items.map(val => new Unlocked(Item.create(val)));
+  const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
+  return [].concat(skills, items, challenges);
 };
 
 /**
