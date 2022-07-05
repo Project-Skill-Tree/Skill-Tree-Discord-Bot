@@ -40,6 +40,14 @@ function startMenu(client, message, userID) {
               });
             return false;
           }
+          if (res === 202) {
+            message.channel
+              .send("```Error: Skill already ongoing, use "+`${message.settings.prefix}tasks` +" to view ongoing skills```")
+              .then(msg => {
+                setTimeout(() => msg.delete(), 10000);
+              });
+            return false;
+          }
           return true;
         }
       },{
