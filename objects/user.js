@@ -1,5 +1,6 @@
 const Skill = require("./skill");
 const Challenge = require("./challenge");
+const Item = require("./item");
 
 /**
  * User object
@@ -47,8 +48,9 @@ class User {
     const cip = user.challengesinprogress.map(val => Challenge.create(val));
     const sc = user.skillscompleted.map(val => Skill.create(val));
     const cc = user.challengescompleted.map(val => Challenge.create(val));
+    const items = user.items.map(val => Item.create(val));
     return new User(user._id, user.discordid, user.username, user.xp, user.xpHistory,
-      sc.concat(cc), sip.concat(cip), user.items,
+      sc.concat(cc), sip.concat(cip), items,
       user.numDaysTracked, user.reminderChannel, user.timezone,
       user.baselocation);
   }
