@@ -1,5 +1,5 @@
 const { Message, MessagePayload } = require("discord.js");
-const resources = require("../utils/resources");
+const resources = require("../modules/resources");
 module.exports.run = () => {
   Message.prototype.reply = function (options) {
     if (!this.channel) return Promise.reject(new Error("CHANNEL_NOT_CACHED"));
