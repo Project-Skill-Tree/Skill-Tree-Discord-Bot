@@ -60,8 +60,8 @@ exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
  * @param {Channel} channel - Discord channel to send to
  * @param {Swipeable[]} list - List of swipeable objects
  */
-exports.createSwipePanel = async function(client, user, channel, list) {
-  const msg = await list[0].send(channel);
+exports.createSwipePanel = async function(client, message, list) {
+  const msg = await list[0].send(message);
   let currentPage = 0;
 
   //Add left/right messageButton to message
@@ -79,7 +79,7 @@ exports.createSwipePanel = async function(client, user, channel, list) {
   msg.edit({components: [row]});
 
   //Create listener for button events
-  const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === user.id;
+  const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === message.author.id;
   const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     await i.deferUpdate();
@@ -113,18 +113,18 @@ exports.createSwipePanel = async function(client, user, channel, list) {
  * @param {?{}=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
-exports.createLargeSwipePanel = async function(client, user, channel,
+exports.createLargeSwipePanel = async function(client, message,
   list, actions = null, refresh=null) {
-  const msg = await list[0].send(channel);
+  const msg = await list[0].send(message);
   let currentPage = 0;
 
-  await update(channel, msg, list, currentPage, actions);
+  await update(message, msg, list, currentPage, actions);
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
     || i.customId === "next"
     || i.customId === "first"
-    || i.customId === "last") && i.user.id === user.id;
+    || i.customId === "last") && i.user.id === message.author.id;
 
   const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
@@ -150,14 +150,14 @@ exports.createLargeSwipePanel = async function(client, user, channel,
       default:
         break;
     }
-    await update(channel, msg, list, currentPage, actions);
+    await update(message, msg, list, currentPage, actions);
   });
 
 
   //Create action listener
   if (actions == null) return;
 
-  const actionFilter = i => i.user.id === user.id;
+  const actionFilter = i => i.user.id === message.author.id;
   const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
@@ -178,7 +178,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
         list = list.filter(i => i !== toRemove);
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
-        await update(channel, msg, list, currentPage, actions);
+        await update(message, msg, list, currentPage, actions);
       }
     }
   });
@@ -186,7 +186,7 @@ exports.createLargeSwipePanel = async function(client, user, channel,
   return msg;
 };
 
-async function update(channel, msg, list, currentPage, actions) {
+async function update(message, msg, list, currentPage, actions) {
   //check for empty list
   if (list.length === 0) {
     msg.delete();
@@ -194,7 +194,7 @@ async function update(channel, msg, list, currentPage, actions) {
     embed.setTitle("EMPTY");
     embed.setDescription("No more items to display");
     embed.setThumbnail("");
-    channel.send({embeds: [embed]});
+    message.reply({embeds: [embed]});
     return;
   }
 

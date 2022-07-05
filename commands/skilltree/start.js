@@ -26,7 +26,7 @@ function startMenu(client, message, userID) {
       return;
     }
     //Create panel showing skills
-    createLargeSwipePanel(client, message.author, message.channel, skills,
+    createLargeSwipePanel(client, message, skills,
       [{
         name: "START",
         description: "Start a skill and add it to your current skills",

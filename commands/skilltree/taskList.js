@@ -64,7 +64,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
         .setDisabled(true));
   const msg = await message.reply({ embeds: [embed], components: [dropDownBox,row] });
 
-  const collector = msg.createMessageComponentCollector({time: 120000});
+  const collector = msg.createMessageComponentCollector({time: 240000});
 
   collector.on("collect", i => {
     if (i.user.id !== message.author.id) {
@@ -97,6 +97,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
     if (i.isSelectMenu()) {
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => task.child.getName() === skillTitle);
+      if (!task) return;
       task.setChecked(!task.isChecked(date), date);
 
       updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
@@ -106,7 +107,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
           });
         }
         if (unlocked.length !== 0) {
-          createLargeSwipePanel(client, message.author, message.channel, unlocked);
+          createLargeSwipePanel(client, message, unlocked);
         }
       });
     }

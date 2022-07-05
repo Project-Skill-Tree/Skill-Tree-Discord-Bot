@@ -17,7 +17,7 @@ exports.run = async (client, message) => {
   const pages = await getPages(message.settings);
 
   //Create swipeable menu
-  createLargeSwipePanel(client, message.author, message.channel, pages);
+  createLargeSwipePanel(client, message, pages);
 };
 
 async function getPages(settings) {

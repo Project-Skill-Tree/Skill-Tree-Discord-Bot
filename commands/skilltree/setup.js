@@ -200,9 +200,9 @@ function getSettings(scope, message, userExists) {
 
           const book = new Unlocked(new Item(-1, "SELF IMPROVEMENT GUIDE BOOK", "" +
             "https://www.youtube.com/watch?v=PYaixyrzDOk", "📙"));
-          book.send(scope);
+          book.send(message);
           const sword = new Unlocked(new Item(-1, "RUSTY SWORD", "", "🗡"));
-          sword.send(scope);
+          sword.send(message);
         }
         setupUser(message.author.id, userSettings);
         next();
