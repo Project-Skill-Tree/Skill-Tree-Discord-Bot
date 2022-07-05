@@ -194,7 +194,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
   const tHeight = 90;
   const tWidth = (w - pad*2 - tHeight - 10) / 7;
   const size = Math.min(tHeight, tWidth) - 4;
-  taskList.length = 0;
+
   if (taskList.length === 0) {
     //draw challenge icon
     const challenge = await Canvas.loadImage("./assets/characters/character6.png");
