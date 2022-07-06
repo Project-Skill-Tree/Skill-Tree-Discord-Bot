@@ -132,9 +132,13 @@ function createDropDownBox(tasks, date) {
       new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Check/uncheck a task").addOptions(
         tasks.map(
           task => {
+            let goal = task.child.goal;
+            if (goal.length > 100) {
+              goal = task.child.goal.substring(0,97) + "...";
+            }
             return {
               label: task.child.getName(),
-              description: task.child.goal,
+              description: goal,
               value: task.child.getName(),
               emoji: task.isChecked(date) ? "✅" : "❌",
             };
