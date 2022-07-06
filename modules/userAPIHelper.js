@@ -79,6 +79,21 @@ exports.updateUser = function(userID, character, timezone, baselocation) {
     });
 };
 
+/**
+ * Updating a user in the database
+ * @param userID
+ **/
+exports.deleteUser = function(userID) {
+  return axios
+    .post(process.env.API_URL + "users/deleteUser/", {
+      userid: userID,
+    },{
+      headers: {
+        api_key: getAPIKey()
+      }
+    });
+};
+
 exports.setUserLocation = function(userID, base, callback) {
   return axios
     .post(process.env.API_URL + "users/updateBaseLocation/", {
