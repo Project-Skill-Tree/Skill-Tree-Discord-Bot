@@ -47,7 +47,7 @@ function displayInventory(client, user, message) {
 exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: [],
+  aliases: ["inventory"],
   permLevel: "User"
 };
 

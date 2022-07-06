@@ -98,6 +98,10 @@ class Skill extends Swipeable {
     return `${this.title} ${romanise(this.level)}`;
   }
 
+  toLine() {
+    return `${this.title} ${romanise(this.level)}`;
+  }
+
   getIconName() {
     return `${this.title.toLowerCase().replace(" ", "-")}.png`;
   }

@@ -69,6 +69,10 @@ class Challenge extends Swipeable {
     return this.title;
   }
 
+  toLine() {
+    return this.title;
+  }
+
   toString() {
     let link = "";
     if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;

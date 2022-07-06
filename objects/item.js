@@ -74,6 +74,16 @@ class Item extends Swipeable {
     return this.name;
   }
 
+  /**
+   * Convert item to a summary
+   * @return {string}
+   */
+  toLine() {
+    let description = `+ [${this.name}](${this.link})`;
+    if (this.emoji != null) description += ` (${this.emoji})`;
+    return description;
+  }
+
   async getIcon() {
     return imageToBuffer("icons/chest.png", 200);
   }

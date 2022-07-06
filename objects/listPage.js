@@ -37,7 +37,7 @@ class ListPage extends Swipeable {
   async update(embed) {
     await embed.setColor("#1071E5");
     embed.setTitle(this.title);
-    embed.setDescription(this.list.map(v => v.toString()).join("\n"));
+    embed.setDescription(this.list.map(v => v.toLine()).join("\n"));
 
     const embeds = [embed];
     return [embeds, null];
