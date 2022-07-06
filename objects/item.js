@@ -37,12 +37,17 @@ class Item extends Swipeable {
 
   /**
    * Sends an embedded item in the chat
-   * @param message
+   * @param message - message to send to
+   * @param channel - send to channel if message doesn't exist
    */
-  async send(message) {
+  async send(message, channel) {
     const data = await this.update(new MessageEmbed());
 
-    return await message.reply({embeds: data[0], files: data[1]});
+    if (message !== null) {
+      return await message.reply({embeds: data[0], files: data[1]});
+    } else {
+      return await channel.send({embeds: data[0], files: data[1]});
+    }
   }
 
   /**
