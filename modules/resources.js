@@ -2,11 +2,27 @@ const { MessageEmbed } = require("discord.js");
 const Discord = require("discord.js");
 const { cleanNull } = require("./cleanNull.js");
 
+/** @module resources */
+
+/**
+ * Allows easier embed construction and provides a greater degree of easy customization
+ * @Class Resource
+ */
+
 class Resource {
   constructor(options) {
     this.color = options.color;
     this.emote = options.emote;
   }
+
+  /**
+   * Returns embed message options based on the parameters provided
+   * @param {object} options - parameters and values for the embed, as well as additional message options like components and ephemeral
+   * most object keys are obtained from the direct dJS function counterpart, eg: { title: "" } is from .setTitle("")
+   * { authorIconURL: "" } is from .setAuthor({ iconURL: "" })
+   *
+   * @return {object}
+   */
 
   embed = (options) => {
     //If options is a string, it's the content
