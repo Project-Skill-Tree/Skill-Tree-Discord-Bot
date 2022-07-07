@@ -1,5 +1,4 @@
 const Canvas = require("canvas");
-const { createConverter } = require("convert-svg-to-png");
 const {tint} = require("../modules/UIHelper");
 
 /** @module badge */
@@ -57,17 +56,7 @@ exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
     let icon = null;
     //Parse the icon file type
     const type = iconPath.split(".").pop();
-    const converter = createConverter();
     switch (type) {
-      case "svg":
-        //Convert svg to png and load to canvas
-        try {
-          const buf = await converter.convertFile("./assets/icons/" + iconPath);
-          icon = await Canvas.loadImage(buf);
-        } finally {
-          await converter.destroy();
-        }
-        break;
       case "png":
       case "jpg":
         icon = await Canvas.loadImage("./assets/icons/" + iconPath);
