@@ -16,7 +16,7 @@ class Challenge extends Swipeable {
    * @param {?string=} link - The link to the item resource (default: null)
    * @constructor
    */
-  constructor(id, title, goal, goals, xp, link=null) {
+  constructor(id, title, goal, goals, xp, requires, link=null) {
     super();
     this.id = id;
     this.title = title;
@@ -24,6 +24,7 @@ class Challenge extends Swipeable {
     this.goals = goals;
     this.xp = xp;
     this.link = link;
+    this.requires = requires;
   }
 
   /**
@@ -37,6 +38,7 @@ class Challenge extends Swipeable {
       data.goal,
       data.goals,
       data.xp,
+      data.requires,
       data.link);
   }
 
