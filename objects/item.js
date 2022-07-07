@@ -70,7 +70,12 @@ class Item extends Swipeable {
    * @return {string}
    */
   toString() {
-    let description = `+ [${this.name}](${this.link})`;
+    let description;
+    if (this.link) {
+      description = `+ [${this.name}](${this.link})`;
+    } else {
+      description = `+ ${this.name}`;
+    }
     if (this.emoji != null) description += ` (${this.emoji})`;
     return description;
   }

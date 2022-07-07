@@ -40,8 +40,8 @@ class User {
 
   /**
    * Create User object from JSON data
-   * @return {User}
    * @param user
+   * @return {User}
    */
   static create(user) {
     const sip = user.skillsinprogress.map(val => Skill.create(val));
