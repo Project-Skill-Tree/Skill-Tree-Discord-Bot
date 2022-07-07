@@ -177,7 +177,7 @@ function buildEmbed(tasks, date) {
 function formatTask(task, date) {
   if (task.child instanceof Challenge) {
     const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
-    return `${checkedEmoji} | **${task.child.title} (UNCOMPLETE)**: \n${task.child.goal}`;
+    return `${checkedEmoji} | **${task.child.title} (INCOMPLETE)**: \n${task.child.goal}`;
   }
   if (task.child instanceof Skill) {
     const checkedEmoji = task.isChecked(date) ? ":white_check_mark:" : ":x:";
@@ -187,9 +187,13 @@ function formatTask(task, date) {
     if (freq === "DAILY") {
       return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date)})**: \n${task.child.goal}`;
     } else {
-      const numForPeriod = task.numCheckedInInterval(date);
-      const daysLeft = task.daysLeftInterval(date);
-      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
+      if (task.child.timelimit === "N/A") {
+        return `${checkedEmoji} | **${task.child.title} ${levelRoman} (0/1)**: \n${task.child.goal}`;
+      } else {
+        const numForPeriod = task.numCheckedInInterval(date);
+        const daysLeft = task.daysLeftInterval(date);
+        return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
+      }
     }
   }
   return "";

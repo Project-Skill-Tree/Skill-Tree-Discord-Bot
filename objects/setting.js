@@ -51,7 +51,9 @@ class Setting {
         "4) press Done```");
       setTimeout(() => errorMsg.delete(),10000);
       onFailure();
-      initMessage.delete();
+      if (initMessage) {
+        initMessage.delete();
+      }
     }
 
     const collector = initMessage.channel.createMessageComponentCollector({time: 120000});

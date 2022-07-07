@@ -200,9 +200,7 @@ exports.addXP = function(userid, xp) {
       headers: {
         api_key: getAPIKey()
       }
-    }).then(res => {
-      //console.log(res);
-    });
+    })
 };
 
 /**
