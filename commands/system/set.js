@@ -11,7 +11,7 @@
 // OR the same as:
 // const [action, key, ...value] = args;
 const { codeBlock } = require("@discordjs/builders");
-const { settings } = require("../../modules/settings.js");
+const settings = require("../../modules/settings.js");
 const { awaitReply } = require("../../modules/functions.js");
 
 exports.run = async (client, message, [action, key, ...value], level) => { // eslint-disable-line no-unused-vars
@@ -35,9 +35,6 @@ exports.run = async (client, message, [action, key, ...value], level) => { // es
     // User must specify a different value than the current one.
     if (joinedValue === serverSettings[key]) return message.reply({ content: "This setting already has that value!", allowedMentions: { repliedUser: (replying === "true") }});
     
-    // If the guild does not have any overrides, initialize it.
-    if (!settings.has(message.guild.id)) settings.set(message.guild.id, {});
-
     // Modify the guild overrides directly.
     settings.set(message.guild.id, joinedValue, key);
 

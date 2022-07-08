@@ -1,6 +1,6 @@
 const logger = require("./logger.js");
 const config = require("../config.js");
-const { settings } = require("./settings.js");
+const settings = require("./settings.js");
 // Let's start by getting some useful functions that we'll use throughout
 // the bot, like logs and elevation features.
 
