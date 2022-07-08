@@ -42,7 +42,11 @@ class Settings {
 
     let body = { serverId: guild };
     body[key] = value;
-    axios.put(`${process.env.API_URL}/v1/config/setConfig`, body, { api_key: process.env.API_KEY })
+    axios.put(`${process.env.API_URL}/v1/config/setConfig`, body, { 
+      headers: {
+        api_key: process.env.API_KEY 
+      }
+    })
     .then(res => {
       return this.client.set(guild, value, key);
     }
@@ -62,7 +66,11 @@ class Settings {
   }
 
   delete(guild) {
-    axios.delete(`${process.env.API_URL}/v1/config/deleteServerConfig`, { serverId: guild }, { api_key: process.env.API_KEY })
+    axios.delete(`${process.env.API_URL}/v1/config/deleteServerConfig`, { serverId: guild }, { 
+      headers: {
+        api_key: process.env.API_KEY 
+      }
+    })
     .then(res => {
       this.client.delete(guild);
     })
