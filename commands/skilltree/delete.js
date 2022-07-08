@@ -47,8 +47,8 @@ exports.conf = {
 };
 
 exports.help = {
-  name: "reset",
+  name: "delete",
   category: "Skill Tree",
   description: "(PERMANENT) Deletes all data associated with your account from the database. You'd need to do ~setup again if you want to make a new account",
-  usage: "reset"
+  usage: "delete"
 };

@@ -56,9 +56,11 @@ const init = async () => {
   }
 
   // Now we load any **slash** commands you may have in the ./slash directory.
-  const slashFiles = fs.readdirSync("./slash").filter(file => file.endsWith(".js"));
-  for (const file of slashFiles) {
-    const command = require(`./slash/${file}`);
+  const slashFiles = [];
+  getFiles("./slash/", slashFiles);
+  const slashCommands = slashFiles.filter(file => file.endsWith(".js"));
+  for (const file of slashCommands) {
+    const command = require(`./${file}`);
     const commandName = file.split(".")[0];
     logger.log(`Loading Slash command: ${commandName}. 👌`, "log");
     

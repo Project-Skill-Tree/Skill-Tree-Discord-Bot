@@ -58,9 +58,9 @@ class Setting {
 
     const collector = initMessage.channel.createMessageComponentCollector({time: 120000});
     collector.on("collect", async i => {
+      await i.deferUpdate();
       callback(initMessage);
       collector.stop();
-      await i.deferUpdate();
     });
   }
   /**
