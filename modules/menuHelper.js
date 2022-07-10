@@ -7,10 +7,12 @@ const {MessageSelectMenu} = require("discord.js");
  * Create swipeable panel
  * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
  * List is cyclic and cycles back to the start
- * @param interaction - discord interaction
- * @param embed - embed to query
+ * @param msg - embedded message to attach to
+ * @param {User} user - User who sent the message
+ * @param onYes - function to run on "yes" selected
+ * @param onNo - function to run on "no" selected
  */
-exports.createYesNoPanel = async function(interaction, embed) {
+exports.createYesNoPanel = async function(msg, user, onYes, onNo) {
   //Add left/right messageButton to message
   const row = new MessageActionRow()
     .addComponents(
@@ -23,20 +25,23 @@ exports.createYesNoPanel = async function(interaction, embed) {
         .setLabel("NO")
         .setStyle("PRIMARY"),
     );
-  const followUp = await interaction.followUp({embeds: [embed], components: [row]});
+  msg.edit({components: [row]});
 
   //Create listener for button events
-  const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === interaction.user.id;
-  const collector = await followUp.createMessageComponentCollector({componentType : "BUTTON", filter, time: 240000});
-  return await new Promise( (resolve, reject) => {
+  const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === user.id;
+  const collector = msg.createMessageComponentCollector({filter, time: 240000});
+  await new Promise( (resolve, reject) => {
     collector.on("collect", async i => {
       await i.deferUpdate();
+      msg.delete();
       switch (i.customId) {
         case "yes":
-          resolve(true);
+          await onYes();
+          resolve();
           break;
         case "no":
-          resolve(false);
+          await onNo();
+          resolve();
           break;
         default:
           reject(new Error("Invalid option in yes/no panel"));
@@ -46,34 +51,86 @@ exports.createYesNoPanel = async function(interaction, embed) {
   });
 };
 
+
+/**
+ * Create swipeable panel
+ * Adds left/right embedded buttons to a discord message to navigate through a swipeable list
+ * List is cyclic and cycles back to the start
+ * @param {Client} client - Discord bot client
+ * @param {User} message - Message from the user
+ * @param {Swipeable[]} list - List of swipeable objects
+ */
+exports.createSwipePanel = async function(client, message, list) {
+  const msg = await list[0].send(message);
+  let currentPage = 0;
+
+  //Add left/right messageButton to message
+  const row = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("left")
+        .setLabel("<")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId("right")
+        .setLabel(">")
+        .setStyle("PRIMARY"),
+    );
+  msg.edit({components: [row]});
+
+  //Create listener for button events
+  const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === message.author.id;
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
+  collector.on("collect", async i => {
+    await i.deferUpdate();
+    switch (i.customId) {
+      case "left":
+        currentPage--;
+        if (currentPage === -1) currentPage = list.length - 1;
+        break;
+      case "right":
+        currentPage++;
+        if (currentPage === list.length) currentPage = 0;
+        break;
+      default: break;
+    }
+    //update embed
+    const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
+    await msg.removeAttachments();
+    msg.edit({embeds: data[0], files: data[1]});
+  });
+};
+
+
 /**
  * Create swipeable panel
  * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
- * @param {Interaction} interaction - Message from the user
+ * @param {User} message - Message from the user
  * @param {Swipeable[]} list - List of swipeable objects
  * @param {?{}=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  * @param refresh - action to happen on update
  */
-exports.createLargeSwipePanel = async function(client, interaction,
+exports.createLargeSwipePanel = async function(client, message,
   list, actions = null, refresh=null) {
+  const msg = await list[0].send(message);
   let currentPage = 0;
 
-  let options = await update(interaction, list, currentPage, actions);
-  let followUp = await interaction.editReply(options);
+  await update(message, msg, list, currentPage, actions);
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
     || i.customId === "next"
     || i.customId === "first"
-    || i.customId === "last") && i.user.id === interaction.user.id;
+    || i.customId === "last") && i.user.id === message.author.id;
 
-  const collector = followUp.createMessageComponentCollector({filter, time: 120000});
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
 
+    await i.deferUpdate();
     switch (i.customId) {
       case "first":
         currentPage = 0;
@@ -93,16 +150,15 @@ exports.createLargeSwipePanel = async function(client, interaction,
       default:
         break;
     }
-    options = await update(interaction, list, currentPage, actions);
-    await i.update(options);
+    await update(message, msg, list, currentPage, actions);
   });
 
 
   //Create action listener
   if (actions == null) return;
 
-  const actionFilter = i => i.user.id === interaction.user.id;
-  const actionCollector = followUp.createMessageComponentCollector({actionFilter, time: 120000});
+  const actionFilter = i => i.user.id === message.author.id;
+  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
     await i.deferUpdate();
@@ -114,6 +170,7 @@ exports.createLargeSwipePanel = async function(client, interaction,
       //Delete item on action
       if (deleteItem) {
         if (refresh) {
+          msg.delete();
           refresh();
           return;
         }
@@ -121,12 +178,12 @@ exports.createLargeSwipePanel = async function(client, interaction,
         list = list.filter(i => i !== toRemove);
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
-        followUp = await update(interaction, list, currentPage, actions);
+        await update(message, msg, list, currentPage, actions);
       }
     }
   });
 
-  return followUp;
+  return msg;
 };
 
 /**
@@ -134,23 +191,25 @@ exports.createLargeSwipePanel = async function(client, interaction,
  * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
- * @param interaction
+ * @param {User} message - Message from the user
  * @param {Swipeable[]} list - List of swipeable objects
  * @param {?[{}]=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
-exports.createLargeMultiActionSwipePanel = async function(client, interaction,
+exports.createLargeMultiActionSwipePanel = async function(client, message,
   list, actions = null) {
+  const msg = await list[0].send(message);
   let currentPage = 0;
-  let followUp = await update(interaction, list, currentPage, actions[currentPage]);
+
+  await update(message, msg, list, currentPage, actions[currentPage]);
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
     || i.customId === "next"
     || i.customId === "first"
-    || i.customId === "last") && i.user.id === interaction.user.id;
+    || i.customId === "last") && i.user.id === message.author.id;
 
-  const collector = followUp.createMessageComponentCollector({filter, time: 120000});
+  const collector = msg.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
 
@@ -174,15 +233,15 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
       default:
         break;
     }
-    followUp = await update(interaction, list, currentPage, actions[currentPage]);
+    await update(message, msg, list, currentPage, actions[currentPage]);
   });
 
 
   //Create action listener
   if (actions == null) return;
 
-  const actionFilter = i => i.user.id === interaction.user.id;
-  const actionCollector = followUp.createMessageComponentCollector({actionFilter, time: 120000});
+  const actionFilter = i => i.user.id === message.author.id;
+  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
     await i.deferUpdate();
@@ -201,23 +260,24 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
         }
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
-        followUp = await update(interaction, list, currentPage, actions[currentPage]);
+        await update(message, msg, list, currentPage, actions[currentPage]);
       }
     }
   });
 
-  return followUp;
+  return msg;
 };
 
 
-async function update(interaction, list, currentPage, actions) {
+async function update(message, msg, list, currentPage, actions) {
   //check for empty list
   if (list.length === 0) {
+    msg.delete();
     const embed = new MessageEmbed();
     embed.setTitle("EMPTY");
     embed.setDescription("No more items to display");
     embed.setThumbnail("");
-    await interaction.editReply({embeds: [embed]});
+    message.reply({embeds: [embed]});
     return;
   }
 
@@ -230,8 +290,11 @@ async function update(interaction, list, currentPage, actions) {
   }
 
   //update embed to show current page
-  const data = await list[currentPage].update(interaction);
-  return {embeds: data[0], components: components, files: data[1], attachments: []};
+  const data = await list[currentPage].update(new MessageEmbed(msg.embeds[0]));
+  if (msg.embeds[0].thumbnail !== null && msg.embeds[0].thumbnail.length !== 0) {
+    await msg.removeAttachments();
+  }
+  await msg.edit({embeds: data[0], components: components, files: data[1]});
 }
 
 function createRow(currentPage, length) {

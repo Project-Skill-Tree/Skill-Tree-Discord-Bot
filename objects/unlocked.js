@@ -15,14 +15,30 @@ class Unlocked extends Swipeable {
   }
 
   /**
+   * Sends an embedded skill in the chat
+   * @param message - channel to send the message in
+   * @param channel
+   */
+  async send(message, channel) {
+    //Create embedded messages
+    const data = await this.update(new MessageEmbed());
+
+    if (message !== null) {
+      return await message.reply({embeds: data[0], files: data[1]});
+    } else {
+      return await channel.send({embeds: data[0], files: data[1]});
+    }
+  }
+
+  /**
    * Updates properties of embed with values from this class
+   * @param embed - embedded message to update
    * @returns data - [embed, files]
    */
-  async update() {
+  async update(embed) {
     const image = await this.object.getIcon();
     const file = new MessageAttachment(image, "img.png");
 
-    const embed = new MessageEmbed();
     await embed.setColor("#ffce00");
     embed.setTitle(`UNLOCKED: ${this.object.getName()}`);
     embed.setThumbnail("attachment://img.png");

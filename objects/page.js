@@ -22,11 +22,21 @@ class Page extends Swipeable {
   }
 
   /**
+   * Sends an embedded page in the chat
+   * @param message - channel to send the message in
+   */
+  async send(message) {
+    const data = await this.update(new MessageEmbed());
+
+    return message.reply({embeds: data[0], files: data[1]});
+  }
+
+  /**
    * Updates properties of embed with values from this class
+   * @param embed - embedded message to update
    * @returns data - [embed, files]
    */
-  async update() {
-    const embed = new MessageEmbed();
+  async update(embed) {
     embed.setColor("#d21cff");
     embed.setTitle(this.title);
     embed.setDescription(this.text);
@@ -37,6 +47,7 @@ class Page extends Swipeable {
       embed.setThumbnail("attachment://image.png");
       files.push(imageFile);
     }
+
     const embeds = [embed];
     return [embeds, files];
   }

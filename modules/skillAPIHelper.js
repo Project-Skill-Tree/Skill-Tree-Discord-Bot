@@ -17,17 +17,21 @@ function getAPIKey() {
 /**
  * Get JSON object containing tasks that the user has accepted from the database
  * @param userID - MongoDB userID
+ * @param callback - list of task objects
  */
-exports.getCurrentTasks = async function(userID) {
-  const res = await axios.get(process.env.API_URL + "tasks/currentTasks", {
+exports.getCurrentTasks = function(userID,callback) {
+  axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
+  }).then((res)=>{
+    const tasks = res.data.tasks.map(data => Task.create(data));
+    const timezoneoffset = res.data.timezoneoffset;
+    callback(tasks, timezoneoffset);
+  }).catch(res => {
+    console.log(res);
   });
-  const tasks = res.data.tasks.map(data => Task.create(data));
-  const timezoneoffset = res.data.timezoneoffset;
-  return [tasks, timezoneoffset];
 };
 
 /**
@@ -70,16 +74,19 @@ exports.deleteTask = function(taskID) {
  * @param userID - MongoDB userID
  * @param callback - return JSON data of skills in progress
  */
-exports.getInProgress = async function(userID) {
-  const res = await axios.get(process.env.API_URL + "users/getInProgress", {
+exports.getInProgress = function(userID, callback) {
+  axios.get(process.env.API_URL + "users/getInProgress", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
+  }).then((res)=>{
+    const skills = res.data.skills.map(val => Skill.create(val));
+    const challenges = res.data.challenges.map(val => Challenge.create(val));
+    callback(skills.concat(challenges));
+  }).catch(res => {
+    console.log(res);
   });
-  const skills = res?.data.skills.map(val => Skill.create(val));
-  const challenges = res?.data.challenges.map(val => Challenge.create(val));
-  return skills.concat(challenges);
 };
 
 /**
@@ -87,16 +94,20 @@ exports.getInProgress = async function(userID) {
  * @param userID - MongoDB userID
  * @param callback - function to run, passes list of skills
  */
-exports.getAvailable = async function(userID) {
-  const res = await axios.get(process.env.API_URL + "users/getAvailable", {
+exports.getAvailable = function(userID, callback) {
+  axios.get(process.env.API_URL + "users/getAvailable", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
+  }).then(res => {
+    const skills = res.data.skills.map(val => Skill.create(val));
+    const challenges = res.data.challenges.map(val => Challenge.create(val));
+    callback(skills.concat(challenges));
+  }).catch(res => {
+    console.log(res);
+    console.log(`Error fetching skills: ${res.status}`);
   });
-  const skills = res.data.skills.map(val => Skill.create(val));
-  const challenges = res.data.challenges.map(val => Challenge.create(val));
-  return skills.concat(challenges);
 };
 
 /**
