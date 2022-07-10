@@ -133,6 +133,14 @@ function createDropDownBox(tasks, date) {
         tasks.map(
           task => {
             let goal = task.child.goal;
+            if (!goal) {
+              return {
+                label: task.child.getName(),
+                description: task.child.goals,
+                value: task.child.getName(),
+                emoji: task.isChecked(date) ? "✅" : "❌",
+              };
+            }
             if (goal.length > 100) {
               goal = task.child.goal.substring(0,97) + "...";
             }

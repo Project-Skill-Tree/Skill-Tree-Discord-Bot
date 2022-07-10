@@ -4,6 +4,7 @@ const XPHelper = require("./XPHelper");
 const {drawBadge} = require("../objects/badge");
 const Skill = require("../objects/skill");
 const Challenge = require("../objects/challenge");
+const {getDaysBetweenDates} = require("./dateHelper");
 
 /** @module WeeklyReviewRenderer */
 
@@ -248,10 +249,11 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
         y + pad + index*tHeight + tHeight*0.5 - size*0.5 - 5,
         w - pad*2 - tHeight,
         size + 15);
-      const dateIndex = new Date();
+      const dateIndex = new Date(new Date().getTime() + user.timezone*3600000);
       let numChecked = 0;
+      console.log(task.startDate, task.data);
       for (let i = 0; i < 7; i++) {
-        if (dateIndex < task.startDate) context.fillStyle = "rgba(20, 20, 20, 1.0)";
+        if (getDaysBetweenDates(dateIndex, task.startDate) > 0) context.fillStyle = "rgba(20, 20, 20, 1.0)";
         else if (task.isChecked(dateIndex)) {
           context.fillStyle = "rgba(108, 199, 78,0.8)";
           numChecked += 1;
@@ -262,12 +264,13 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
           y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
           size,
           size);
-        dateIndex.setDate(dateIndex.getDate() - 1);
+        task.setChecked(task.isChecked(dateIndex), dateIndex);
+        dateIndex.setUTCDate(dateIndex.getUTCDate() - 1);
       }
 
       //Draw completion percentage
       context.font = "25px \"Akira\"";
-      let percent = Math.floor(100 *  numChecked / Math.min(task.data.length, 7));
+      let percent = Math.floor(100 * numChecked / Math.min(task.data.length, 7));
       percent = isNaN(percent) ? 0 : percent;
       const text = `${Math.max(percent, 0)}%`;
       const percentMetric = context.measureText(text);
