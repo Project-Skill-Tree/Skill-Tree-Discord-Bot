@@ -36,33 +36,21 @@ class Item extends Swipeable {
   }
 
   /**
-   * Sends an embedded item in the chat
-   * @param message - message to send to
-   * @param channel - send to channel if message doesn't exist
-   */
-  async send(message, channel) {
-    const data = await this.update(new MessageEmbed());
-
-    if (message !== null) {
-      return await message.reply({embeds: data[0], files: data[1]});
-    } else {
-      return await channel.send({embeds: data[0], files: data[1]});
-    }
-  }
-
-  /**
    * Updates properties of embed with values from this class
-   * @param embed - embed to update
    * @return embed - updated embed
    */
-  async update(embed) {
+  async update() {
     const icon = new MessageAttachment(await this.getIcon(), "icon.png");
 
+    const embed = new MessageEmbed();
     await embed.setColor("#1071E5");
     embed.setTitle("```[ITEM FOUND]```");
     embed.setThumbnail("attachment://icon.png");
     embed.setDescription(this.toString());
-    return [[embed], [icon]];
+
+    const embeds = [embed];
+    const files = [icon];
+    return [embeds, files];
   }
 
   /**

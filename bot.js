@@ -67,6 +67,9 @@ const init = async () => {
     // Now set the name of the command with it's properties.
     client.container.slashcmds.set(command.commandData.name, command);
   }
+  //Set all global slash commands
+  const globalCmds = client.container.slashcmds.filter(c => !c.conf.guildOnly);
+  await client.application?.commands.set(globalCmds.map(c => c.commandData)).catch(e => console.log(e));
 
   // Then we load events, which will include our message and ready event.
   const eventFiles = fs.readdirSync("./events/").filter(file => file.endsWith(".js"));
