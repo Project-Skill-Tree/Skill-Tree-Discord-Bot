@@ -251,7 +251,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
         size + 15);
       const dateIndex = new Date(new Date().getTime() + user.timezone*3600000);
       let numChecked = 0;
-      console.log(task.startDate, task.data);
+
       for (let i = 0; i < 7; i++) {
         if (getDaysBetweenDates(dateIndex, task.startDate) > 0) context.fillStyle = "rgba(20, 20, 20, 1.0)";
         else if (task.isChecked(dateIndex)) {
