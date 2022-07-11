@@ -189,7 +189,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
     } else { // if that fails: sort by xp
       return b.child.xp - a.child.xp;
     }
-  }).splice(0,6);
+  }).slice(0,6);
 
   //Width of one task
   const tHeight = 90;
@@ -250,11 +250,12 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
         w - pad*2 - tHeight,
         size + 15);
       const dateIndex = new Date(new Date().getTime() + user.timezone*3600000);
+
       let numChecked = 0;
 
       for (let i = 0; i < 7; i++) {
-        if (getDaysBetweenDates(dateIndex, task.startDate) > 0) context.fillStyle = "rgba(20, 20, 20, 1.0)";
-        else if (task.isChecked(dateIndex)) {
+        if (getDaysBetweenDates(dateIndex, task.startDate, user.timezone) > 0) context.fillStyle = "rgba(20, 20, 20, 1.0)";
+        else if (task.isChecked(dateIndex, user.timezone)) {
           context.fillStyle = "rgba(108, 199, 78,0.8)";
           numChecked += 1;
         }
@@ -264,7 +265,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
           y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
           size,
           size);
-        task.setChecked(task.isChecked(dateIndex), dateIndex);
+        task.setChecked(task.isChecked(dateIndex, user.timezone), dateIndex, user.timezone);
         dateIndex.setUTCDate(dateIndex.getUTCDate() - 1);
       }
 

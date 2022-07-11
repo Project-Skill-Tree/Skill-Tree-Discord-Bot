@@ -48,7 +48,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
   let date = dayToDate(day, timezoneOffset);
 
   const embed = buildEmbed(tasks, date, timezoneOffset);
-  const dropDownBox = createDropDownBox(tasks, date);
+  const dropDownBox = createDropDownBox(tasks, date, timezoneOffset);
 
   const row = new MessageActionRow()
     .addComponents(
@@ -72,7 +72,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       return;
     }
     if (getDaysBetweenDates(dayCreated,
-      new Date(new Date().getTime() + timezoneOffset*3600000)) !== 0) {
+      new Date(new Date().getTime() + timezoneOffset*3600000), timezoneOffset) !== 0) {
       i.reply({ content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true });
       return;
     }
@@ -98,9 +98,9 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => task.child.getName() === skillTitle);
       if (!task) return;
-      task.setChecked(!task.isChecked(date), date);
+      task.setChecked(!task.isChecked(date, timezoneOffset), date, timezoneOffset);
 
-      updateTask(userID, task, day, task.isChecked(date), (levelUp, unlocked) => {
+      updateTask(userID, task, day, task.isChecked(date, timezoneOffset), (levelUp, unlocked) => {
         if (levelUp !== 0) {
           getUser(userID, message.author.username, (user) => {
             displayLevelUp(user, message.channel);
@@ -113,7 +113,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
     }
 
     // Send the same embed, but with the updated values of the tasks array.
-    const embed = buildEmbed(filteredTasks, date);
+    const embed = buildEmbed(filteredTasks, date, timezoneOffset);
     const dropDownBox = createDropDownBox(filteredTasks, date);
     const components = [];
     if (dropDownBox != null) {
@@ -126,7 +126,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
   });
 }
 
-function createDropDownBox(tasks, date) {
+function createDropDownBox(tasks, date, timezoneOffset) {
   if (tasks.length !== 0) {
     return new MessageActionRow().addComponents(
       new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Check/uncheck a task").addOptions(
@@ -138,7 +138,7 @@ function createDropDownBox(tasks, date) {
                 label: task.child.getName(),
                 description: task.child.goals,
                 value: task.child.getName(),
-                emoji: task.isChecked(date) ? "✅" : "❌",
+                emoji: task.isChecked(date, timezoneOffset) ? "✅" : "❌",
               };
             }
             if (goal.length > 100) {
@@ -148,7 +148,7 @@ function createDropDownBox(tasks, date) {
               label: task.child.getName(),
               description: goal,
               value: task.child.getName(),
-              emoji: task.isChecked(date) ? "✅" : "❌",
+              emoji: task.isChecked(date, timezoneOffset) ? "✅" : "❌",
             };
           }
         )
@@ -159,7 +159,7 @@ function createDropDownBox(tasks, date) {
 }
 
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(tasks, date) {
+function buildEmbed(tasks, date, tz) {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
@@ -167,39 +167,61 @@ function buildEmbed(tasks, date) {
   const dailyTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval === "day");
   const otherTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval !== "day");
 
-  let dailyTaskStrings = dailyTasks.map((task) => formatTask(task, date)).join("\n");
-  let otherTaskStrings = otherTasks.map((task) => formatTask(task, date)).join("\n");
-  let challengeTaskStrings = challengeTasks.map((task) => formatTask(task, date)).join("\n");
+  let dailyTaskStrings = dailyTasks.map((task) => formatTask(task, date, tz)).join("\n");
+  let otherTaskStrings = otherTasks.map((task) => formatTask(task, date, tz)).join("\n");
+  let challengeTaskStrings = challengeTasks.map((task) => formatTask(task, date, tz)).join("\n");
 
   if (dailyTaskStrings.length === 0) { dailyTaskStrings = "No daily tasks are available";}
   if (otherTaskStrings.length === 0) { otherTaskStrings = "No other tasks are available";}
   if (challengeTaskStrings.length === 0) { challengeTaskStrings = "No challenges available";}
-  return new MessageEmbed()
+  const messageEmbed = new MessageEmbed()
     .setTitle(`Tasks for ${dateString}`)
-    .setColor("#1071E5")
-    .addField("Daily Tasks", dailyTaskStrings)
-    .addField("Other", otherTaskStrings)
-    .addField("Challenges", challengeTaskStrings);
+    .setColor("#1071E5");
+  addField(messageEmbed, dailyTaskStrings, "DAILY TASKS");
+  addField(messageEmbed, otherTaskStrings, "OTHER");
+  addField(messageEmbed, challengeTaskStrings, "CHALLENGES");
+  return messageEmbed;
 }
 
-function formatTask(task, date) {
+function addField(messageEmbed, string, title) {
+  //Chop tasks to fit field
+  let chopped = string;
+  let index = 0;
+  while (chopped.length !== 0) {
+    const chars = chopped.slice(0, 1024);
+    const name = index === 0 ? title : title + " (cont)";
+
+    if (chars.length < 1024) {
+      messageEmbed.addField(name, chars);
+      chopped = "";
+    } else {
+      const lastSplit = chars.lastIndexOf("\n");
+      const field = chars.slice(0, lastSplit);
+      chopped = chopped.slice(lastSplit + 1);
+      messageEmbed.addField(name, field);
+    }
+    index += 1;
+  }
+}
+
+function formatTask(task, date, tz) {
   if (task.child instanceof Challenge) {
-    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:": ":x:";
+    const checkedEmoji = task.isChecked(date, tz) ? ":white_check_mark:": ":x:";
     return `${checkedEmoji} | **${task.child.title} (INCOMPLETE)**: \n${task.child.goal}`;
   }
   if (task.child instanceof Skill) {
-    const checkedEmoji = task.isChecked(date) ? ":white_check_mark:" : ":x:";
+    const checkedEmoji = task.isChecked(date, tz) ? ":white_check_mark:" : ":x:";
     const levelRoman = romanise(task.child.level);
 
     const freq = formatFrequency(task.child.frequency, task.child.interval);
     if (freq === "DAILY") {
-      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date)})**: \n${task.child.goal}`;
+      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date, tz)})**: \n${task.child.goal}`;
     } else {
       if (task.child.timelimit === "N/A") {
         return `${checkedEmoji} | **${task.child.title} ${levelRoman} (0/1)**: \n${task.child.goal}`;
       } else {
-        const numForPeriod = task.numCheckedInInterval(date);
-        const daysLeft = task.daysLeftInterval(date);
+        const numForPeriod = task.numCheckedInInterval(date, tz);
+        const daysLeft = task.daysLeftInterval(date, tz);
         return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
       }
     }

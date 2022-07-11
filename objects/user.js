@@ -56,7 +56,7 @@ class User {
   }
 
   getPrevXP() {
-    const prevXP = this.xpHistory.splice(-1);
+    const prevXP = this.xpHistory.slice(-1);
     if (prevXP === undefined) {
       return 0;
     }

@@ -101,7 +101,7 @@ exports.getAbsDate = function(d0) {
 
    Assumes d0 <= d1
 */
-exports.getDaysBetweenDates = function(d0, d1) {
+exports.getDaysBetweenDates = function(d0, d1, tz) {
 
   const msPerDay = 8.64e7;
 
@@ -110,8 +110,8 @@ exports.getDaysBetweenDates = function(d0, d1) {
   const x1 = new Date(d1);
 
   // Set to noon - avoid DST errors
-  x0.setHours(12,0,0);
-  x1.setHours(12,0,0);
+  x0.setUTCHours(12+tz,0,0);
+  x1.setUTCHours(12+tz,0,0);
 
   // Round to remove daylight saving errors
   return Math.round( (x1 - x0) / msPerDay );
