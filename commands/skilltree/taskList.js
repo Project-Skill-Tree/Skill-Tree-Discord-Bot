@@ -114,7 +114,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
 
     // Send the same embed, but with the updated values of the tasks array.
     const embed = buildEmbed(filteredTasks, date, timezoneOffset);
-    const dropDownBox = createDropDownBox(filteredTasks, date);
+    const dropDownBox = createDropDownBox(filteredTasks, date, timezoneOffset);
     const components = [];
     if (dropDownBox != null) {
       components.push(dropDownBox);
