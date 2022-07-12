@@ -37,12 +37,12 @@ class Resource {
    * const success = new Resource({ color: "#8C33FF", emote: "<:success:983285649660596224>" }); // Override success into default interaction.reply() prototype
    *
    * const row = new MessageActionRow()
-	 *	.addComponents(
-	 *		new MessageButton()
-	 *			.setCustomId('primary')
-	 *   		.setLabel('Primary')
-	 * 			.setStyle('PRIMARY'),
-	 * 	);
+   *	.addComponents(
+   *		new MessageButton()
+   *		.setCustomId('primary')
+   *   		.setLabel('Primary')
+   * 		.setStyle('PRIMARY'),
+   * 	);
    * await interaction.reply({ title: "Hola!", description: "¿Como estas?", components: [row] });
    * 
    * Output: https://imgur.com/a/THUZfLI
