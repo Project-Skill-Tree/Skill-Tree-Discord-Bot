@@ -20,6 +20,32 @@ class Resource {
    * @param {object} options - parameters and values for the embed, as well as additional message options like components and ephemeral
    * most object keys are obtained from the direct dJS function counterpart, eg: { title: "" } is from .setTitle("")
    * { authorIconURL: "" } is from .setAuthor({ iconURL: "" })
+   * 
+   * Given below are a few examples:
+   *
+   * .setDescription() => { description: "" }
+   * .setColor() => { color: "" } ?? Resource().color 
+   * The colors use the pre-defined color attr by default, as this allows for more uniformity between the different types of embeds (success embeds, error embeds, etc)
+   * .setImage() => { imageURL: "" }
+   * .setThumbnail() => { thumbnailURL: "" }
+   * .setAuthor({ name: "", iconURL: "", url: "" }) => { authorName: "", authorIconURL: "", authorURL: "" }
+   * .setFooter({ text: "", iconURL: "" }) => { footerText: "", footerIconURL: "" }
+   * .addFields({ name: "Title 1", value: "Value 1", inline: true }, { name: "Title 2", value: "Value 2", inline: true }) => { fieldNames: ["Title 1", "Title 2"], fieldValues: ["Value 1", "Value 2"], inlines: [true, true]}
+   *
+   * Sample usage:
+   *
+   * const success = new Resource({ color: "#8C33FF", emote: "<:success:983285649660596224>" }); // Override success into default interaction.reply() prototype
+   *
+   * const row = new MessageActionRow()
+	 *	.addComponents(
+	 *		new MessageButton()
+	 *			.setCustomId('primary')
+	 *   		.setLabel('Primary')
+	 * 			.setStyle('PRIMARY'),
+	 * 	);
+   * await interaction.reply({ title: "Hola!", description: "¿Como estas?", components: [row] });
+   * 
+   * Output: https://imgur.com/a/THUZfLI
    *
    * @return {object}
    */
