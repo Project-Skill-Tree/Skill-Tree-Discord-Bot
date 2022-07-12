@@ -94,7 +94,7 @@ class Skill extends Swipeable {
   }
 
   toString() {
-    if (this.timelimit === "N/A") {
+    if (this.interval === "N/A") {
       return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" +
         "\n**TIME:** `N/A`" +
         "\n**XP:** `" + `${this.xp}XP` + "`";

@@ -220,7 +220,7 @@ function formatTask(task, date, tz) {
     if (freq === "DAILY") {
       return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date, tz)} - ${daysLeft})**: \n${task.child.goal}`;
     } else {
-      if (task.child.timelimit === "N/A") {
+      if (task.child.interval === "N/A") {
         return `${checkedEmoji} | **${task.child.title} ${levelRoman} (0/1)**: \n${task.child.goal}`;
       } else {
         const numForPeriod = task.numCheckedInInterval(date, tz);

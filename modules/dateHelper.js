@@ -25,6 +25,9 @@ exports.formatFrequency = function(frequency, interval) {
       case "year":
         timesString = `${frequency}x/YEAR`;
         break;
+      case "N/A":
+        timesString = "N/A";
+        break;
     }
   } else {
     switch (interval) {
@@ -42,6 +45,10 @@ exports.formatFrequency = function(frequency, interval) {
 
       case "year":
         timesString = "YEARLY";
+        break;
+
+      case "N/A":
+        timesString = "N/A";
         break;
     }
   }
