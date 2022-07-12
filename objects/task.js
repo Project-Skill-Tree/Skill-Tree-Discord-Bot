@@ -48,7 +48,7 @@ class Task {
     this.data[index] = checked;
     //Write all nonexistant data as false
     for (let i = 0; i < this.data.length; i++) {
-      if (this.data[i] === undefined) {
+      if (this.data[i] === undefined || this.data[i] === null) {
         this.data[i] = false;
       }
     }
@@ -91,7 +91,8 @@ class Task {
     if (this.child instanceof Skill) {
       data = [...this.data]; //only check the last <timelimit> days
       if (interval !== -1) {
-        data = data.slice(-interval);
+        const curIntervalLength = this.data.length - Math.floor(this.data.length / interval) * interval - 1;
+        data = data.slice(Math.min(-curIntervalLength,-1), 0);
       }
     } else { //challenge has no time limit
       data = this.data;
