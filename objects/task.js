@@ -91,8 +91,8 @@ class Task {
     if (this.child instanceof Skill) {
       data = [...this.data]; //only check the last <timelimit> days
       if (interval !== -1) {
-        const curIntervalLength = this.data.length - Math.floor(this.data.length / interval) * interval - 1;
-        data = data.slice(Math.min(-curIntervalLength,-1), 0);
+        const curIntervalLength = (this.data.length - Math.floor(this.data.length / interval) * interval) + 1;
+        data = data.slice(Math.min(-curIntervalLength,-1));
       }
     } else { //challenge has no time limit
       data = this.data;
