@@ -66,14 +66,14 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
 
   const collector = msg.createMessageComponentCollector({time: 240000});
 
-  collector.on("collect", i => {
+  collector.on("collect", async i => {
     if (i.user.id !== message.author.id) {
-      i.reply({ content: "You can't edit someone else's task list!", ephemeral: true });
+      i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
       return;
     }
     if (getDaysBetweenDates(dayCreated,
-      new Date(new Date().getTime() + timezoneOffset*3600000), timezoneOffset) !== 0) {
-      i.reply({ content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true });
+      new Date(new Date().getTime() + timezoneOffset * 3600000), timezoneOffset) !== 0) {
+      i.reply({content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true});
       return;
     }
 
@@ -100,16 +100,18 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       if (!task) return;
       task.setChecked(!task.isChecked(date, timezoneOffset), date, timezoneOffset);
 
-      updateTask(userID, task, day, task.isChecked(date, timezoneOffset), (levelUp, unlocked) => {
-        if (levelUp !== 0) {
-          getUser(userID, message.author.username, (user) => {
-            displayLevelUp(user, message.channel);
-          });
-        }
-        if (unlocked.length !== 0) {
-          createLargeSwipePanel(client, message, unlocked);
-        }
-      });
+      const [levelUp, unlocked] = await updateTask(userID, task, day, task.isChecked(date, timezoneOffset));
+
+      if (levelUp !== 0) {
+        getUser(userID, message.author.username, (user) => {
+          displayLevelUp(user, message.channel);
+        });
+        tasks.splice(tasks.indexOf(task),1);
+        filteredTasks.splice(filteredTasks.indexOf(task), 1);
+      }
+      if (unlocked.length !== 0) {
+        createLargeSwipePanel(client, message, unlocked);
+      }
     }
 
     // Send the same embed, but with the updated values of the tasks array.
@@ -207,7 +209,7 @@ function addField(messageEmbed, string, title) {
 function formatTask(task, date, tz) {
   if (task.child instanceof Challenge) {
     const checkedEmoji = task.isChecked(date, tz) ? ":white_check_mark:": ":x:";
-    return `${checkedEmoji} | **${task.child.title} (INCOMPLETE)**: \n${task.child.goal}`;
+    return `${checkedEmoji} | **${task.child.title} (${task.percentChecked(date, tz)})**: \n${task.child.goal}`;
   }
   if (task.child instanceof Skill) {
     const checkedEmoji = task.isChecked(date, tz) ? ":white_check_mark:" : ":x:";

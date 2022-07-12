@@ -215,24 +215,22 @@ exports.cancel = function(userID, toCancel) {
  * @param task
  * @param day
  * @param checked - T/F if checked/unchecked
- * @param callback - function to execute on completion
  */
-exports.updateTask = function(userid, task, day, checked, callback) {
-  axios
+exports.updateTask = async function(userid, task, day, checked) {
+  const res = await axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
       taskid: task.id,
       checked: checked,
       day: day
-    },{
+    }, {
       headers: {
         api_key: getAPIKey()
       }
-    }).then((res)=>{
-      const levelUp = res.data.levelUp;
-      const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
-      const items = res.data.items.map(val => new Unlocked(Item.create(val)));
-      const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
-      callback(levelUp, [].concat(skills, items, challenges));
     });
+  const levelUp = res.data.levelUp;
+  const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
+  const items = res.data.items.map(val => new Unlocked(Item.create(val)));
+  const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
+  return [levelUp, [].concat(skills, items, challenges)];
 };

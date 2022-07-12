@@ -68,9 +68,11 @@ class Task {
     if (this.child instanceof Skill) {
       data = [...this.data]; //only check the last <timelimit> days
       const blockSize = intervalToInt(this.child.interval);
-      const newIndexOfStart = Math.floor((data.length - this.child.timelimit) / blockSize) * blockSize;
-      const limitSize = data.length - newIndexOfStart;
-      data = data.slice(-limitSize);
+      if (blockSize !== -1) {
+        const newIndexOfStart = Math.floor((data.length - this.child.timelimit) / blockSize) * blockSize;
+        const limitSize = data.length - newIndexOfStart;
+        data = data.slice(-limitSize);
+      }
     } else { //challenge has no time limit
       data = this.data;
     }
@@ -88,7 +90,9 @@ class Task {
     const frequency = this.child.frequency;
     if (this.child instanceof Skill) {
       data = [...this.data]; //only check the last <timelimit> days
-      data = data.slice(-interval);
+      if (interval !== -1) {
+        data = data.slice(-interval);
+      }
     } else { //challenge has no time limit
       data = this.data;
     }
@@ -104,8 +108,13 @@ class Task {
 
     //Split goals into equal sections covering the time limit for the given frequency
     const blockSize = intervalToInt(this.child.interval);
-    const curIntervalLength = this.data.length - Math.floor(this.data.length / blockSize) * blockSize;
-    const daysLeft = intervalToInt(this.child.interval) - curIntervalLength;
+    let daysLeft = 0;
+    if (blockSize !== -1) {
+      const curIntervalLength = this.data.length - Math.floor(this.data.length / blockSize) * blockSize;
+      daysLeft = blockSize - curIntervalLength;
+    } else {
+      daysLeft = "N/A";
+    }
 
     return `${daysLeft} day(s) left`;
   }

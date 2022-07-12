@@ -71,7 +71,7 @@ function getCurrentOffset() {
     if ( list.indexOf(dayOfWeek) < 4) {
       dayDiff = - list.indexOf(dayOfWeek);
     } else {
-      dayDiff = 7 - list.indexOf(dayOfWeek);
+      dayDiff = 6 - list.indexOf(dayOfWeek);
     }
     const scheduledTime = new Date(currentTime.getTime());
     scheduledTime.setUTCHours(18,0,0);
