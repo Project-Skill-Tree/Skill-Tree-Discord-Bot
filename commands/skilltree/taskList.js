@@ -68,14 +68,18 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
 
   collector.on("collect", async i => {
     if (i.user.id !== message.author.id) {
-      i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
+      await i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
       return;
     }
     if (getDaysBetweenDates(dayCreated,
       new Date(new Date().getTime() + timezoneOffset * 3600000), timezoneOffset) !== 0) {
-      i.reply({content: "This task list is outdated, run the command again to get today's tasks", ephemeral: true});
+      await i.reply({
+        content: "This task list is outdated, run the command again to get today's tasks",
+        ephemeral: true
+      });
       return;
     }
+    await i.deferUpdate();
 
     if (i.isButton()) {
       day = i.customId; //today or yesterday
@@ -123,8 +127,6 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
     }
     components.push(row);
     msg.edit({ embeds: [embed], components: components});
-
-    i.deferUpdate();
   });
 }
 
