@@ -34,7 +34,7 @@ class Resource {
    *
    * Sample usage:
    *
-   * const success = new Resource({ color: "#8C33FF", emote: "<:success:983285649660596224>" }); // Uou must override success into default interaction.reply() prototype
+   * const success = new Resource({ color: "#8C33FF", emote: "<:success:983285649660596224>" }); // You must override success into default interaction.reply() prototype
    *
    * const row = new MessageActionRow()
    *	.addComponents(
