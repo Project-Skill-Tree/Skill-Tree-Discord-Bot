@@ -109,10 +109,10 @@ class Task {
 
     //Split goals into equal sections covering the time limit for the given frequency
     const blockSize = intervalToInt(this.child.interval);
-    let daysLeft = 0;
+    const timelimit = this.child.timelimit;
+    let daysLeft;
     if (blockSize !== -1) {
-      const curIntervalLength = this.data.length - Math.floor(this.data.length / blockSize) * blockSize;
-      daysLeft = blockSize - curIntervalLength;
+      daysLeft = Math.max(timelimit - this.data.length, 0);
     } else {
       daysLeft = "N/A";
     }

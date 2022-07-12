@@ -54,6 +54,7 @@ class Setting {
       if (initMessage) {
         initMessage.delete();
       }
+      return;
     }
 
     const collector = initMessage.channel.createMessageComponentCollector({time: 120000});

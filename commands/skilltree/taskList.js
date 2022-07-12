@@ -216,14 +216,14 @@ function formatTask(task, date, tz) {
     const levelRoman = romanise(task.child.level);
 
     const freq = formatFrequency(task.child.frequency, task.child.interval);
+    const daysLeft = task.daysLeftInterval(date, tz);
     if (freq === "DAILY") {
-      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date, tz)})**: \n${task.child.goal}`;
+      return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${task.percentChecked(date, tz)} - ${daysLeft})**: \n${task.child.goal}`;
     } else {
       if (task.child.timelimit === "N/A") {
         return `${checkedEmoji} | **${task.child.title} ${levelRoman} (0/1)**: \n${task.child.goal}`;
       } else {
         const numForPeriod = task.numCheckedInInterval(date, tz);
-        const daysLeft = task.daysLeftInterval(date, tz);
         return `${checkedEmoji} | **${task.child.title} ${levelRoman} (${freq} - ${numForPeriod} - ${daysLeft})**: \n${task.child.goal}`;
       }
     }
