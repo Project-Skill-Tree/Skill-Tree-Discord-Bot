@@ -13,20 +13,20 @@ const Skill = require("../../objects/skill");
  */
 exports.run = async (client, message) => {
   //Validate user exists
-  authUser(message.author.id, message.channel, (userID) => {
+  authUser(message.author.id, message.channel, async (userID) => {
     //Get tasks
-    getCurrentTasks(userID,(tasks, timezoneOffset)=>{
-      if (tasks.length === 0) {
-        message.channel
-          .send("```No Current tasks, go to `~start` to start a skill```")
-          .then(msg => {
-            setTimeout(() => msg.delete(), 10000);
-          });
-      } else {
-        //Show tasks in embed
-        createTaskList(client, message, tasks, userID, timezoneOffset);
-      }
-    });
+    const [tasks, timezoneOffset] = await getCurrentTasks(userID);
+
+    if (tasks.length === 0) {
+      message.channel
+        .send("```No Current tasks, go to `~start` to start a skill```")
+        .then(msg => {
+          setTimeout(() => msg.delete(), 10000);
+        });
+    } else {
+      //Show tasks in embed
+      createTaskList(client, message, tasks, userID, timezoneOffset);
+    }
   });
 };
 
@@ -91,6 +91,10 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
         row.components[0].setStyle("SECONDARY").setDisabled(true);
         row.components[1].setStyle("PRIMARY").setDisabled(false);
       }
+      //Get tasks
+      const [newTasks, newTimezoneOffset] = await getCurrentTasks(userID);
+      tasks = newTasks;
+      timezoneOffset = newTimezoneOffset;
     }
 
 

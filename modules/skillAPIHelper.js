@@ -19,19 +19,16 @@ function getAPIKey() {
  * @param userID - MongoDB userID
  * @param callback - list of task objects
  */
-exports.getCurrentTasks = function(userID,callback) {
-  axios.get(process.env.API_URL + "tasks/currentTasks", {
+exports.getCurrentTasks = async function(userID) {
+  const res = await axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
-  }).then((res)=>{
-    const tasks = res.data.tasks.map(data => Task.create(data));
-    const timezoneoffset = res.data.timezoneoffset;
-    callback(tasks, timezoneoffset);
-  }).catch(res => {
-    console.log(res);
   });
+  const tasks = res.data.tasks.map(data => Task.create(data));
+  const timezoneoffset = res.data.timezoneoffset;
+  return [tasks, timezoneoffset];
 };
 
 /**
