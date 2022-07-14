@@ -8,9 +8,9 @@ exports.run = (client) => {
   // set cron to be GMT + 12
   cron.setTimezone("Etc/GMT+12");
 
-  // run “At minute 0 past every hour from 0 through 23 on Sunday.”
+  // run “At minute 0 and 30 past every hour from 0 through 23 on Sunday.”
   // https://crontab.guru/#0_0-23_*_*_0
-  cron.schedule("0 0-23 * * 0", async () => {
+  cron.schedule("0,30 0-23 * * 0", async () => {
     getUsersInTimezone(offset, (users)=>{
       //only get discord users
       users = users.filter(u => u.discordid);
