@@ -5,8 +5,8 @@ const {getUsersInTimezone} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
 
 exports.run = (client) => {
-  //Schedule a job every sunday
-  cron.schedule("0 0-24/30 * * 6,0,1", function() {
+  //Schedule a job every day at 6pm
+  cron.schedule("0 18 * * *", async () => {
     const offset = getCurrentOffset();
     if (!offset) return;
     getUsersInTimezone(offset, (users)=>{
