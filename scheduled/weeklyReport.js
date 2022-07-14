@@ -5,10 +5,12 @@ const {getUsersInTimezone} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
 
 exports.run = (client) => {
-  //Schedule a job every day at 6pm
-  cron.schedule("0 18 * * *", async () => {
-    const offset = getCurrentOffset();
-    if (!offset) return;
+  // set cron to be GMT + 12
+  cron.setTimezone("Etc/GMT+12");
+
+  // run “At minute 0 past every hour from 0 through 23 on Sunday.”
+  // https://crontab.guru/#0_0-23_*_*_0
+  cron.schedule("0 0-23 * * 0", async () => {
     getUsersInTimezone(offset, (users)=>{
       //only get discord users
       users = users.filter(u => u.discordid);
@@ -56,30 +58,3 @@ exports.run = (client) => {
     });
   });
 };
-
-function getCurrentOffset() {
-  let offset;
-  try {
-    //Round time to the nearest 30 minutes
-    const currentTime = new Date();
-    currentTime.setMinutes(Math.round(currentTime.getMinutes() / 30) * 30);
-    //Get the nearest sunday at 6:00:00
-    const dayOfWeek = currentTime.getDay();
-    //day
-    const dayDiff = dayOfWeek < 4 ? 0 - dayOfWeek : 7 - dayOfWeek;
-    const scheduledTime = new Date(currentTime.getTime());
-    scheduledTime.setHours(18,0,0);
-    scheduledTime.setDate(currentTime.getDate() + dayDiff);
-
-    //Add 5 days so it doesn't underflow below jan 1st 1970
-    const timeDiff = new Date(10*60*60*1000*24 + scheduledTime.getTime() - currentTime.getTime());
-    offset = timeDiff.getHours() + Math.round(timeDiff.getMinutes() / 30)*0.5;
-  } catch (e) {
-    console.log(e);
-  }
-  //only check valid offsets
-  if (offset < -12 || offset > 14) {
-    return null;
-  }
-  return offset;
-}
