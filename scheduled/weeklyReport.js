@@ -30,8 +30,8 @@ exports.run = (client) => {
 
       const difference = (GMT12Time.getTime() - lastSundayAbsoluteTime)/(1000*60*60);
 
-      // convert GMT+12 current time and GMT+12 sunday6pm time to universal offset by subtracting the difference from 12
-      // for example if at GMT+12 it is 10pm and at GMT+8 it is 6pm, then the difference is 4 hours
+      // convert GMT+12 current time and GMT+12 sunday 6pm time to universal offset by subtracting the difference from 12
+      // for example if it's 10PM at GMT+12 then it's been 4 hours since last sunday 6pm
       // 12 - 4 = 8
       // therefore we must get all users that have set their timezone to GMT+8
 
