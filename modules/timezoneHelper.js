@@ -42,6 +42,7 @@ exports.timezoneFromLocation = async function(location) {
         location: foundTimezone.timeZoneId,
         dstOffset: Math.round(foundTimezone.dstOffset/360) / 10,
         //convert seconds into hours and round to nearest 1 decimal places (for 0.5)
+        
         utcOffset: Math.round(foundTimezone.rawOffset/360) / 10,
       };
     }
