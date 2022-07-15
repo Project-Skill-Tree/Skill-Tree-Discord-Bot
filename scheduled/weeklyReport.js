@@ -5,10 +5,7 @@ const { getUsersInTimezone } = require("../modules/userAPIHelper");
 const { getBaseLocation } = require("../modules/baseHelper");
 
 exports.run = (client) => {
-  // set cron to be GMT + 12
-  cron.setTimezone("Etc/GMT+12");
-
-  // run ““At minute 0 and 30.” any day of the week
+  // run “At minute 0 and 30.” any day of the week
   // https://crontab.guru/#0_0-23_*_*_0
   cron.schedule("0,30 * * * *", async () => {
 
