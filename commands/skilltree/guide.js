@@ -73,7 +73,6 @@ async function getPages(settings) {
       "Skills require an **80%** completion rate (because life gets in the way).\n"+
       "Challenges are **one off** tracked events which are completed immediately upon checking off\n"+
       "**XP**: The amount of XP you will be awarded by completing the skill. \n\n"+
-      
       "Note: If the time limit is N/A, the skill must be completed only once "+
       "and has no time limit. E.g. Plan an activity with family, does not need "+
       "to be kept up for a week. \nWhen completing a skill, all items/challenges/skills "+

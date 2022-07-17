@@ -116,7 +116,6 @@ class Task {
     } else {
       daysLeft = "N/A";
     }
-
     return `${daysLeft} day(s) left`;
   }
 
