@@ -44,12 +44,14 @@ async function startSetup(client, interaction, member) {
   settings[1].start(interaction, {}, settings, member);
 }
 
-async function setupUser(userID, userSettings) {
+async function setupUser(id, userSettings) {
+  let userID = await authUser(id);
+
   if (userID) {
     await updateUser(userID, userSettings.character, userSettings.timezone, userSettings.baselocation);
     return [];
   } else {
-    return await createUser(userID,
+    return await createUser(id,
       userSettings.character,
       userSettings.difficulty,
       userSettings.timezone,
@@ -133,35 +135,17 @@ async function getSettings(client, interaction, userExists, member) {
       }),
 
     //Timezone selection
-    new Setting("Specify your timezone",
-      "Write your timezone in the format:\n" +
-      "<timezone> or <location> or <timecode> (e.g EST / london / GMT+5)\n" +
-      "(Warning: you must complete this within 60 seconds, otherwise you will need to restart the setup process)",
+    new Setting("Set your time zone",
+      `Your time zone will automatically be set to UTC+0.\n` +
+      "Use `/timezone` in a server or in your DMs to change your time zone. \n" +
+      "Weekly reviews and reminders will be sent according to this time zone.",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
+      ),
       null,
-      (thismessage, complete, next, userSettings) => {
-        //Filter and parse location messages
-        const filter = (m) => m.author.id === interaction.user.id;
-        const timezoneCollector = thismessage.channel.createMessageCollector({filter, time: 60000});
-        timezoneCollector.on("collect", async (msg) => {
-
-          if (msg.author.id !== interaction.user.id) return;
-          const locationInfo = await timezoneFromLocation(msg.content);
-
-          await locationConfirmation(member, locationInfo, async (locationInfo) => {
-            timezoneCollector.stop();
-            userSettings.timezone = locationInfo.utcOffset;
-            complete("OK", userSettings, next);
-          });
-        });
-        // fires when the collector is finished collecting
-        timezoneCollector.on("end", async (collected, reason) => {
-          if (reason === "time") {
-            await member.send("The timezone selector has timed out. Please restart the setup process");
-            timezoneCollector.stop();
-          }
-        });
-      },
-      (res, userSettings, next) => {
+      async (_res, userSettings, next) => {
+        const locationInfo = await timezoneFromLocation("GMT+0");
+        userSettings.timezone = locationInfo.utcOffset;
         next();
       }),
 

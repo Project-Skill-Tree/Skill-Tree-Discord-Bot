@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-const { MessageEmbed, MessageActionRow, MessageButton} = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu } = require("discord.js");
 const { createUser, updateUser, authUser} = require("../../modules/userAPIHelper");
 const Configurations = require("../../modules/botConfigurations");
 const Item = require("../../objects/item");
@@ -142,47 +142,28 @@ function getSettings(scope, message, userExists) {
         next();
       }),
 
-    //Timezone selection
-    new Setting("Specify your timezone",
-      "Write your timezone in the format:\n" +
-      "<timezone> or <location> or <timecode> (e.g EST / london / GMT+5)\n"+
-      "(Warning: you must complete this within 60 seconds, otherwise you will need to restart the setup process)",
+    new Setting("Set your time zone",
+      `Your time zone will automatically be set to UTC+0.\n` +
+      "Use `/timezone` in a server or in your DMs to change your time zone. \n" +
+      "Weekly reviews and reminders will be sent according to this time zone.",
+      new MessageActionRow().addComponents(
+        new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
+      ),
       null,
-      (thismessage, complete, next, userSettings)=>{
-        //Filter and parse location messages
-        const filter = (m) => m.author.id === message.author.id;
-        const timezoneCollector = thismessage.channel.createMessageCollector({filter, time: 60000});
-        timezoneCollector.on("collect", async (msg) => {
+      async (_res, userSettings, next) => {
+        const locationInfo = await timezoneFromLocation("GMT+0");
+        userSettings.timezone = locationInfo.utcOffset;
 
-          if (msg.author.id !== message.author.id) return;
-          const locationInfo = await timezoneFromLocation(msg.content);
-
-          locationConfirmation(msg, scope, locationInfo, async (locationInfo) => {
-            timezoneCollector.stop();
-            userSettings.timezone = locationInfo.utcOffset;
-            complete("OK", userSettings, next);
-          });
-        });
-        // fires when the collector is finished collecting
-        timezoneCollector.on("end", (collected, reason) => {
-          if (reason === "time") {
-            scope
-              .send("The timezone selector has timed out. Please restart the setup process")
-              .then(msg => {
-                setTimeout(() => msg.delete(), 10000);
-              });
-            timezoneCollector.stop();
-          }
-        });
-      },
-      (res, userSettings, next)=>{
+        /*locationConfirmation(msg, scope, locationInfo, async (locationInfo) => {
+        });*/
         next();
-      }),
+      }
+    ),
 
     //DM options
     new Setting("Set your base location",
       `Your base location has been automatically set to ${baseName}.\n` +
-      "Use `~base` in a server or in your DMs to set your base location. \n" +
+      "Use `/base` in a server or in your DMs to set your base location. \n" +
       "This is where weekly reviews and reminders will be sent automatically.",
       new MessageActionRow().addComponents(
         new MessageButton().setCustomId("ok").setLabel("OK").setStyle("PRIMARY"),
