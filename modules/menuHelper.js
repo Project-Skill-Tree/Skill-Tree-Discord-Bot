@@ -80,7 +80,7 @@ exports.createSwipePanel = async function(client, message, list) {
 
   //Create listener for button events
   const filter = i => (i.customId === "left" || i.customId === "right") && i.user.id === message.author.id;
-  const collector = msg.createMessageComponentCollector({filter, time: 120000});
+  const collector = msg.createMessageComponentCollector({filter, time: 240000});
   collector.on("collect", async i => {
     await i.deferUpdate();
     switch (i.customId) {
@@ -126,7 +126,7 @@ exports.createLargeSwipePanel = async function(client, message,
     || i.customId === "first"
     || i.customId === "last") && i.user.id === message.author.id;
 
-  const collector = msg.createMessageComponentCollector({filter, time: 120000});
+  const collector = msg.createMessageComponentCollector({filter, time: 240000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
 
@@ -158,7 +158,7 @@ exports.createLargeSwipePanel = async function(client, message,
   if (actions == null) return;
 
   const actionFilter = i => i.user.id === message.author.id;
-  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 120000});
+  const actionCollector = msg.createMessageComponentCollector({actionFilter, time: 240000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
     await i.deferUpdate();
@@ -264,8 +264,6 @@ exports.createLargeMultiActionSwipePanel = async function(client, message,
       }
     }
   });
-
-  return msg;
 };
 
 
