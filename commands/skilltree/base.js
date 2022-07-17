@@ -40,6 +40,6 @@ exports.conf = {
 exports.help = {
   name: "base",
   category: "Skill Tree",
-  description: "Sets your base location where reminders and weekly-reports are published",
+  description: "Sets your base location where weekly-reports are published. Use it in the server/DM where you'd like to set your base",
   usage: "base"
 };

@@ -6,7 +6,7 @@ const {getBaseLocation} = require("../modules/baseHelper");
 
 exports.run = (client) => {
   //Schedule a job every sunday
-  cron.schedule("0 0-24/30 * * 6,0,1", function() {
+  cron.schedule("*/30 0-23 * * 0,1,2", function() {
     const offset = getCurrentOffset();
     if (!offset) return;
     getUsersInTimezone(offset, (users)=>{
@@ -62,18 +62,24 @@ function getCurrentOffset() {
   try {
     //Round time to the nearest 30 minutes
     const currentTime = new Date();
-    currentTime.setMinutes(Math.round(currentTime.getMinutes() / 30) * 30);
+    currentTime.setUTCMinutes(Math.round(currentTime.getUTCMinutes() / 30) * 30);
     //Get the nearest sunday at 6:00:00
-    const dayOfWeek = currentTime.getDay();
+    const dayOfWeek = currentTime.getUTCDay();
     //day
-    const dayDiff = dayOfWeek < 4 ? 0 - dayOfWeek : 7 - dayOfWeek;
+    const list = [...Array(8).keys()].map(x => (x + 1) % 7);
+    let dayDiff;
+    if ( list.indexOf(dayOfWeek) < 4) {
+      dayDiff = - list.indexOf(dayOfWeek);
+    } else {
+      dayDiff = 6 - list.indexOf(dayOfWeek);
+    }
     const scheduledTime = new Date(currentTime.getTime());
-    scheduledTime.setHours(18,0,0);
-    scheduledTime.setDate(currentTime.getDate() + dayDiff);
+    scheduledTime.setUTCHours(18,0,0);
+    scheduledTime.setUTCDate(currentTime.getUTCDate() + dayDiff);
 
     //Add 5 days so it doesn't underflow below jan 1st 1970
     const timeDiff = new Date(10*60*60*1000*24 + scheduledTime.getTime() - currentTime.getTime());
-    offset = timeDiff.getHours() + Math.round(timeDiff.getMinutes() / 30)*0.5;
+    offset = timeDiff.getUTCHours() + Math.round(timeDiff.getUTCMinutes() / 30)*0.5;
   } catch (e) {
     console.log(e);
   }

@@ -25,6 +25,9 @@ exports.formatFrequency = function(frequency, interval) {
       case "year":
         timesString = `${frequency}x/YEAR`;
         break;
+      case "N/A":
+        timesString = "N/A";
+        break;
     }
   } else {
     switch (interval) {
@@ -43,6 +46,10 @@ exports.formatFrequency = function(frequency, interval) {
       case "year":
         timesString = "YEARLY";
         break;
+
+      case "N/A":
+        timesString = "N/A";
+        break;
     }
   }
   return timesString;
@@ -53,21 +60,24 @@ exports.formatFrequency = function(frequency, interval) {
  * Today -> new Date()
  * Yesterday -> new Date() - 1
  * @param day - written day [yesterday, today, tomorrow]
+ * @param timezoneOffset
  * @return {Date} - date object
  */
-exports.dayToDate = function(day) {
-  if (day === "today") {
-    return new Date();
-  } else if (day === "yesterday") {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday;
-  } else if (day === "tomorrow") {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
+exports.dayToDate = function(day, timezoneOffset=null) {
+  let date = new Date(Date.parse(new Date().toUTCString()));
+  if (timezoneOffset != null) {
+    date = new Date(date.getTime() + timezoneOffset*3600000);
   }
-  return new Date();
+  if (day === "today") {
+    return date;
+  } else if (day === "yesterday") {
+    date.setUTCDate(date.getUTCDate() - 1);
+    return date;
+  } else if (day === "tomorrow") {
+    date.setUTCDate(date.getUTCDate() + 1);
+    return date;
+  }
+  return date;
 };
 
 /**
@@ -98,7 +108,7 @@ exports.getAbsDate = function(d0) {
 
    Assumes d0 <= d1
 */
-exports.getDaysBetweenDates = function(d0, d1) {
+exports.getDaysBetweenDates = function(d0, d1, tz) {
 
   const msPerDay = 8.64e7;
 
@@ -107,8 +117,8 @@ exports.getDaysBetweenDates = function(d0, d1) {
   const x1 = new Date(d1);
 
   // Set to noon - avoid DST errors
-  x0.setHours(12,0,0);
-  x1.setHours(12,0,0);
+  x0.setUTCHours(12+tz,0,0);
+  x1.setUTCHours(12+tz,0,0);
 
   // Round to remove daylight saving errors
   return Math.round( (x1 - x0) / msPerDay );

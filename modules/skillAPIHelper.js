@@ -19,18 +19,16 @@ function getAPIKey() {
  * @param userID - MongoDB userID
  * @param callback - list of task objects
  */
-exports.getCurrentTasks = function(userID,callback) {
-  axios.get(process.env.API_URL + "tasks/currentTasks", {
+exports.getCurrentTasks = async function(userID) {
+  const res = await axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
-  }).then((res)=>{
-    const tasks = res.data.tasks.map(data => Task.create(data));
-    callback(tasks);
-  }).catch(res => {
-    console.log(res);
   });
+  const tasks = res.data.tasks.map(data => Task.create(data));
+  const timezoneoffset = res.data.timezoneoffset;
+  return [tasks, timezoneoffset];
 };
 
 /**
@@ -159,7 +157,7 @@ exports.start = async function(userID, toStart) {
  * @param toSkip - object to skip
  */
 exports.skip = async function(userID, toSkip) {
-  return await axios
+  const res = await axios
     .post(process.env.API_URL + "users/skip", {
       userid: userID,
       toskip: toSkip.id
@@ -168,6 +166,10 @@ exports.skip = async function(userID, toSkip) {
         api_key: getAPIKey()
       }
     });
+  const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
+  const items = res.data.items.map(val => new Unlocked(Item.create(val)));
+  const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
+  return [].concat(skills, items, challenges);
 };
 
 /**
@@ -210,24 +212,22 @@ exports.cancel = function(userID, toCancel) {
  * @param task
  * @param day
  * @param checked - T/F if checked/unchecked
- * @param callback - function to execute on completion
  */
-exports.updateTask = function(userid, task, day, checked, callback) {
-  axios
+exports.updateTask = async function(userid, task, day, checked) {
+  const res = await axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,
       taskid: task.id,
       checked: checked,
       day: day
-    },{
+    }, {
       headers: {
         api_key: getAPIKey()
       }
-    }).then((res)=>{
-      const levelUp = res.data.levelUp;
-      const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
-      const items = res.data.items.map(val => new Unlocked(Item.create(val)));
-      const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
-      callback(levelUp, [].concat(skills, items, challenges));
     });
+  const levelUp = res.data.levelUp;
+  const skills = res.data.skills.map(val => new Unlocked(Skill.create(val)));
+  const items = res.data.items.map(val => new Unlocked(Item.create(val)));
+  const challenges = res.data.challenges.map(val => new Unlocked(Challenge.create(val)));
+  return [levelUp, [].concat(skills, items, challenges)];
 };

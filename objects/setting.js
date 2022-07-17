@@ -51,14 +51,17 @@ class Setting {
         "4) press Done```");
       setTimeout(() => errorMsg.delete(),10000);
       onFailure();
-      initMessage.delete();
+      if (initMessage) {
+        initMessage.delete();
+      }
+      return;
     }
 
     const collector = initMessage.channel.createMessageComponentCollector({time: 120000});
     collector.on("collect", async i => {
+      await i.deferUpdate();
       callback(initMessage);
       collector.stop();
-      await i.deferUpdate();
     });
   }
   /**

@@ -1,5 +1,6 @@
 const Skill = require("./skill");
 const Challenge = require("./challenge");
+const Item = require("./item");
 
 /**
  * User object
@@ -39,22 +40,23 @@ class User {
 
   /**
    * Create User object from JSON data
-   * @return {User}
    * @param user
+   * @return {User}
    */
   static create(user) {
     const sip = user.skillsinprogress.map(val => Skill.create(val));
     const cip = user.challengesinprogress.map(val => Challenge.create(val));
     const sc = user.skillscompleted.map(val => Skill.create(val));
     const cc = user.challengescompleted.map(val => Challenge.create(val));
+    const items = user.items.map(val => Item.create(val));
     return new User(user._id, user.discordid, user.username, user.xp, user.xpHistory,
-      sc.concat(cc), sip.concat(cip), user.items,
+      sc.concat(cc), sip.concat(cip), items,
       user.numDaysTracked, user.reminderChannel, user.timezone,
       user.baselocation);
   }
 
   getPrevXP() {
-    const prevXP = this.xpHistory.splice(-1);
+    const prevXP = this.xpHistory.slice(-1);
     if (prevXP === undefined) {
       return 0;
     }

@@ -61,13 +61,17 @@ exports.timezoneCodeToLocationData = function(location) {
     .replace(/@!?\d* */gi, "");
 
   // check for UTC command
-  const UTCMatch = /^(?:UTC|GMT) ?(\+|-)? ?(\d*)/gi.exec(
+  const UTCMatch = /^(?:UTC|GMT) ?(\+|-)? ?(\d*)? ?(:30)?/gi.exec(
     location,
   );
   if (UTCMatch) {
-    let offset = UTCMatch[2]
-      ? parseInt(UTCMatch[2])
-      : 0;
+    let offset = 0;
+    if (UTCMatch[2]) {
+      offset = parseInt(UTCMatch[2]);
+      if (UTCMatch[3]) {
+        offset += 0.5;
+      }
+    }
     if (UTCMatch[1] === "-") {
       offset = -offset;
     }

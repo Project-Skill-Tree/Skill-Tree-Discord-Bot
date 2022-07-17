@@ -13,6 +13,9 @@ module.exports = async (client, message) => {
   // and not get into a spam loop (we call that "botception").
   if (message.author.bot) return;
 
+  //If using the testing bot, and the channel is not the testing channel, return
+  if (client.user.id === "994429183327473724" && message.channel.id !== "953925566728380456") return;
+
   // Grab the settings for this server from Enmap.
   // If there is no guild, get default conf (DMs)
   const settings = message.settings = getSettings(message.guild);

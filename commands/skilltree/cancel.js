@@ -19,7 +19,7 @@ exports.run = (client, message) => {
         return;
       }
       //Create panel showing skills
-      createLargeSwipePanel(client, message.author, message.channel, skills, 
+      createLargeSwipePanel(client, message, skills,
         [{
           name: "CANCEL",
           description: "Cancel the skill",
