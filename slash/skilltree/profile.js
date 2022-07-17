@@ -14,9 +14,8 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     return;
   }
   
-  let userProfile = getUser(userID, message.author.username);
-
-  displayProfile(userProfile, message.channel);
+  let userProfile = await getUser(userID, interaction.user.username);
+  displayProfile(userProfile, interaction.channel);
 };
 
 exports.conf = {
