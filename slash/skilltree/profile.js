@@ -6,6 +6,8 @@ const {displayProfile} = require("../../modules/profileRenderer");
  *
  */
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
+  await interaction.deferReply({ephemeral: true});
+
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
   if (!userID) {
@@ -14,7 +16,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   }
 
   const userProfile = await getUser(userID, interaction.user.username);
-  displayProfile(userProfile, interaction.channel);
+  await displayProfile(userProfile, interaction);
 };
 
 exports.conf = {
@@ -24,9 +26,9 @@ exports.conf = {
   permLevel: "User"
 };
 
-exports.help = {
+exports.commandData = {
   name: "profile",
-  category: "Skill Tree",
   description: "Displays your character profile, XP, level, badges and more",
-  usage: "profile"
+  options: [],
+  defaultPermission: true,
 };

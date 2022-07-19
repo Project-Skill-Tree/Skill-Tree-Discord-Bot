@@ -37,7 +37,7 @@ exports.run = async (client, interaction) => {
  * Has yesterday/today button to toggle previous day
  * Has combobox to select which skill has been completed
  * @param client
- * @param message
+ * @param interaction
  * @param tasks
  * @param userID
  * @param timezoneOffset

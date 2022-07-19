@@ -5,20 +5,22 @@ const {getUser, authUser} = require("../../modules/userAPIHelper");
 /**
  * #TODO TEST METHOD - DELETE ON RELEASE
  * @param client
- * @param message
+ * @param interaction
  */
-exports.run = (client, message) => {
-  //Authenticate user
-  authUser(message.author.id, message.channel,(userID) => {
-    //Get user profile
-    getUser(userID, message.author.username,user => {
-      //Get last 7 days worth of tasks
-      getRecentTasks(userID, 7, (tasks) => {
-        //Display weekly analytics
-        displayReview(user, message, tasks);
-      });
-    });
-  });
+exports.run = async (client, interaction) => {
+  await interaction.deferReply({ephemeral: true});
+
+  //Validate user exists
+  const userID = await authUser(interaction.user.id, interaction.channel);
+  if (!userID) {
+    await interaction.reply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    return;
+  }
+
+  const user = await getUser(userID, interaction.user.username);
+  const tasks = getRecentTasks(userID, 7);
+  //Display weekly analytics
+  displayReview(user, interaction, tasks);
 };
 
 exports.conf = {
@@ -28,9 +30,9 @@ exports.conf = {
   permLevel: "Bot Admin"
 };
 
-exports.help = {
+exports.commandData = {
   name: "weekly",
-  category: "Skill Tree",
   description: "Displays a weekly report for testing",
-  usage: "weekly"
+  options: [],
+  defaultPermission: true,
 };

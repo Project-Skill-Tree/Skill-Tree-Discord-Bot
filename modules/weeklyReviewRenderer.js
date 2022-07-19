@@ -17,10 +17,10 @@ const {getDaysBetweenDates} = require("./dateHelper");
  * @param tasks - tasks to display
  */
 
-exports.displayReview = async function(user, message , tasks) {
+exports.displayReview = async function(user, interaction , tasks) {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
-  return message.reply({files: [reviewImage]});
+  return interaction.editReply({files: [reviewImage]});
 };
 
 /**

@@ -12,10 +12,10 @@ const Skill = require("../objects/skill");
  * @param user - User object
  * @param channel - the channel to send the message to
  */
-exports.displayProfile = async function(user, channel) {
+exports.displayProfile = async function(user, interaction) {
   //Generate profile
   const profileImage = new MessageAttachment(await exports.getProfileImage(user), "profile.png");
-  return channel.send({files: [profileImage]});
+  return interaction.editReply({files: [profileImage]});
 };
 
 /**

@@ -142,8 +142,9 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
   list, actions = null) {
   let currentPage = 0;
 
-  let followUp = await update(interaction, list, currentPage, actions[currentPage]);
-
+  let options = await update(interaction, list, currentPage, actions);
+  let followUp = await interaction.editReply(options);
+  
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
     || i.customId === "next"
@@ -174,7 +175,8 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
       default:
         break;
     }
-    followUp = await update(interaction, list, currentPage, actions[currentPage]);
+    options = await update(interaction, list, currentPage, actions[currentPage]);
+    await i.update(options);
   });
 
 
