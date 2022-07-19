@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const axios = require("axios");
 const Enmap = require("enmap");
 
@@ -13,7 +13,7 @@ class Settings {
     });
 
     // Get all the configs from the API and set them in enmap.
-    axios.get(`${process.env.API_URL}/v1/config/`, {
+    axios.get(`${process.env.API_URL}config/`, {
       headers: {
         api_key: process.env.API_KEY
       }
@@ -31,7 +31,7 @@ class Settings {
     return this.client.get(guild);
   }
 
-  set(guild, value, key) {
+  async set(guild, value, key) {
     // Check if the guild is set as "default", if so then we only want to set it in enmap
     // if it is not already set.
     if (guild === "default") {
@@ -40,20 +40,14 @@ class Settings {
 
     // Set the settings on the API as well as the local enmap.
 
-    let body = { serverId: guild };
+    const body = {serverId: guild};
     body[key] = value;
-    axios.put(`${process.env.API_URL}/v1/config/setConfig`, body, { 
+    await axios.put(`${process.env.API_URL}config/setConfig`, body, {
       headers: {
-        api_key: process.env.API_KEY 
+        api_key: process.env.API_KEY
       }
-    })
-    .then(res => {
-      return this.client.set(guild, value, key);
-    }
-    ).catch(err => {
-      console.log(err.response.data);
     });
-
+    return this.client.set(guild, value, key);
   }
 
   // This is the same as the set command, but it will only set the value if it is not already set.
@@ -66,17 +60,18 @@ class Settings {
   }
 
   delete(guild) {
-    axios.delete(`${process.env.API_URL}/v1/config/deleteServerConfig`, { serverId: guild }, { 
+    axios.delete(`${process.env.API_URL}config/deleteServerConfig`, { serverId: guild }, { 
       headers: {
         api_key: process.env.API_KEY 
       }
     })
-    .then(res => {
-      this.client.delete(guild);
-    })
-    .catch(err => {
-      console.log(err.response.data);
-    });
+      // eslint-disable-next-line no-unused-vars
+      .then(res => {
+        this.client.delete(guild);
+      })
+      .catch(err => {
+        console.log(err.response.data);
+      });
   }
 }
 

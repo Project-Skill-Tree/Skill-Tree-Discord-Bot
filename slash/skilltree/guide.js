@@ -12,15 +12,15 @@ const {getBadgeIcon} = require("../../objects/badge");
  * Page 4: Ranks and XP
  * Page 5: Items and Challenges
  */
-exports.run = async (client, message) => {
+exports.run = async (client, interaction) => {
   //Get pages
-  const pages = await getPages(message.settings);
+  const pages = await getPages(interaction.settings);
 
   //Create swipeable menu
-  createLargeSwipePanel(client, message, pages);
+  await createLargeSwipePanel(client, interaction, pages);
 };
 
-async function getPages(settings) {
+async function getPages() {
   const skilltreeLogo = await imageToBuffer("skilltree/logo_filled.png", 300);
   const setupLogo = await imageToBuffer("icons/settings.png", 300);
   const badge = await getBadgeIcon("meditation.png", 7, 300);
@@ -39,28 +39,27 @@ async function getPages(settings) {
       "`interaction failed` the message has timed out.\n"+
       "- Challenges are completed with one check-off, "+
       "\"Meditate for 30 days\" needs to be tracked yourself, not with the bot\n"+
-      `- If you accidently completed a skill, or want to start again. Use \`${settings.prefix}completed\` to view `+
+      "- If you accidently completed a skill, or want to start again. Use `/completed` to view "+
       "completed skills and erase their data. Removing their XP."),
     new Page("Setup", setupLogo,
-      `To use Skill Tree, you need to create an account with \`${settings.prefix}setup\`, `+
+      "To use Skill Tree, you need to create an account with `/setup`" +
       "this will automatically be cross compatible with the skill tree app. "+
       "You need to set a few options to use the skill tree: \n\n"+
       "**DIFFICULTY**: Sets difficulty level of your starting skills. You can "+
-      `always change this later with \`${settings.prefix}skip\` to skip or revert skills to match your experience level.\n`+
+      "always change this later with `/skip` to skip or revert skills to match your experience level.\n"+
       "**GENDER**: \\*Does not\\* affect your progress in the tree, this is purely for your character design.\n"+
       "**TIMEZONE**: Sets your timezone so that tasks calculate days correctly. "+
       "Setting it correctly will also ensure that weekly reports are sent at the right time. Use "+
-      `\`${settings.prefix}timezone\` to edit this at any point.\n`+
+      "`/timezone` to edit this at any point.\n"+
       "**BASE LOCATION**: Set the location where weekly reports are sent. Use "+
-      `\`${settings.prefix}base\` in the server or DM where you'd like to set your base.\n\n`+
-      
+      "`/base` in the server or DM where you'd like to set your base.\n\n"+
       "Note: If you think you have made a mistake, you can edit your settings using "+
-      `the \`${settings.prefix}setup\` command again.`),
+      "the `/setup` command again."),
     new Page("Skills", badge,
       "Skills are organised into increasing levels of difficulty as you progress through the tree. "+
       "You can start skills if you have unlocked all of the previous ones for that branch. \n"+
-      `Use the \`${settings.prefix}start\` command to start available skills, or `+
-      `use \`${settings.prefix}skip\` to bypass skills without collecting XP, and \`${settings.prefix}revert\` `+
+      "Use the /start command to start available skills, or "+
+      "use /skip to bypass skills without collecting XP, and `/revert`"+
       "to go back to old skills. \n\n"+
       "Each skill includes: \n"+
       "**NAME**: The name of the skill to be completed e.g. mindfulness.\n"+
@@ -80,7 +79,7 @@ async function getPages(settings) {
       "and start challenges below it."),
     new Page("Ranks and XP", rankIcon,
       "The XP system is the basis for levelling up and progressing in the skill tree. \n"+
-      `XP points are earned by completing skills. You can use the \`${settings.prefix}profile\` command to `+
+      "XP points are earned by completing skills. You can use the `/profile` command to "+
       "view your character, level, badges, and loads of data about your self-improvement. \n\n"+
       
       "Note: you do not earn XP points by skipping tasks"),
@@ -97,7 +96,6 @@ async function getPages(settings) {
       "reward you with a massive amount of XP, but take incredible dedication to complete.")
   ];
 }
-
 exports.conf = {
   enabled: true,
   guildOnly: false,
@@ -105,9 +103,9 @@ exports.conf = {
   permLevel: "User"
 };
 
-exports.help = {
+exports.commandData = {
   name: "guide",
-  category: "Skill Tree",
   description: "Guides you through usage of skill-tree.",
-  usage: "guide"
+  options: [],
+  defaultPermission: true,
 };

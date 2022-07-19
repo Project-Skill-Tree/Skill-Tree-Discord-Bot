@@ -43,6 +43,9 @@ const init = async () => {
 
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
+  //No need to load commands but leaving this here if we change that in
+  //the future
+  /**
   const files = [];
   getFiles("./commands/", files);
   const commands = files.filter(file => file.endsWith(".js"));
@@ -53,7 +56,7 @@ const init = async () => {
     props.conf.aliases.forEach(alias => {
       client.container.aliases.set(alias, props.help.name);
     });
-  }
+  }**/
 
   // Now we load any **slash** commands you may have in the ./slash directory.
   const slashFiles = [];
@@ -67,6 +70,10 @@ const init = async () => {
     // Now set the name of the command with it's properties.
     client.container.slashcmds.set(command.commandData.name, command);
   }
+
+  //Set all global slash commands
+  const globalCmds = client.container.slashcmds.filter(c => !c.conf.guildOnly);
+  await client.application?.commands.set(globalCmds.map(c => c.commandData)).catch(e => console.log(e));
 
   // Then we load events, which will include our message and ready event.
   const eventFiles = fs.readdirSync("./events/").filter(file => file.endsWith(".js"));

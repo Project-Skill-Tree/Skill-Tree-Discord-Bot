@@ -11,23 +11,25 @@ const Skill = require("../../objects/skill");
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
  */
-exports.run = async (client, message) => {
-  //Validate user exists
-  authUser(message.author.id, message.channel, async (userID) => {
-    //Get tasks
-    const [tasks, timezoneOffset] = await getCurrentTasks(userID);
+exports.run = async (client, interaction) => {
+  await interaction.deferReply({ephemeral: true});
 
-    if (tasks.length === 0) {
-      message.channel
-        .send("```No Current tasks, go to `~start` to start a skill```")
-        .then(msg => {
-          setTimeout(() => msg.delete(), 10000);
-        });
-    } else {
-      //Show tasks in embed
-      createTaskList(client, message, tasks, userID, timezoneOffset);
-    }
-  });
+  //Validate user exists
+  const userID = await authUser(interaction.user.id);
+  //Error if no account found
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
+
+  const [tasks, timezoneOffset] = await getCurrentTasks(userID);
+  if (tasks.length === 0) {
+    await interaction
+      .editReply("```No Current tasks, go to `~start` to start a skill```");
+  } else {
+    //Show tasks in embed
+    createTaskList(client, interaction, tasks, userID, timezoneOffset);
+  }
 };
 
 /**
@@ -41,7 +43,7 @@ exports.run = async (client, message) => {
  * @param timezoneOffset
  * @return {Promise<void>}
  */
-async function createTaskList(client, message, tasks, userID, timezoneOffset) {
+async function createTaskList(client, interaction, tasks, userID, timezoneOffset) {
   const UTC = new Date(Date.parse(new Date().toUTCString()));
   const dayCreated = new Date(UTC.getTime() + timezoneOffset*3600000);
   let day = "today";
@@ -62,12 +64,14 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
         .setLabel("TODAY")
         .setStyle("SECONDARY")
         .setDisabled(true));
-  const msg = await message.reply({ embeds: [embed], components: [dropDownBox,row] });
+  const msg = await interaction.editReply({ embeds: [embed], components: [dropDownBox,row] });
 
   const collector = msg.createMessageComponentCollector({time: 240000});
 
   collector.on("collect", async i => {
-    if (i.user.id !== message.author.id) {
+    await i.deferReply();
+
+    if (i.user.id !== interaction.user.id) {
       await i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
       return;
     }
@@ -79,7 +83,6 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       });
       return;
     }
-    await i.deferUpdate();
 
     if (i.isButton()) {
       day = i.customId; //today or yesterday
@@ -111,14 +114,14 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       const [levelUp, unlocked] = await updateTask(userID, task, day, task.isChecked(date, timezoneOffset));
 
       if (levelUp !== 0) {
-        getUser(userID, message.author.username, (user) => {
-          displayLevelUp(user, message.channel);
-        });
+        const user = await getUser(userID, interaction.user.username);
+        displayLevelUp(user, interaction.channel);
+
         tasks.splice(tasks.indexOf(task),1);
         filteredTasks.splice(filteredTasks.indexOf(task), 1);
       }
       if (unlocked.length !== 0) {
-        createLargeSwipePanel(client, message, unlocked);
+        createLargeSwipePanel(client, interaction, unlocked);
       }
     }
 
@@ -130,7 +133,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       components.push(dropDownBox);
     }
     components.push(row);
-    msg.edit({ embeds: [embed], components: components});
+    await msg.edit({embeds: [embed], components: components});
   });
 }
 
@@ -244,9 +247,9 @@ exports.conf = {
   permLevel: "User"
 };
 
-exports.help = {
+exports.commandData = {
   name: "tasks",
-  category: "Skill Tree",
   description: "daily task list",
-  usage: "tasks"
+  options: [],
+  defaultPermission: true,
 };

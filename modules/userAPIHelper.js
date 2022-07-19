@@ -1,8 +1,9 @@
 const axios = require("axios");
-const {authErrMsg} = require("./authHelper");
 const User = require("../objects/user");
 const Skill = require("../objects/skill");
 const Challenge = require("../objects/challenge");
+const Unlocked = require("../objects/unlocked");
+const Item = require("../objects/item");
 
 /**
  * Get API authentication key
@@ -18,16 +19,15 @@ function getAPIKey() {
  * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
  * @param callback - Callback with param true/false for user found/not
  */
-exports.authUser = function(discordid, channel=null, callback) {
-  axios
+exports.authUser = async function(discordid) {
+  const res = await axios
     .get(process.env.API_URL + "users/loginDiscord/", {
       headers: {
         api_key: getAPIKey(),
         discordid: discordid,
       }
-    }).then(res => {
-      authErrMsg(res.data.id, channel, callback);
     });
+  return res.data.id;
 };
 
 /**
@@ -39,9 +39,9 @@ exports.authUser = function(discordid, channel=null, callback) {
  * @param baselocation
  * @param callback - Callback with param true/false for user found/not
  */
-exports.createUser = function(discordid, character, difficulty, timezone, baselocation, callback) {
-  axios
-    .post(process.env.API_URL + "users/registerDiscord/",{
+exports.createUser = async function(discordid, character, difficulty, timezone, baselocation) {
+  const res = await axios
+    .post(process.env.API_URL + "users/registerDiscord/", {
       discordid: discordid,
       character: character,
       difficulty: difficulty,
@@ -51,11 +51,8 @@ exports.createUser = function(discordid, character, difficulty, timezone, baselo
       headers: {
         api_key: getAPIKey(),
       }
-    }).then(res => {
-      if (res.data.userFound) {
-        callback();
-      }
     });
+  return res.data.items.map(i => new Unlocked(Item.create(i)));
 };
 
 /**
@@ -94,8 +91,8 @@ exports.deleteUser = function(userID) {
     });
 };
 
-exports.setUserLocation = function(userID, base, callback) {
-  return axios
+exports.setUserLocation = async function(userID, base) {
+  return await axios
     .post(process.env.API_URL + "users/updateBaseLocation/", {
       id: userID,
       baselocation: base,
@@ -103,8 +100,6 @@ exports.setUserLocation = function(userID, base, callback) {
       headers: {
         api_key: getAPIKey()
       }
-    }).then(()=>{
-      callback();
     });
 };
 
@@ -114,19 +109,16 @@ exports.setUserLocation = function(userID, base, callback) {
  * @param username - discord username
  * @param callback - method to pass user object to
  */
-exports.getUser = function(userID, username, callback) {
-  axios
+exports.getUser = async function(userID, username) {
+  const res = await axios
     .get(process.env.API_URL + "users/profile/", {
       headers: {
         api_key: getAPIKey(),
         id: userID
       }
-    }).then(res => {
-      res.data.user["username"] = username;
-      callback(User.create(res.data.user));
-    }).catch(err => {
-      console.log(err);
     });
+  res.data.user["username"] = username;
+  return User.create(res.data.user);
 };
 
 /**
@@ -152,19 +144,15 @@ exports.getUsers = function(callback) {
  * @param timezone - timezone offset of the user
  * @param callback - method to pass user object to
  */
-exports.getUsersInTimezone = function(timezone, callback) {
-  axios
+exports.getUsersInTimezone = async function(timezone) {
+  const res = await axios
     .get(process.env.API_URL + "users/getAllInTimezone/", {
       headers: {
         api_key: getAPIKey(),
         timezone: timezone,
       }
-    }).then(res => {
-      const users = res.data.users.map(u => User.create(u));
-      callback(users);
-    }).catch(err => {
-      console.log(err);
     });
+  return res.data.users.map(u => User.create(u));
 };
 
 /**
@@ -172,8 +160,8 @@ exports.getUsersInTimezone = function(timezone, callback) {
  * @param userID
  * @param {number} timezoneoffset - hours difference to GMT (-14 to +12)
  */
-exports.updateTimezone = function(userID, timezoneoffset, callback) {
-  axios
+exports.updateTimezone = async function(userID, timezoneoffset) {
+  return await axios
     .post(process.env.API_URL + "users/updateTimezone", {
       id: userID,
       timezone: timezoneoffset
@@ -181,8 +169,6 @@ exports.updateTimezone = function(userID, timezoneoffset, callback) {
       headers: {
         api_key: getAPIKey()
       }
-    }).then(()=>{
-      callback();
     });
 };
 
@@ -200,7 +186,7 @@ exports.addXP = function(userid, xp) {
       headers: {
         api_key: getAPIKey()
       }
-    })
+    });
 };
 
 /**
@@ -219,18 +205,18 @@ exports.updateXPHistory = function(userid, xp) {
     });
 };
 
-exports.getCompleted = function(userid, callback) {
-  axios
+exports.getCompleted = async function(userid) {
+  const res = await axios
     .get(process.env.API_URL + "users/getCompleted", {
       headers: {
         api_key: getAPIKey(),
         userid: userid,
       }
-    }).then(res => {
-      const skillsCompleted = res.data.skills.map(d => Skill.create(d));
-      const challengesCompleted = res.data.challenges.map(d => Challenge.create(d));
-      callback([].concat(skillsCompleted, challengesCompleted));
     });
+  const skillsCompleted = res.data.skills.map(d => Skill.create(d));
+  const challengesCompleted = res.data.challenges.map(d => Challenge.create(d));
+  return [].concat(skillsCompleted, challengesCompleted);
+
 };
 
 exports.eraseCompleted = function(userid, toErase) {

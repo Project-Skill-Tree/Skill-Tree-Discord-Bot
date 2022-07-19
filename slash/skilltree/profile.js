@@ -5,15 +5,16 @@ const {displayProfile} = require("../../modules/profileRenderer");
  * Profile command, authenticates user and displays their profile
  *
  */
-exports.run = (client, message, args, level) => { // eslint-disable-line no-unused-vars
+exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   //Validate user exists
-  authUser(message.author.id, message.channel,(userID) => {
-    //Get user profile
-    getUser(userID, message.author.username, user => {
-      //Display profile
-      displayProfile(user, message.channel);
-    });
-  });
+  const userID = await authUser(interaction.user.id, interaction.channel);
+  if (!userID) {
+    await interaction.reply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    return;
+  }
+
+  const userProfile = await getUser(userID, interaction.user.username);
+  displayProfile(userProfile, interaction.channel);
 };
 
 exports.conf = {
