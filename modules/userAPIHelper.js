@@ -1,6 +1,8 @@
 const axios = require("axios");
 const {authErrMsg} = require("./authHelper");
 const User = require("../objects/user");
+const Skill = require("../objects/skill");
+const Challenge = require("../objects/challenge");
 
 /**
  * Get API authentication key
@@ -70,6 +72,21 @@ exports.updateUser = function(userID, character, timezone, baselocation) {
       character:character,
       timezone: timezone,
       baselocation: baselocation,
+    },{
+      headers: {
+        api_key: getAPIKey()
+      }
+    });
+};
+
+/**
+ * Updating a user in the database
+ * @param userID
+ **/
+exports.deleteUser = function(userID) {
+  return axios
+    .post(process.env.API_URL + "users/deleteUser/", {
+      userid: userID,
     },{
       headers: {
         api_key: getAPIKey()
@@ -183,9 +200,7 @@ exports.addXP = function(userid, xp) {
       headers: {
         api_key: getAPIKey()
       }
-    }).then(res => {
-      //console.log(res);
-    });
+    })
 };
 
 /**
@@ -200,6 +215,32 @@ exports.updateXPHistory = function(userid, xp) {
     },{
       headers: {
         api_key: getAPIKey()
+      }
+    });
+};
+
+exports.getCompleted = function(userid, callback) {
+  axios
+    .get(process.env.API_URL + "users/getCompleted", {
+      headers: {
+        api_key: getAPIKey(),
+        userid: userid,
+      }
+    }).then(res => {
+      const skillsCompleted = res.data.skills.map(d => Skill.create(d));
+      const challengesCompleted = res.data.challenges.map(d => Challenge.create(d));
+      callback([].concat(skillsCompleted, challengesCompleted));
+    });
+};
+
+exports.eraseCompleted = function(userid, toErase) {
+  return axios
+    .post(process.env.API_URL + "users/eraseCompleted", {
+      userid: userid,
+      toerase: toErase.id,
+    }, {
+      headers: {
+        api_key: getAPIKey(),
       }
     });
 };

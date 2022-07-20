@@ -16,13 +16,18 @@ class Unlocked extends Swipeable {
 
   /**
    * Sends an embedded skill in the chat
-   * @param channel - channel to send the message in
+   * @param message - channel to send the message in
+   * @param channel
    */
-  async send(channel) {
+  async send(message, channel) {
     //Create embedded messages
     const data = await this.update(new MessageEmbed());
 
-    return channel.send({embeds: data[0], files: data[1]});
+    if (message !== null) {
+      return await message.reply({embeds: data[0], files: data[1]});
+    } else {
+      return await channel.send({embeds: data[0], files: data[1]});
+    }
   }
 
   /**

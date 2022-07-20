@@ -23,12 +23,12 @@ class Page extends Swipeable {
 
   /**
    * Sends an embedded page in the chat
-   * @param channel - channel to send the message in
+   * @param message - channel to send the message in
    */
-  async send(channel) {
+  async send(message) {
     const data = await this.update(new MessageEmbed());
 
-    return channel.send({embeds: data[0], files: data[1]});
+    return message.reply({embeds: data[0], files: data[1]});
   }
 
   /**

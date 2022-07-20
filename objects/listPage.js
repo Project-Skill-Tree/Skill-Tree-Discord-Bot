@@ -21,12 +21,12 @@ class ListPage extends Swipeable {
 
   /**
    * Sends an embedded page in the chat
-   * @param channel - channel to send the message in
+   * @param message - channel to send the message in
    */
-  async send(channel) {
+  async send(message) {
     const data = await this.update(new MessageEmbed());
 
-    return channel.send({embeds: data[0]});
+    return message.reply({embeds: data[0]});
   }
 
   /**
@@ -37,7 +37,7 @@ class ListPage extends Swipeable {
   async update(embed) {
     await embed.setColor("#1071E5");
     embed.setTitle(this.title);
-    embed.setDescription(this.list.map(v => v.toString()).join("\n"));
+    embed.setDescription(this.list.map(v => v.toLine()).join("\n"));
 
     const embeds = [embed];
     return [embeds, null];

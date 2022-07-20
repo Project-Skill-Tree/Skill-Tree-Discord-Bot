@@ -17,7 +17,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
 };
 
 exports.commandData = {
-  name: "stats",
+  name: "bot",
   description: "Show's the bots stats.",
   options: [],
   defaultPermission: true,

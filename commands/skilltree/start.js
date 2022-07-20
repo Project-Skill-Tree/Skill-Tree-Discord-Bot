@@ -26,7 +26,7 @@ function startMenu(client, message, userID) {
       return;
     }
     //Create panel showing skills
-    createLargeSwipePanel(client, message.author, message.channel, skills,
+    createLargeSwipePanel(client, message, skills,
       [{
         name: "START",
         description: "Start a skill and add it to your current skills",
@@ -35,6 +35,14 @@ function startMenu(client, message, userID) {
           if (res === 201) {
             message.channel
               .send("```Error: A maximum of 25 skills/challenges can be active at any one time. Please "+`${message.settings.prefix}cancel` +" ongoing skills```")
+              .then(msg => {
+                setTimeout(() => msg.delete(), 10000);
+              });
+            return false;
+          }
+          if (res === 202) {
+            message.channel
+              .send("```Error: Skill already ongoing, use "+`${message.settings.prefix}tasks` +" to view ongoing skills```")
               .then(msg => {
                 setTimeout(() => msg.delete(), 10000);
               });
@@ -55,7 +63,10 @@ function startMenu(client, message, userID) {
               });
             return true;
           }
-          await skip(userID, toSkip);
+          const unlocked = await skip(userID, toSkip);
+          if (unlocked.length !== 0) {
+            createLargeSwipePanel(client, message, unlocked);
+          }
           return true;
         }
       },{
@@ -76,10 +87,11 @@ function startMenu(client, message, userID) {
             .setDescription("WARNING: This will revert to the previous skill, " +
               "removing its parent skill from your completed/ongoing skills. " +
               "You will need to skip or complete it again to show it in your profile." +
-              "\n(This will not affect XP or ongoing/completed skills unlocked by the parent)");
+              "\n(This will not affect XP or ongoing/completed skills unlocked by the parent).\n\n" +
+              "Do you wish to continue?");
           const msg = await message.channel.send({embeds: [embed]});
           await createYesNoPanel(msg,
-            message.client,
+            message.author,
             async () => {
               await revert(userID, toRevert);
             },

@@ -16,7 +16,7 @@ class Challenge extends Swipeable {
    * @param {?string=} link - The link to the item resource (default: null)
    * @constructor
    */
-  constructor(id, title, goal, goals, xp, link=null) {
+  constructor(id, title, goal, goals, xp, requires, link=null) {
     super();
     this.id = id;
     this.title = title;
@@ -24,6 +24,7 @@ class Challenge extends Swipeable {
     this.goals = goals;
     this.xp = xp;
     this.link = link;
+    this.requires = requires;
   }
 
   /**
@@ -37,17 +38,23 @@ class Challenge extends Swipeable {
       data.goal,
       data.goals,
       data.xp,
+      data.requires,
       data.link);
   }
 
   /**
    * Sends an embedded challenge to the chat
+   * @param message
    * @param channel
    */
-  async send(channel) {
+  async send(message, channel) {
     const data = await this.update(new MessageEmbed());
 
-    return channel.send({ embeds: data[0], files: data[1]});
+    if (message !== null) {
+      return await message.reply({embeds: data[0], files: data[1]});
+    } else {
+      return await channel.send({embeds: data[0], files: data[1]});
+    }
   }
 
   /**
@@ -66,6 +73,10 @@ class Challenge extends Swipeable {
   }
 
   getName() {
+    return this.title;
+  }
+
+  toLine() {
     return this.title;
   }
 

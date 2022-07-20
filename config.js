@@ -3,7 +3,9 @@ const { Intents } = require("discord.js");
 /* config */
 const config = {
   // Bot Admins, level 9 by default. Array of user ID strings.
-  "admins": [],
+  "admins": ["104747354799788032",
+    "671329958089457664",
+    "327397589668331520"],
 
   // Bot Support, level 8 by default. Array of user ID strings
   "support": [],
@@ -14,7 +16,7 @@ const config = {
   * For join messages to work you need Guild Members, which is privileged and requires extra setup.
   * For more info about intents see the README.
   */
-  intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
+  intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES],
   // Partials your bot may need should go here, CHANNEL is required for DM's
   partials: ["CHANNEL"],
 
@@ -31,7 +33,6 @@ const config = {
     "systemNotice": "true", // This gives a notice when a user tries to run a command that they do not have permission to use.
     "commandReply": "true", // Toggle this if you want the bot to ping the command executor or not.
     "botChannel" : "null",
-    "welcome" : "false",
   },
 
   // PERMISSION LEVEL DEFINITIONS.

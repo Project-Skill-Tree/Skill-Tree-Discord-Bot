@@ -5,9 +5,16 @@ const { getUsersInTimezone } = require("../modules/userAPIHelper");
 const { getBaseLocation } = require("../modules/baseHelper");
 
 exports.run = (client) => {
-  // run “At minute 0 and 30.” any day of the week
-  // https://crontab.guru/#0_0-23_*_*_0
-  cron.schedule("0,30 * * * *", async () => {
+
+  //Schedule a job every sunday
+  cron.schedule("*/30 0-23 * * 0,1,2", function() {
+    const offset = getCurrentOffset();
+    if (!offset) return;
+    getUsersInTimezone(offset, (users)=>{
+      //only get discord users
+      users = users.filter(u => u.discordid);
+      //exit if no users found
+      if (users.length === 0) return;
 
     // get time at GMT + 8
     const GMToffset = new Date().getTimezoneOffset();

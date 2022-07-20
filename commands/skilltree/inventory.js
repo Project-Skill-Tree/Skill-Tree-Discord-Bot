@@ -40,14 +40,14 @@ function displayInventory(client, user, message) {
     for (let i = 0; i < items.length; i++) {
       itemPages.push(new ListPage("INVENTORY 🎒",items[i]));
     }
-    createLargeSwipePanel(client, message.author, message.channel, itemPages);
+    createLargeSwipePanel(client, message, itemPages);
   }
 }
 
 exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: [],
+  aliases: ["inventory"],
   permLevel: "User"
 };
 
