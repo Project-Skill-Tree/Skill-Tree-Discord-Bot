@@ -1,10 +1,11 @@
 const cron = require("node-cron");
-const {getRecentTasks, getAllInList} = require("../modules/skillAPIHelper");
-const {displayReview} = require("../modules/weeklyReviewRenderer");
-const {getUsersInTimezone} = require("../modules/userAPIHelper");
-const {getBaseLocation} = require("../modules/baseHelper");
+const { getRecentTasks, getAllInList } = require("../modules/skillAPIHelper");
+const { displayReview } = require("../modules/weeklyReviewRenderer");
+const { getUsersInTimezone } = require("../modules/userAPIHelper");
+const { getBaseLocation } = require("../modules/baseHelper");
 
 exports.run = (client) => {
+
   //Schedule a job every sunday
   cron.schedule("*/30 0-23 * * 0,1,2", function() {
     const offset = getCurrentOffset();
@@ -15,77 +16,80 @@ exports.run = (client) => {
       //exit if no users found
       if (users.length === 0) return;
 
-      //Get unique skills/challenges from users as list
-      const objIDs = Array.from(
-        users
-          .map(u => u.inprogress) //get skills from users
-          .flat() //convert to one big list
-          .reduce((set, e) => set.add(e), new Set()) //only unique items
-      );
-      getAllInList(objIDs, async (objs) => {
-        //Map skills for indexing
-        const IDMap = new Map(
-          objs.map(obj => {
-            return [obj.id, obj];
-          }),
+    // get time at GMT + 8
+    const GMToffset = new Date().getTimezoneOffset();
+    const GMTTime = new Date(new Date().getTime() + GMToffset * 60 * 1000);
+    // get GMT+12 time and round it to nearest 30minutes
+    const GMT12Time = new Date(new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000) - new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000).getTime() % (30 * 60 * 1000));
+
+    // check it's between sunday 6pm and monday 8pm
+    if ((GMT12Time.getDay() === 0 && GMT12Time.getHours() >= 18) || (GMT12Time.getDay() === 1 && GMT12Time.getHours() <= 20)) {
+
+      // get absolute time for last sunday 6pm for GMT time 
+      const lastSundayAbsoluteTime = new Date(
+        GMT12Time.getFullYear(),
+        GMT12Time.getMonth(),
+        GMT12Time.getDate() - GMT12Time.getDay(),
+        18,
+        0,
+        0
+      ).getTime();
+
+      const difference = (GMT12Time.getTime() - lastSundayAbsoluteTime)/(1000*60*60);
+
+      // convert GMT+12 current time and GMT+12 sunday 6pm time to universal offset by subtracting the difference from 12
+      // for example if it's 10PM at GMT+12 then it's been 4 hours since last sunday 6pm
+      // 12 - 4 = 8
+      // therefore we must get all users that have set their timezone to GMT+8
+
+      const offset = 12 - difference;
+
+      getUsersInTimezone(offset, (users) => {
+        //only get discord users
+        users = users.filter(u => u.discordid);
+        //exit if no users found
+        if (users.length === 0) return;
+
+        //Get unique skills/challengess from users as list
+        const objIDs = Array.from(
+          users
+            .map(u => u.inprogress) //get skills from users
+            .flat() //convert to one big list
+            .reduce((set, e) => set.add(e), new Set()) //only unique items
         );
-        for (let i = 0; i < users.length; i++) {
-          const user = users[i];
+        getAllInList(objIDs, async (objs) => {
+          //Map skills for indexing
+          const IDMap = new Map(
+            objs.map(obj => {
+              return [obj.id, obj];
+            }),
+          );
+          for (let i = 0; i < users.length; i++) {
+            const user = users[i];
 
-          //Get skill/challenge objects for user's inprogress
-          user.inprogress = user.inprogress.map(s => IDMap.get(s.id));
+            //Get skill/challenge objects for user's inprogress
+            user.inprogress = user.inprogress.map(s => IDMap.get(s.id));
 
-          //Get last 7 days worth of tasks
-          getRecentTasks(user.id, 7, async (tasks) => {
-            if (!user.baselocation) {
-              //Attempt to send warning message if no base found
-              const userDM = client.channels.cache.get(user.id);
-              if (!userDM) return;
-              userDM.send(
-                "``` Your weekly report failed to send. " +
-                "Please set a base location with the `base` command " +
-                "to receive reminders and weekly messages.```");
-              return;
-            }
-            const channel = await getBaseLocation(client, user.baselocation);
-            if (!channel) return;
-            displayReview(user, channel, tasks);
-          });
-        }
+            //Get last 7 days worth of tasks
+            getRecentTasks(user.id, 7, async (tasks) => {
+              if (!user.baselocation) {
+                //Attempt to send warning message if no base found
+                const userDM = client.channels.cache.get(user.id);
+                if (!userDM) return;
+                userDM.send(
+                  "``` Your weekly report failed to send. " +
+                  "Please set a base location with the `base` command " +
+                  "to receive reminders and weekly messages.```");
+                return;
+              }
+              const channel = await getBaseLocation(client, user.baselocation);
+              if (!channel) return;
+              displayReview(user, channel, tasks);
+            });
+          }
+        });
       });
-    });
+    }
+
   });
 };
-
-function getCurrentOffset() {
-  let offset;
-  try {
-    //Round time to the nearest 30 minutes
-    const currentTime = new Date();
-    currentTime.setUTCMinutes(Math.round(currentTime.getUTCMinutes() / 30) * 30);
-    //Get the nearest sunday at 6:00:00
-    const dayOfWeek = currentTime.getUTCDay();
-    //day
-    const list = [...Array(8).keys()].map(x => (x + 1) % 7);
-    let dayDiff;
-    if ( list.indexOf(dayOfWeek) < 4) {
-      dayDiff = - list.indexOf(dayOfWeek);
-    } else {
-      dayDiff = 6 - list.indexOf(dayOfWeek);
-    }
-    const scheduledTime = new Date(currentTime.getTime());
-    scheduledTime.setUTCHours(18,0,0);
-    scheduledTime.setUTCDate(currentTime.getUTCDate() + dayDiff);
-
-    //Add 5 days so it doesn't underflow below jan 1st 1970
-    const timeDiff = new Date(10*60*60*1000*24 + scheduledTime.getTime() - currentTime.getTime());
-    offset = timeDiff.getUTCHours() + Math.round(timeDiff.getUTCMinutes() / 30)*0.5;
-  } catch (e) {
-    console.log(e);
-  }
-  //only check valid offsets
-  if (offset < -12 || offset > 14) {
-    return null;
-  }
-  return offset;
-}
