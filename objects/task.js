@@ -116,7 +116,11 @@ class Task {
     } else {
       daysLeft = "N/A";
     }
-    return `${daysLeft} day(s) left`;
+    if (daysLeft === 0) {
+      return "ongoing";
+    } else {
+      return `${daysLeft} day(s) left`;
+    }
   }
 
   /**

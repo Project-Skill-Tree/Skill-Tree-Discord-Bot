@@ -35,4 +35,5 @@ exports.commandData = {
   description: "Displays a weekly report for testing",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

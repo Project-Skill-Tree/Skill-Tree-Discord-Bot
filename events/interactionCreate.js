@@ -17,6 +17,7 @@ module.exports = async (client, interaction) => {
 
   // Get the user or member's permission level from the elevation
   const level = permlevel(interaction);
+  interaction.level = level;
   
   // Grab the command data from the client.container.slashcmds Collection
   const cmd = client.container.slashcmds.get(interaction.commandName);

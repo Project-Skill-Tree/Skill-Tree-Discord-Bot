@@ -1,10 +1,10 @@
 const {getSettings} = require("./functions");
 
 exports.getBaseLocation = async function(client, baselocation) {
-  const guildID = client.guilds.fetch(baselocation);
+  const guild = await client.guilds.fetch(baselocation);
   //Check for guild first
-  if (guildID) {
-    const botChannel = getSettings(guildID).botChannel.replace(/[<#>]/gi, "");
+  if (guild) {
+    const botChannel = getSettings(guild).botChannel.replace(/[<#>]/gi, "");
     const channel = await client.channels.fetch(botChannel);
     if (channel) return channel;
     return null;

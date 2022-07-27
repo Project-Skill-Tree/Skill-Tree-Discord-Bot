@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const {getRecentTasks, getAllInList} = require("../modules/skillAPIHelper");
+const {getRecentTasks} = require("../modules/skillAPIHelper");
 const {displayReview} = require("../modules/weeklyReviewRenderer");
 const {getUsersInTimezone} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
@@ -14,32 +14,14 @@ exports.run = (client) => {
     users = users.filter(u => u.discordid);
     //exit if no users found
     if (users.length === 0) return;
-
-    //Get unique skills/challenges from users as list
-    const objIDs = Array.from(
-      users
-        .map(u => u.inprogress) //get skills from users
-        .flat() //convert to one big list
-        .reduce((set, e) => set.add(e), new Set()) //only unique items
-    );
-    const objs = await getAllInList(objIDs);
-    //Map skills for indexing
-    const IDMap = new Map(
-      objs.map(obj => {
-        return [obj.id, obj];
-      }),
-    );
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
-
-      //Get skill/challenge objects for user's inprogress
-      user.inprogress = user.inprogress.map(s => IDMap.get(s.id));
 
       //Get last 7 days worth of tasks
       const tasks = await getRecentTasks(user.id, 7);
       if (!user.baselocation) {
         //Attempt to send warning message if no base found
-        const userDM = client.channels.cache.get(user.id);
+        const userDM = client.channels.cache.get(user.discordid);
         if (!userDM) return;
         userDM.send(
           "``` Your weekly report failed to send. " +
@@ -49,7 +31,7 @@ exports.run = (client) => {
       }
       const channel = await getBaseLocation(client, user.baselocation);
       if (!channel) return;
-      displayReview(user, channel, tasks);
+      await displayReview(user, channel, tasks);
     }
   });
 };

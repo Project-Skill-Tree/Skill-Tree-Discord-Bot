@@ -16,7 +16,7 @@ exports.run = async (client, interaction) => {
 
 exports.conf = {
   enabled: true,
-  guildOnly: true,
+  guildOnly: false,
   aliases: [],
   permLevel: "Bot Owner"
 };
@@ -26,4 +26,5 @@ exports.commandData = {
   description: "This will deploy all slash commands.",
   options: [],
   defaultPermission: true,
+  category: "System",
 };

@@ -59,4 +59,5 @@ exports.commandData = {
   description: "Displays your inventory",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

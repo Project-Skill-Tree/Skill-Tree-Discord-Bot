@@ -133,7 +133,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
       components.push(dropDownBox);
     }
     components.push(row);
-    await msg.edit({embeds: [embed], components: components});
+    await interaction.editReply({embeds: [embed], components: components});
   });
 }
 
@@ -178,6 +178,7 @@ function buildEmbed(tasks, date, tz) {
   const dailyTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval === "day");
   const otherTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval !== "day");
 
+  console.log(tasks.map(t => t.child.getName()));
   let dailyTaskStrings = dailyTasks.map((task) => formatTask(task, date, tz)).join("\n");
   let otherTaskStrings = otherTasks.map((task) => formatTask(task, date, tz)).join("\n");
   let challengeTaskStrings = challengeTasks.map((task) => formatTask(task, date, tz)).join("\n");
@@ -252,4 +253,5 @@ exports.commandData = {
   description: "daily task list",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

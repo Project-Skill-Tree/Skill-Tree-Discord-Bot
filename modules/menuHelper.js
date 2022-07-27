@@ -51,7 +51,7 @@ exports.createYesNoPanel = async function(interaction, embed) {
  * Adds left/right embedded buttons to a discord message to navigate through the swipeable list
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
- * @param {Interaction} interaction - Message from the user
+ * @param interaction - Message from the user
  * @param {Swipeable[]} list - List of swipeable objects
  * @param {?{}=} actions - action {name: string, description: string, action: function} map
  * item as parameter - return value is T/F based on whether this item will be removed or not
@@ -72,6 +72,7 @@ exports.createLargeSwipePanel = async function(client, interaction,
   const collector = followUp.createMessageComponentCollector({filter, time: 240000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
+    await i.deferUpdate();
 
     switch (i.customId) {
       case "first":
@@ -93,7 +94,7 @@ exports.createLargeSwipePanel = async function(client, interaction,
         break;
     }
     options = await update(interaction, list, currentPage, actions);
-    await i.update(options);
+    followUp = await i.editReply(options);
   });
 
 
@@ -120,7 +121,8 @@ exports.createLargeSwipePanel = async function(client, interaction,
         list = list.filter(i => i !== toRemove);
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
-        followUp = await update(interaction, list, currentPage, actions);
+        options = await update(interaction, list, currentPage, actions);
+        followUp = await i.editReply(options);
       }
     }
   });
@@ -154,8 +156,8 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
   const collector = followUp.createMessageComponentCollector({filter, time: 120000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
-
     await i.deferUpdate();
+
     switch (i.customId) {
       case "first":
         currentPage = 0;
@@ -176,7 +178,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
         break;
     }
     options = await update(interaction, list, currentPage, actions[currentPage]);
-    await i.update(options);
+    await i.editReply(options);
   });
 
 
@@ -203,7 +205,8 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
         }
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
-        followUp = await update(interaction, list, currentPage, actions[currentPage]);
+        options = await update(interaction, list, currentPage, actions[currentPage]);
+        followUp = await i.editReply(options);
       }
     }
   });
@@ -219,6 +222,7 @@ async function update(interaction, list, currentPage, actions) {
     embed.setTitle("EMPTY");
     embed.setDescription("No more items to display");
     embed.setThumbnail("");
+    embed.setImage("");
     await interaction.editReply({embeds: [embed]});
     return;
   }
@@ -233,7 +237,7 @@ async function update(interaction, list, currentPage, actions) {
 
   //update embed to show current page
   const data = await list[currentPage].update(interaction);
-  return {embeds: data[0], components: components, files: data[1], attachments: []};
+  return {embeds: data[0], components: components, files: data[1], attachments: [], thumbnails: [], images: []};
 }
 
 function createRow(currentPage, length) {

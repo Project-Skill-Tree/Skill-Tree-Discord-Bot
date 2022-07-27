@@ -74,6 +74,7 @@ exports.commandData = {
     }
   ],
   defaultPermission: true,
+  category: "Skill Tree",
 };
 
 exports.conf = {

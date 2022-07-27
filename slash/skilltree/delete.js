@@ -41,10 +41,10 @@ exports.run = async (client, interaction) => {
   collector.on("collect", async i => {
     if (i.customId === "delete") {
       await deleteUser(userID);
-      await interaction.editReply("Account successfully deleted.");
+      await interaction.editReply({content: "Account successfully deleted.", embeds: [], components: []});
     }
     if (i.customId === "cancel") {
-      await interaction.editReply("Deletion cancelled.");
+      await interaction.editReply({content: "Deletion cancelled.", embeds: [], components: []});
     }
   });
 };
@@ -61,4 +61,5 @@ exports.commandData = {
   description: "(PERMANENT) Deletes all data associated with your account from the database.",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

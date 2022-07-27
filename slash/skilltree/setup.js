@@ -18,21 +18,9 @@ const {createLargeSwipePanel} = require("../../modules/menuHelper");
 exports.run = async (client, interaction) => {
   await interaction.deferReply({ephemeral: true});
 
-  if (interaction.member != null) {
-    //Send notification reply to user
-    await interaction.editReply(":thumbsup: Message with further instruction has been sent to your DMs!");
-  }
-
   //Send init message to check chat is available
   const member = await client.users.cache.get(interaction.user.id);
-  const init = await getSettings(client, interaction, false, member);
-  const success = await init[0].sendInitMessage(client, interaction, member);
-  if (success) {
-    await startSetup(client, interaction, member);
-  }
-};
 
-async function startSetup(client, interaction, member) {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
 
@@ -40,15 +28,20 @@ async function startSetup(client, interaction, member) {
   if (userID) {
     settings = settings.filter(s => s.title !== "Set Experience Level");
   }
-  settings[1].start(interaction, {}, settings, member);
-}
+  //Start settings with discordid specified
+  settings[0].start(interaction, {discordid: member.id}, settings, member);
+};
 
 async function setupUser(userID, userSettings) {
   if (userID) {
-    await updateUser(userID, userSettings.character, userSettings.timezone, userSettings.baselocation);
+    await updateUser(userID,
+      userSettings.character,
+      userSettings.timezone,
+      userSettings.baselocation);
     return [];
   } else {
-    return await createUser(userID,
+    return await createUser(
+      userSettings.discordid,
       userSettings.character,
       userSettings.difficulty,
       userSettings.timezone,
@@ -56,7 +49,7 @@ async function setupUser(userID, userSettings) {
   }
 }
 
-function displayProjectInfo(channel) {
+async function displayProjectInfo(interaction) {
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
@@ -68,7 +61,7 @@ function displayProjectInfo(channel) {
     <#953924789494501376> : Want to contribute? Add a role that suits your interests and help develop this project!  \n
     <#954747309143490591> : Have a look at the roadmap and scope of this project \n
     <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n`);
-  channel.send({embeds: [infoEmbed]});
+  await interaction.editReply({embeds: [infoEmbed]});
 }
 async function getSettings(client, interaction, userExists) {
   let locationID;
@@ -156,15 +149,14 @@ async function getSettings(client, interaction, userExists) {
       null,
       async (res, userSettings, next) => {
         userSettings.baselocation = locationID;
-        const items = await setupUser(interaction.user.id, userSettings);
+        const items = await setupUser(userExists, userSettings);
 
         if (!userExists) {
           const confirmationEmbed = new MessageEmbed()
             .setColor(`#${Configurations().primary}`)
             .setTitle("WELCOME TO THE SKILL TREE")
             .setDescription("To begin your quest, here are a few items you can use!");
-          await interaction.editReply({embeds: [confirmationEmbed]});
-
+          const msg = await interaction.followUp({embeds: [confirmationEmbed]});
           createLargeSwipePanel(client, interaction, items);
         }
         next();
@@ -200,5 +192,6 @@ exports.commandData = {
   name: "setup",
   description: "Sets up your Skill Tree account",
   options: [],
-  defaultPermission: true,
+  defaultPermission: false,
+  category: "Skill Tree",
 };

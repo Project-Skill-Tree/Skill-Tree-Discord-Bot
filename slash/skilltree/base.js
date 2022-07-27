@@ -48,6 +48,7 @@ exports.commandData = {
   description: "Sets your base to where you run the command. Where weekly reports and notifications are sent",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };
 
 exports.conf = {

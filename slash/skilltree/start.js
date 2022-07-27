@@ -105,4 +105,5 @@ exports.commandData = {
   description: "Displays all of your available skills and allows you to start them",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

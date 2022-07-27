@@ -11,20 +11,17 @@ class Settings {
     this.client = new Enmap({
       name: "settings"
     });
-
     // Get all the configs from the API and set them in enmap.
     axios.get(`${process.env.API_URL}config/`, {
       headers: {
         api_key: process.env.API_KEY
       }
-    })
-      .then(res => {
-        res.data.data.forEach(config => {
-          this.client.set(config.serverId, config);
-        });
+    }).then(res => {
+      console.log(res.data);
+      res.data.data.forEach(config => {
+        this.client.set(config.serverId, config);
       });
-
-
+    });
   }
 
   get(guild) {
@@ -34,12 +31,12 @@ class Settings {
   async set(guild, value, key) {
     // Check if the guild is set as "default", if so then we only want to set it in enmap
     // if it is not already set.
+    console.log(guild, value, key);
     if (guild === "default") {
       return this.client.set("default", value, key);
     }
 
     // Set the settings on the API as well as the local enmap.
-
     const body = {serverId: guild};
     body[key] = value;
     await axios.put(`${process.env.API_URL}config/setConfig`, body, {

@@ -18,8 +18,7 @@ exports.run = async (client, interaction) => {
     return;
   }
   //Get completed skills
-  const completed = getCompleted(userID);
-
+  const completed = await getCompleted(userID);
   showCompleted(client, interaction, userID, completed);
 };
 
@@ -65,4 +64,5 @@ exports.commandData = {
   description: "Allows you to view completed skills and remove them and subtract their XP",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

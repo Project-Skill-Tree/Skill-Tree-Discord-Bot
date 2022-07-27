@@ -110,4 +110,5 @@ exports.commandData = {
   description: "Guides you through usage of skill-tree.",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };

@@ -23,52 +23,12 @@ class Setting {
   }
 
   /**
-   * Sends title message to check for DMs being disabled
-   * @return {Promise<boolean>}
-   * @param client
-   * @param interaction
-   * @param member
-   */
-  async sendInitMessage(client, interaction, member) {
-    const embed = new MessageEmbed()
-      .setTitle(this.title)
-      .setDescription(this.description)
-      .setColor(`#${Configurations().primary}`);
-
-    let initMessage;
-    try {
-      initMessage = await member.send({embeds: [embed], components: this.components});
-    } catch (e) {
-      // messages in the same channel saying your DMs are disabled
-      await interaction.editReply(
-        `<@${interaction.user.id}> Your DMs are Disabled. Please enable them and try again ` +
-        "(You can turn this setting off afterwards)\n" +
-        "**HOW TO ENABLE DMS**```" +
-        "1) Right-click server icon\n" +
-        "2) Click on Privacy Settings\n" +
-        "3) Toggle \"Allow direct messages from server members\" on\n" +
-        "4) press Done```");
-      return Promise.resolve(false);
-    }
-
-    const collector = initMessage.createMessageComponentCollector({time: 120000});
-    // eslint-disable-next-line no-unused-vars
-    return await new Promise((resolve, reject) => {
-      collector.on("collect", async i => {
-        await i.deferUpdate();
-        resolve(true);
-        collector.stop();
-      });
-    });
-  }
-  /**
    * Sends an embedded skill in the chat
-   * @param channel - channel to send the message in
+   * @param interaction - channel to send the message in
    * @param userSettings - {} list of current user settings
    * @param settings - list of setting objects
-   * @param member
    */
-  async start(channel, userSettings, settings, member) {
+  async start(interaction, userSettings, settings) {
     const index = settings.indexOf(this);
 
     const embed = new MessageEmbed()
@@ -81,12 +41,12 @@ class Setting {
       embed.setFooter(`Completion Status: \n (${index+1}/${settings.length})`);
     }
 
-    const message = await member.send({embeds: [embed], components: this.components});
+    const message = await interaction.editReply({embeds: [embed], components: this.components});
 
     if (index === settings.length) return;
 
     const next = function() {
-      settings[index+1].start(channel, userSettings, settings, member);
+      settings[index+1].start(interaction, userSettings, settings);
     };
     if (this.components) {
       const filter = (m) => {

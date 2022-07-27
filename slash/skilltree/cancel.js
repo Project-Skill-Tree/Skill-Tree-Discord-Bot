@@ -46,5 +46,6 @@ exports.commandData = {
   description: "Allows you to cancel on-going skills",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };
 

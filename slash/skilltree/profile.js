@@ -31,4 +31,5 @@ exports.commandData = {
   description: "Displays your character profile, XP, level, badges and more",
   options: [],
   defaultPermission: true,
+  category: "Skill Tree",
 };
