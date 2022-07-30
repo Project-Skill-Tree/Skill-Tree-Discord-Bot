@@ -46,7 +46,8 @@ const init = async () => {
   //No need to load commands but leaving this here if we change that in
   //the future
 
-  const files = [];
+  // NOTE: Enable again if wanting to experiment with text-based commands
+  /*const files = [];
   getFiles("./commands/", files);
   const commands = files.filter(file => file.endsWith(".js"));
   for (const file of commands) {
@@ -56,7 +57,7 @@ const init = async () => {
     props.conf.aliases.forEach(alias => {
       client.container.aliases.set(alias, props.help.name);
     });
-  }
+  }*/
 
 
   // Now we load any **slash** commands you may have in the ./slash directory.
