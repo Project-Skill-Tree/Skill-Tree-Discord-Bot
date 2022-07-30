@@ -24,7 +24,7 @@ class Setting {
   }
 
   /**
-   * Sends an embedded skill in the chat
+   * Sends the setting option in the chat
    * @param interaction - channel to send the message in
    * @param userSettings - {} list of current user settings
    * @param settings - list of setting objects

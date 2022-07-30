@@ -13,11 +13,9 @@ function getAPIKey() {
 }
 
 /**
- * Authorise the user, return callback value if they exist in the database,
- * display an error message if the channel is defined and the user is not found
+ * Authorise the user, return their user ID if they exist in the database,
+ * otherwise, return null
  * @param discordid - Discord ID
- * @param {?Channel=} channel - Channel to send error message in, if undefined, don't send
- * @param callback - Callback with param true/false for user found/not
  */
 exports.authUser = async function(discordid) {
   const res = await axios
@@ -37,7 +35,6 @@ exports.authUser = async function(discordid) {
  * @param difficulty
  * @param timezone - timezone offset of the user
  * @param baselocation
- * @param callback - Callback with param true/false for user found/not
  */
 exports.createUser = async function(discordid, character, difficulty, timezone, baselocation) {
   const res = await axios
@@ -142,7 +139,6 @@ exports.getUsers = function(callback) {
 /**
  * Get list of users within a given timezone
  * @param timezone - timezone offset of the user
- * @param callback - method to pass user object to
  */
 exports.getUsersInTimezone = async function(timezone) {
   const res = await axios

@@ -4,11 +4,16 @@ const {displayReview} = require("../modules/weeklyReviewRenderer");
 const {getUsersInTimezone} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
 
+/**
+ * Sends a weekly report every sunday at 6PM in the user's local timezone
+ * @param client
+ */
 exports.run = (client) => {
-  //Schedule a job every sunday
-
-  cron.schedule("*/30 0-23 * * 0,1,2", async function() {
+  //Schedule a repeating task every 30 minutes all day saturday, sunday, monday.
+  cron.schedule("*/30 0-23 * * 6,0,1", async function() {
+    //Get the timezone offset
     const offset = getCurrentOffset();
+    //If not at sunday 6PM
     if (!offset) return;
     let users = await getUsersInTimezone(offset);
     //only get discord users

@@ -59,18 +59,18 @@ class Challenge extends Swipeable {
     return [embeds, files];
   }
 
+  toString() {
+    let link = "";
+    if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;
+    return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" + link + "\n```diff\n"+`+${this.xp}` +"XP```";
+  }
+
   getName() {
     return this.title;
   }
 
   toLine() {
     return this.title;
-  }
-
-  toString() {
-    let link = "";
-    if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;
-    return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" + link + "\n```diff\n"+`+${this.xp}` +"XP```";
   }
 
   async getIcon() {

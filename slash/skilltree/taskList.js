@@ -108,8 +108,9 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => task.child.getName() === skillTitle);
       if (!task) return;
+      //Toggle checked
       task.setChecked(!task.isChecked(date, timezoneOffset), date, timezoneOffset);
-
+      //Get levelup and unlocks
       const [levelUp, unlocked] = await updateTask(userID, task, day, task.isChecked(date, timezoneOffset));
 
       if (levelUp !== 0) {
@@ -120,6 +121,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
         filteredTasks.splice(filteredTasks.indexOf(task), 1);
       }
       if (unlocked.length !== 0) {
+        //display unlocked items in a swipeable panel
         createLargeSwipePanel(client, interaction, unlocked);
       }
     }
@@ -143,6 +145,7 @@ function createDropDownBox(tasks, date, timezoneOffset) {
         tasks.map(
           task => {
             let goal = task.child.goal;
+            //If no goal found, use list of goals
             if (!goal) {
               return {
                 label: task.child.getName(),
@@ -151,6 +154,7 @@ function createDropDownBox(tasks, date, timezoneOffset) {
                 emoji: task.isChecked(date, timezoneOffset) ? "✅" : "❌",
               };
             }
+            //Wrap goal if its over 100 characters
             if (goal.length > 100) {
               goal = task.child.goal.substring(0,97) + "...";
             }

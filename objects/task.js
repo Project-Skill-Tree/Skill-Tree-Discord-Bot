@@ -55,7 +55,8 @@ class Task {
   }
 
   /**
-   * Returns the percentage of checked tasks
+   * Returns the percentage of times this task has been checked off
+   * between the task start date and the current date
    * @return {string}
    */
   percentChecked(date, tz) {
@@ -66,9 +67,11 @@ class Task {
     this.setChecked(this.isChecked(date, tz), date, tz);
     let data;
     if (this.child instanceof Skill) {
-      data = [...this.data]; //only check the last <timelimit> days
+      data = [...this.data];
       const blockSize = intervalToInt(this.child.interval);
+      //If the interval is N/A, take all the data
       if (blockSize !== -1) {
+        //take only the data within the current interval
         const newIndexOfStart = Math.floor((data.length - this.child.timelimit) / blockSize) * blockSize;
         const limitSize = data.length - newIndexOfStart;
         data = data.slice(-limitSize);
@@ -76,6 +79,7 @@ class Task {
     } else { //challenge has no time limit
       data = this.data;
     }
+    //return percentage as a string
     return `${Math.round(100 * data.filter(Boolean).length / data.length)}%`;
   }
 

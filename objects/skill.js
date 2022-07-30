@@ -16,9 +16,14 @@ class Skill extends Swipeable {
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
    * @param goals
-   * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
-   * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
-   * @param {String} timelimit - The number of days for which you need to maintain the skill before acquiring it
+   * @param {number} frequency - The frequency at which the task of the skill
+   * must be completed. Say you have to do x thing 3 times a week,
+   * 3 would be the frequency, and weekly would be the time interval.
+   * @param {string} interval - The time interval of the skill. If a skill
+   * was to be done x times weekly, weekly would be the interval.
+   * Valid values would be "day", "week", "month", "year", etc.
+   * @param {String} timelimit - The number of days for which you need to
+   * maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
    * @param requires - required skills
    * @param children - child skills

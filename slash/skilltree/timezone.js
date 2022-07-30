@@ -25,7 +25,7 @@ exports.run = async (client, interaction) => {
   //Create confirmation
   const confirm = await exports.locationConfirmation(interaction, locationInfo);
   //If not confirmed, return
-  if (confirm !== true) {
+  if (confirm !== "confirmed") {
     const cancelledEmbed = new MessageEmbed()
       .setColor("#3bffbe")
       .setTitle("TIMEZONE")
@@ -44,6 +44,13 @@ exports.run = async (client, interaction) => {
 };
 
 
+/**
+ * Ask user to confirm location
+ * Returns cancellation and invalid format error messages
+ * @param interaction
+ * @param locationInfo
+ * @return {Promise<string|boolean|string>}
+ */
 exports.locationConfirmation = async function(interaction, locationInfo) {
 
   //Error message
@@ -61,8 +68,10 @@ exports.locationConfirmation = async function(interaction, locationInfo) {
     .setDescription(`Timezone detected: ${locationInfo.location}? \n`+
       `Your local time should be ${dateAsTime(localTime)}. Is this correct?`);
   const confirm = await createYesNoPanel(interaction, timezoneEmbed);
-  return confirm ? true : "Timezone update cancelled";
+  return confirm ? "confirmed" : "Timezone update cancelled";
 };
+
+
 exports.commandData = {
   name: "timezone",
   description: "Sets your timezone for reminders and weekly reports",

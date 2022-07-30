@@ -35,7 +35,6 @@ module.exports = async (client, message) => {
   // This will return and stop the code from continuing if it's missing
   // our prefix (be it mention or from the settings).
   if (!prefix) return;
-    
   // Here we separate our "command" name, and our "arguments" for the command.
   // e.g. if we have the message "+say Is this the real life?" , we'll get the following:
   // command = say

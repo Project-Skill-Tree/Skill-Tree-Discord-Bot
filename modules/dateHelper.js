@@ -117,6 +117,7 @@ exports.getDaysBetweenDates = function(d0, d1, tz) {
   const x1 = new Date(d1);
 
   // Set to noon - avoid DST errors
+  //normalise to the same timezone offset
   x0.setUTCHours(12+tz,0,0);
   x1.setUTCHours(12+tz,0,0);
 
