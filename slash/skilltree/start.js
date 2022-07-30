@@ -38,15 +38,14 @@ async function startMenu(client, interaction, userID) {
         const res = await start(userID, toStart);
         if (res === 201) {
           await interaction
-            .followUp("```Error: A maximum of 25 skills/challenges can be active at any one time. " +
-              "Please " + `${interaction.settings.prefix}cancel` + " ongoing skills```");
+            .followUp({content: "```Error: A maximum of 25 skills/challenges can be active at any one time. " +
+              "Please " + `${interaction.settings.prefix}cancel` + " ongoing skills```", ephemeral: true});
           return false;
         }
         if (res === 202) {
           await interaction
-            .followUp("```Error: Skill already ongoing, use " +
-              `${interaction.settings.prefix}tasks` + " to view ongoing skills```");
-          return false;
+            .followUp({content: "```Error: Skill already ongoing, use /tasks to view ongoing skills```", ephemeral: true});
+          return true;
         }
         return true;
       }
@@ -57,12 +56,21 @@ async function startMenu(client, interaction, userID) {
         //Cannot skip challenges
         if (toSkip instanceof Challenge) {
           await interaction
-            .followUp("```Error: Challenges cannot be skipped```");
+            .followUp({content: "```Error: Challenges cannot be skipped```", ephemeral: true});
           return true;
         }
         const unlocked = await skip(userID, toSkip);
         if (unlocked.length !== 0) {
-          createLargeSwipePanel(client, interaction, unlocked);
+          const msg = await interaction.followUp({content: "Loading Unlocks...", ephemeral: true});
+          if (unlocked.length !== 0) {
+            createLargeSwipePanel(client, {
+              interaction: interaction,
+              channelType: true,
+              message: msg,
+              user: interaction.user,
+              options: {ephemeral: true, content: null}
+            }, unlocked);
+          }
         }
         return true;
       }
@@ -72,7 +80,7 @@ async function startMenu(client, interaction, userID) {
       action: async (toRevert) => {
         if (toRevert.requires.length === 0) {
           await interaction
-            .followUp("```Error: This is a starting skill and cannot be reverted```");
+            .followUp({content: "```Error: This is a starting skill and cannot be reverted```", ephemeral: true});
           return true;
         }
         const embed = new MessageEmbed()
@@ -88,8 +96,8 @@ async function startMenu(client, interaction, userID) {
         if (res) await revert(userID, toRevert);
         return true;
       }
-    }], () => {
-      startMenu(client, interaction, userID);
+    }], async () => {
+      return await getAvailable(userID);
     });
 }
 

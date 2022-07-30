@@ -18,9 +18,9 @@ exports.run = async (client, interaction) => {
   }
 
   const user = await getUser(userID, interaction.user.username);
-  const tasks = getRecentTasks(userID, 7);
+  const tasks = await getRecentTasks(userID, 7);
   //Display weekly analytics
-  displayReview(user, interaction, tasks);
+  displayReview(user, interaction.channel, tasks);
 };
 
 exports.conf = {

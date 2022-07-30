@@ -69,8 +69,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
   const collector = msg.createMessageComponentCollector({time: 240000});
 
   collector.on("collect", async i => {
-    await i.deferReply();
-
+    await i.deferUpdate();
     if (i.user.id !== interaction.user.id) {
       await i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
       return;
@@ -133,7 +132,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
       components.push(dropDownBox);
     }
     components.push(row);
-    await interaction.editReply({embeds: [embed], components: components});
+    await i.editReply({embeds: [embed], components: components});
   });
 }
 
@@ -178,7 +177,6 @@ function buildEmbed(tasks, date, tz) {
   const dailyTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval === "day");
   const otherTasks = tasks.filter(task => task.child instanceof Skill && task.child.interval !== "day");
 
-  console.log(tasks.map(t => t.child.getName()));
   let dailyTaskStrings = dailyTasks.map((task) => formatTask(task, date, tz)).join("\n");
   let otherTaskStrings = otherTasks.map((task) => formatTask(task, date, tz)).join("\n");
   let challengeTaskStrings = challengeTasks.map((task) => formatTask(task, date, tz)).join("\n");

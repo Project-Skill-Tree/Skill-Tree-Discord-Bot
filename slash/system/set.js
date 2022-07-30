@@ -13,6 +13,9 @@
 const { codeBlock } = require("@discordjs/builders");
 const settings = require("../../modules/settings.js");
 const {createYesNoPanel} = require("../../modules/menuHelper");
+const {MessageEmbed} = require("discord.js");
+const {MessageAttachment} = require("discord.js");
+const {imageToBuffer} = require("../../modules/UIHelper");
 
 //[action, key, ...value]
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
@@ -25,10 +28,12 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   // Retrieve current guild settings (merged) and overrides only.
   const serverSettings = interaction.settings;
   const defaults = settings.get("default");
-  console.log("DEFAULTS:", defaults);
   const overrides = settings.get(interaction.guild.id);
   const replying = serverSettings.commandReply;
-  if (!settings.has(interaction.guild.id)) await settings.set(interaction.guild.id, {});
+  if (!settings.has(interaction.guild.id)) {
+    console.log("setting not found:", interaction.guild.id);
+    await settings.set(interaction.guild.id, {});
+  }
 
   const action = interaction.options.getSubcommand();
 
@@ -67,6 +72,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     }
 
     // Modify the guild overrides directly.
+    console.log("setting:", interaction.guild.id);
     await settings.set(interaction.guild.id, value, key);
 
     // Confirm everything is fine!
@@ -92,7 +98,18 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     });
 
     // Good demonstration of the custom awaitReply method in `./modules/functions.js` !
-    const success = await createYesNoPanel(interaction, `Are you sure you want to reset ${key} to the default value?`);
+    const settingsIcon = await imageToBuffer("icons/settings.png", 300);
+    const imageFile = new MessageAttachment(settingsIcon, "settings.png");
+
+    const defaultSettings = await settings.get("default");
+    const defaultValue = defaultSettings[key];
+    const embed = new MessageEmbed();
+    embed.setColor("#fc9803");
+    embed.setThumbnail("attachment://settings.png");
+    embed.setTitle("Are you sure?");
+    embed.setDescription(`Are you sure you want to reset \`${key}\` to the default value?\n`+
+    `The default value is \`${defaultValue}\``);
+    const success = await createYesNoPanel(interaction, embed, [imageFile]);
 
     // If they respond with y or yes, continue.
     if (success) {

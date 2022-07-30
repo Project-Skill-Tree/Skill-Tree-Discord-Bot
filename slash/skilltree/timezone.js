@@ -25,11 +25,11 @@ exports.run = async (client, interaction) => {
   //Create confirmation
   const confirm = await exports.locationConfirmation(interaction, locationInfo);
   //If not confirmed, return
-  if (!confirm) {
+  if (confirm !== true) {
     const cancelledEmbed = new MessageEmbed()
       .setColor("#3bffbe")
       .setTitle("TIMEZONE")
-      .setDescription("Timezone update cancelled");
+      .setDescription(confirm);
     await interaction.editReply({embeds: [cancelledEmbed]});
     return;
   }
@@ -48,8 +48,8 @@ exports.locationConfirmation = async function(interaction, locationInfo) {
 
   //Error message
   if (locationInfo === null) {
-    await interaction.editReply("```Invalid timezone: Please make sure you're using the correct format```");
-    return false;
+    return "Timezone update failed: Please make sure you're using the correct format: \n\n" +
+      "<timezone> or <location> or <timecode> (e.g EST, london, GMT+5:30)";
   }
   //Calculate local time
   const utc = new Date().getTime() + (new Date().getTimezoneOffset() * 60000);
@@ -60,7 +60,8 @@ exports.locationConfirmation = async function(interaction, locationInfo) {
     .setTitle("TIMEZONE")
     .setDescription(`Timezone detected: ${locationInfo.location}? \n`+
       `Your local time should be ${dateAsTime(localTime)}. Is this correct?`);
-  return await createYesNoPanel(interaction, timezoneEmbed);
+  const confirm = await createYesNoPanel(interaction, timezoneEmbed);
+  return confirm ? true : "Timezone update cancelled";
 };
 exports.commandData = {
   name: "timezone",

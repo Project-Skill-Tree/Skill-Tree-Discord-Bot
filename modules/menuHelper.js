@@ -9,8 +9,9 @@ const {MessageSelectMenu} = require("discord.js");
  * List is cyclic and cycles back to the start
  * @param interaction - discord interaction
  * @param embed - embed to query
+ * @param files - optional files to include
  */
-exports.createYesNoPanel = async function(interaction, embed) {
+exports.createYesNoPanel = async function(interaction, embed, files=[]) {
   //Add left/right messageButton to message
   const row = new MessageActionRow()
     .addComponents(
@@ -23,7 +24,7 @@ exports.createYesNoPanel = async function(interaction, embed) {
         .setLabel("NO")
         .setStyle("PRIMARY"),
     );
-  const followUp = await interaction.followUp({embeds: [embed], components: [row]});
+  const followUp = await interaction.followUp({embeds: [embed], files: files, components: [row]});
 
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === interaction.user.id;
@@ -61,7 +62,17 @@ exports.createLargeSwipePanel = async function(client, interaction,
   list, actions = null, refresh=null) {
   let currentPage = 0;
   let options = await update(interaction, list, currentPage, actions);
-  let followUp = await interaction.editReply(options);
+  let message;
+  // eslint-disable-next-line no-prototype-builtins
+  if (Object.prototype.hasOwnProperty.call(interaction, "channelType")) {
+    if (Object.prototype.hasOwnProperty.call(interaction,"options")) {
+      options = Object.assign({}, options, interaction.options);
+    }
+    await interaction.interaction.webhook.editMessage(interaction.message, options);
+    message = interaction.message;
+  } else {
+    message = await interaction.editReply(options);
+  }
 
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
@@ -69,9 +80,10 @@ exports.createLargeSwipePanel = async function(client, interaction,
     || i.customId === "first"
     || i.customId === "last") && i.user.id === interaction.user.id;
 
-  const collector = followUp.createMessageComponentCollector({filter, time: 240000});
+  const collector = message.createMessageComponentCollector({filter, time: 240000});
   collector.on("collect", async i => {
     if (!i.isButton()) return;
+    if (i.deferred) {return;}
     await i.deferUpdate();
 
     switch (i.customId) {
@@ -94,7 +106,7 @@ exports.createLargeSwipePanel = async function(client, interaction,
         break;
     }
     options = await update(interaction, list, currentPage, actions);
-    followUp = await i.editReply(options);
+    message = await i.editReply(options);
   });
 
 
@@ -102,9 +114,10 @@ exports.createLargeSwipePanel = async function(client, interaction,
   if (actions == null) return;
 
   const actionFilter = i => i.user.id === interaction.user.id;
-  const actionCollector = followUp.createMessageComponentCollector({actionFilter, time: 120000});
+  const actionCollector = message.createMessageComponentCollector({actionFilter, time: 120000});
   actionCollector.on("collect", async i => {
     if (!i.isSelectMenu()) return;
+    if (i.deferred) return;
     await i.deferUpdate();
 
     //If action found
@@ -113,21 +126,20 @@ exports.createLargeSwipePanel = async function(client, interaction,
       const deleteItem = await action.action(list[currentPage]);
       //Delete item on action
       if (deleteItem) {
-        if (refresh) {
-          refresh();
-          return;
-        }
         const toRemove = list[currentPage];
         list = list.filter(i => i !== toRemove);
         //Set page index
         currentPage = Math.max(currentPage - 1, 0);
+        if (refresh) {
+          list = await refresh();
+        }
         options = await update(interaction, list, currentPage, actions);
-        followUp = await i.editReply(options);
+        await i.editReply(options);
       }
     }
   });
 
-  return followUp;
+  return message;
 };
 
 /**
@@ -144,7 +156,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
   list, actions = null) {
   let currentPage = 0;
 
-  let options = await update(interaction, list, currentPage, actions);
+  let options = await update(interaction, list, currentPage, actions[currentPage]);
   let followUp = await interaction.editReply(options);
   
   //Create listener for navigation events
@@ -223,7 +235,12 @@ async function update(interaction, list, currentPage, actions) {
     embed.setDescription("No more items to display");
     embed.setThumbnail("");
     embed.setImage("");
-    await interaction.editReply({embeds: [embed]});
+    if (Object.prototype.hasOwnProperty.call(interaction,"channelType")) {
+      await interaction.interaction.webhook.editMessage(interaction.message,
+        {embeds: [embed], components: [], attachments: [], thumbnails: [], images: []});
+    } else {
+      await interaction.editReply({embeds: [embed], components: [], attachments: [], thumbnails: [], images: []});
+    }
     return;
   }
 
@@ -236,7 +253,7 @@ async function update(interaction, list, currentPage, actions) {
   }
 
   //update embed to show current page
-  const data = await list[currentPage].update(interaction);
+  const data = await list[currentPage].update();
   return {embeds: data[0], components: components, files: data[1], attachments: [], thumbnails: [], images: []};
 }
 

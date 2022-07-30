@@ -17,7 +17,7 @@ const {getDaysBetweenDates} = require("./dateHelper");
  * @param tasks - tasks to display
  */
 
-exports.displayReview = async function(user, channel , tasks) {
+exports.displayReview = async function(user, channel, tasks) {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
   return channel.send({content: `<@${user.discordid}> your weekly report has been published`, files: [reviewImage]});
@@ -46,7 +46,7 @@ async function getWeeklyReview(user, tasks) {
   await drawHeaderFooter(canvas);
 
   await drawXP(canvas, user,20, 150, 360, 30);
-  await drawTasks(canvas, user, tasks,0,190,400,550);
+  await drawTasks(canvas, user, tasks,0,190,400);
 
   //return final buffer
   return canvas.toBuffer();
