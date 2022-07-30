@@ -40,7 +40,7 @@ exports.run = async (client, interaction) => {
     .setColor("#3bffbe")
     .setTitle("TIMEZONE")
     .setDescription("Timezone updated successfully");
-  await interaction.editReply({embeds: [confirmationEmbed]});
+  await interaction.editReply({embeds: [confirmationEmbed], components: []});
 };
 
 

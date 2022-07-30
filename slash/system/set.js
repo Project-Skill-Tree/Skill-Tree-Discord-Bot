@@ -72,7 +72,6 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     }
 
     // Modify the guild overrides directly.
-    console.log("setting:", interaction.guild.id);
     await settings.set(interaction.guild.id, value, key);
 
     // Confirm everything is fine!
@@ -114,15 +113,15 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     // If they respond with y or yes, continue.
     if (success) {
       // We delete the `key` here.
-      settings.delete(interaction.guild.id, key);
+      await settings.set(interaction.guild.id, defaultValue, key);
       await interaction.editReply({
         content: `${key} was successfully reset to default.`,
-        allowedMentions: {repliedUser: (replying === "true")}
+        allowedMentions: {repliedUser: (replying === "true"),embeds: [], components: []}
       });
     } else
       await interaction.editReply({
         content: `Your setting for \`${key}\` remains at \`${serverSettings[key]}\``,
-        allowedMentions: {repliedUser: (replying === "true")}
+        allowedMentions: {repliedUser: (replying === "true"),embeds: [], components: []}
       });
   }
   else {

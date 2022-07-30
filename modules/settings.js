@@ -59,21 +59,6 @@ class Settings {
   has(guild) {
     return this.client.has(guild);
   }
-
-  delete(guild) {
-    axios.delete(`${process.env.API_URL}config/deleteServerConfig`, { serverId: guild }, { 
-      headers: {
-        api_key: process.env.API_KEY 
-      }
-    })
-      // eslint-disable-next-line no-unused-vars
-      .then(res => {
-        this.client.delete(guild);
-      })
-      .catch(err => {
-        console.log(err.response.data);
-      });
-  }
 }
 
 module.exports = new Settings();
