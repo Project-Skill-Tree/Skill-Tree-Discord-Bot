@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const {getRecentTasks} = require("../modules/skillAPIHelper");
 const {displayReview} = require("../modules/weeklyReviewRenderer");
-const {getUsersInTimezone} = require("../modules/userAPIHelper");
+const {getUsersInTimezone, saveWeekly} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
 
 /**
@@ -35,8 +35,11 @@ exports.run = (client) => {
           "to receive reminders and weekly messages.```");
         return;
       }
+      const discorduser = await client.users.fetch(user.discordid);
+      user.username = discorduser.username;
       const channel = await getBaseLocation(client, user.baselocation);
       if (!channel) return;
+      await saveWeekly(user.id);
       await displayReview(user, channel, tasks);
     }
   });

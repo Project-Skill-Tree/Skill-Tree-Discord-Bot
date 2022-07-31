@@ -3,7 +3,6 @@ const {displayReview} = require("../../modules/weeklyReviewRenderer");
 const {getUser, authUser} = require("../../modules/userAPIHelper");
 
 /**
- * #TODO TEST METHOD - DELETE ON RELEASE
  * @param client
  * @param interaction
  */
@@ -13,11 +12,13 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
   if (!userID) {
-    await interaction.reply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    await interaction.editReply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
     return;
   }
 
-  const user = await getUser(userID, interaction.user.username);
+  const user = await getUser(userID, null);
+  const discorduser = await client.users.fetch(user.discordid);
+  user.username = discorduser.username;
   const tasks = await getRecentTasks(userID, 7);
   //Display weekly analytics
   displayReview(user, interaction.channel, tasks);

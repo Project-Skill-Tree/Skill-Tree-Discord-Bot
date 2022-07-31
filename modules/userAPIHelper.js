@@ -226,3 +226,14 @@ exports.eraseCompleted = function(userid, toErase) {
       }
     });
 };
+
+exports.saveWeekly = function(userid) {
+  return axios
+    .post(process.env.API_URL + "users/saveWeekly", {
+      userid: userid,
+    }, {
+      headers: {
+        api_key: getAPIKey(),
+      }
+    });
+};

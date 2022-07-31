@@ -4,7 +4,7 @@ const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
 const {dayToDate, getAbsDate, getDaysBetweenDates, formatFrequency} = require("../../modules/dateHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
-const {authUser, getUser} = require("../../modules/userAPIHelper");
+const {authUser, getUser, saveWeekly} = require("../../modules/userAPIHelper");
 const Challenge = require("../../objects/challenge");
 const Skill = require("../../objects/skill");
 
@@ -16,6 +16,7 @@ exports.run = async (client, interaction) => {
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);
+
   //Error if no account found
   if (!userID) {
     await interaction.editReply("```Error: Please create an account with ~setup```");
