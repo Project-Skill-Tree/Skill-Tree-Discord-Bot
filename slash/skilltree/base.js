@@ -17,9 +17,10 @@ exports.run = async (client, interaction) => {
   //Get user location
   let locationID;
   let channelName;
+
   if (interaction.channel.type === "DM") {
     channelName = "your DMs";
-    locationID = interaction.author.id;
+    locationID = interaction.user.id;
   } else {
     channelName = `"${interaction.guild.name}"`;
     locationID = interaction.guild.id;

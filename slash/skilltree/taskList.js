@@ -115,7 +115,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
 
       if (levelUp !== 0) {
         const user = await getUser(userID, interaction.user.username);
-        displayLevelUp(user, interaction.channel);
+        displayLevelUp(user, interaction);
 
         tasks.splice(tasks.indexOf(task),1);
         filteredTasks.splice(filteredTasks.indexOf(task), 1);

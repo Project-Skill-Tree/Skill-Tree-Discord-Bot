@@ -21,13 +21,13 @@ exports.displayProfile = async function(user, interaction) {
 /**
  * Sends an embedded level-up page, including level, character, xp
  * @param user - User object
- * @param channel - the channel to send the message to
+ * @param interaction
  */
-exports.displayLevelUp = async function(user, channel) {
+exports.displayLevelUp = async function(user, interaction) {
   //Generate profile
   const profileImage = new MessageAttachment(await getLevelUpProfileImage(user), "profile.png");
 
-  return channel.send({files: [profileImage]});
+  return interaction.followUp({files: [profileImage], ephemeral: true});
 };
 
 /**
