@@ -20,6 +20,7 @@ exports.run = (client) => {
     users = users.filter(u => u.discordid);
     //exit if no users found
     if (users.length === 0) return;
+    console.log("PUBLISHING WEEKLY REPORTS");
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
 
