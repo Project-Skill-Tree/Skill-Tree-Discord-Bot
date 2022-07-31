@@ -10,7 +10,7 @@ const {getBaseLocation} = require("../modules/baseHelper");
  */
 exports.run = (client) => {
   //Schedule a repeating task every 30 minutes all day saturday, sunday, monday.
-  cron.schedule("*/30 0-23 * * 6,0,1", async function() {
+  cron.schedule("* 0-23 * * 6,0,1", async function() {
     //Get the timezone offset
     const offset = getCurrentOffset();
     //If not at sunday 6PM
@@ -36,8 +36,10 @@ exports.run = (client) => {
           continue;
         }
         user.username = discorduser.username;
-        const channel = await getBaseLocation(client, user.baselocation);
-        if (!channel) continue;
+        const channel = await getBaseLocation(client, user.discordid, user.baselocation);
+        if (!channel) {
+          continue;
+        }
         await saveWeekly(user.id);
         await displayReview(user, channel, tasks);
       } catch (e) {
