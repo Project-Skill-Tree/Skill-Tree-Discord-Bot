@@ -3,6 +3,7 @@ const {getRecentTasks} = require("../modules/skillAPIHelper");
 const {displayReview} = require("../modules/weeklyReviewRenderer");
 const {getUsersInTimezone, saveWeekly} = require("../modules/userAPIHelper");
 const {getBaseLocation} = require("../modules/baseHelper");
+const {getDaysBetweenDates} = require("../modules/dateHelper");
 
 /**
  * Sends a weekly report every sunday at 6PM in the user's local timezone
@@ -23,6 +24,9 @@ exports.run = (client) => {
     console.log("PUBLISHING WEEKLY REPORTS");
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
+
+      //Exit if there was no data found within the last 7 days
+      if (getDaysBetweenDates(user.lastTracked, new Date()) > 7) continue;
 
       //Get last 7 days worth of tasks
       const tasks = await getRecentTasks(user.id, 7);
