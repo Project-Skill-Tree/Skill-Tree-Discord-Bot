@@ -25,20 +25,24 @@ exports.run = (client) => {
 
       //Get last 7 days worth of tasks
       const tasks = await getRecentTasks(user.id, 7);
-      const discorduser = await client.users.fetch(user.discordid);
-      if (!user.baselocation) {
-        //Attempt to send warning message if no base found
-        discorduser.send(
-          "``` Your weekly report failed to send. " +
-          "Please set a base location with the `base` command " +
-          "to receive reminders and weekly messages.```");
-        return;
+      try {
+        const discorduser = await client.users.fetch(user.discordid);
+        if (!user.baselocation) {
+          //Attempt to send warning message if no base found
+          discorduser.send(
+            "``` Your weekly report failed to send. " +
+            "Please set a base location with the `base` command " +
+            "to receive reminders and weekly messages.```");
+          continue;
+        }
+        user.username = discorduser.username;
+        const channel = await getBaseLocation(client, user.baselocation);
+        if (!channel) continue;
+        await saveWeekly(user.id);
+        await displayReview(user, channel, tasks);
+      } catch (e) {
+        console.log(e);
       }
-      user.username = discorduser.username;
-      const channel = await getBaseLocation(client, user.baselocation);
-      if (!channel) return;
-      await saveWeekly(user.id);
-      await displayReview(user, channel, tasks);
     }
   });
 };
@@ -48,10 +52,11 @@ function getCurrentOffset() {
   const GMToffset = new Date().getTimezoneOffset();
   const GMTTime = new Date(new Date().getTime() + GMToffset * 60 * 1000);
   // get GMT+12 time and round it to nearest 30minutes
-  const GMT12Time = new Date(new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000) - new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000).getTime() % (30 * 60 * 1000));
+  const GMT12Time = new Date(new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000) -
+    new Date(GMTTime.getTime() + 12 * 60 * 60 * 1000).getTime() % (30 * 60 * 1000));
 
   // check it's between sunday 6pm and monday 8pm
-  const inTime = (GMT12Time.getDay() === 0 && GMT12Time.getHours() >= 18) || (GMT12Time.getDay() === 1 && GMT12Time.getHours() <= 20);
+  const inTime = (GMT12Time.getDay() === 0 && GMT12Time.getHours() >= 18) || (GMT12Time.getDay() === 1 && GMT12Time.getHours() <= 21);
   if (!inTime) {
     return null;
   }
@@ -62,7 +67,7 @@ function getCurrentOffset() {
     GMT12Time.getMonth(),
     GMT12Time.getDate() - GMT12Time.getDay(),
     18,
-    0,
+    30,
     0
   ).getTime();
 
