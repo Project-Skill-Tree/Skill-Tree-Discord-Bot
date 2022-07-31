@@ -91,8 +91,7 @@ async function startMenu(client, interaction, userID) {
             "You will need to skip or complete it again to show it in your profile." +
             "\n(This will not affect XP or ongoing/completed skills unlocked by the parent).\n\n" +
             "Do you wish to continue?");
-        const msg = await interaction.followUp({embeds: [embed]});
-        const res = await createYesNoPanel(msg, interaction.user);
+        const res = await createYesNoPanel(interaction, embed);
         if (res) await revert(userID, toRevert);
         return true;
       }
