@@ -12,6 +12,7 @@ const {getDaysBetweenDates} = require("../modules/dateHelper");
 exports.run = (client) => {
   //Schedule a repeating task every 30 minutes all day saturday, sunday, monday.
   cron.schedule("*/30 0-23 * * 6,0,1", async function() {
+    console.log("PUBLISHING WEEKLY REPORTS");
     //Get the timezone offset
     const offset = getCurrentOffset();
     //If not at sunday 6PM
@@ -21,7 +22,7 @@ exports.run = (client) => {
     users = users.filter(u => u.discordid);
     //exit if no users found
     if (users.length === 0) return;
-    console.log("PUBLISHING WEEKLY REPORTS");
+
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
 
