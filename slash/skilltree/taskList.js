@@ -71,12 +71,12 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
   collector.on("collect", async i => {
     await i.deferUpdate();
     if (i.user.id !== interaction.user.id) {
-      await i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
+      await i.editReply({content: "You can't edit someone else's task list!", ephemeral: true});
       return;
     }
     if (getDaysBetweenDates(dayCreated,
       new Date(new Date().getTime() + timezoneOffset * 3600000), timezoneOffset) !== 0) {
-      await i.reply({
+      await i.editReply({
         content: "This task list is outdated, run the command again to get today's tasks",
         ephemeral: true
       });
