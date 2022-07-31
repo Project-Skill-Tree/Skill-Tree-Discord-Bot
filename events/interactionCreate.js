@@ -11,10 +11,6 @@ module.exports = async (client, interaction) => {
   // If there is no guild, get default conf (DMs)
   const settings = interaction.settings = getSettings(interaction.guild);
 
-  //If in dev mode, only allow messages in the #testing channel of the skill tree discord
-  if (client.user.id === "994429183327473724" &&
-    interaction.channelId !== "953925566728380456") return;
-
   // Get the user or member's permission level from the elevation
   const level = permlevel(interaction);
   interaction.level = level;

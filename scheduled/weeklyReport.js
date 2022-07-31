@@ -25,17 +25,15 @@ exports.run = (client) => {
 
       //Get last 7 days worth of tasks
       const tasks = await getRecentTasks(user.id, 7);
+      const discorduser = await client.users.fetch(user.discordid);
       if (!user.baselocation) {
         //Attempt to send warning message if no base found
-        const userDM = client.channels.cache.get(user.discordid);
-        if (!userDM) return;
-        userDM.send(
+        discorduser.send(
           "``` Your weekly report failed to send. " +
           "Please set a base location with the `base` command " +
           "to receive reminders and weekly messages.```");
         return;
       }
-      const discorduser = await client.users.fetch(user.discordid);
       user.username = discorduser.username;
       const channel = await getBaseLocation(client, user.baselocation);
       if (!channel) return;
