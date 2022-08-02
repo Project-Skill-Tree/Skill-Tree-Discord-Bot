@@ -24,7 +24,7 @@ exports.createYesNoPanel = async function(interaction, embed, files=[]) {
         .setLabel("NO")
         .setStyle("PRIMARY"),
     );
-  const followUp = await interaction.followUp({embeds: [embed], files: files, components: [row]});
+  const followUp = await interaction.followUp({embeds: [embed], files: files, components: [row], ephemeral: true});
 
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === interaction.user.id;

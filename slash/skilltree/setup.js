@@ -18,18 +18,15 @@ const {createLargeSwipePanel} = require("../../modules/menuHelper");
 exports.run = async (client, interaction) => {
   await interaction.deferReply({ephemeral: true});
 
-  //Send init message to check chat is available
-  const member = await client.users.cache.get(interaction.user.id);
-
   //Validate user exists
   const userID = await authUser(interaction.user.id);
 
-  let settings = await getSettings(client, interaction, userID, member);
+  let settings = await getSettings(client, interaction, userID, interaction.user);
   if (userID) {
     settings = settings.filter(s => s.title !== "Set Experience Level");
   }
   //Start settings with discordid specified
-  settings[0].start(interaction, {discordid: member.id}, settings, member);
+  settings[0].start(interaction, {discordid: interaction.user.id}, settings, interaction.user);
 };
 
 async function setupUser(userID, userSettings) {
