@@ -21,12 +21,11 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
 
-  console.log("AUTH");
   let settings = await getSettings(client, interaction, userID, interaction.user);
   if (userID) {
     settings = settings.filter(s => s.title !== "Set Experience Level");
   }
-  console.log("start");
+
   //Start settings with discordid specified
   settings[0].start(interaction, {discordid: interaction.user.id}, settings, interaction.user);
 };
