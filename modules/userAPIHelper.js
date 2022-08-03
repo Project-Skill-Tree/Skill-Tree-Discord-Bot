@@ -122,18 +122,17 @@ exports.getUser = async function(userID, username) {
  * Get all users
  * @param callback - method to pass user object to
  */
-exports.getUsers = function(callback) {
-  axios
+exports.getUsers = async function() {
+  let response = await axios
     .get(process.env.API_URL + "users/getAll/", {
       headers: {
         api_key: getAPIKey(),
       }
-    }).then(res => {
-      const users = res.data.users.map(u => User.create(u));
-      callback(users);
-    }).catch(err => {
-      console.log(err);
     });
+
+  const userObjects = response.data.users.map(u => User.create(u));
+
+  return userObjects;
 };
 
 /**

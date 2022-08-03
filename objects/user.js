@@ -20,6 +20,7 @@ class User {
    * @param reminderChannel - user's reminder channel
    * @param timezone - timezone command
    * @param baselocation
+   * @param lastTracked - Datetime object for when the user last tracked
    * @constructor
    */
   constructor(id, discordid, name, xp, xpHistory, completed, inprogress,
