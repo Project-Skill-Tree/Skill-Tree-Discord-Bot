@@ -8,7 +8,7 @@ const {createLargeMultiActionSwipePanel} = require("../../modules/menuHelper");
  * Sends a swipeable list of all the user's available skills
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

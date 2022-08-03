@@ -19,7 +19,7 @@ const {imageToBuffer} = require("../../modules/UIHelper");
 
 //[action, key, ...value]
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   if (!interaction.guild.id) {
     await interaction.editReply("Set can only be used in a server");

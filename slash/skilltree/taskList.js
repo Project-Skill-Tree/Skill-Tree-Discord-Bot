@@ -4,7 +4,7 @@ const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
 const {dayToDate, getAbsDate, getDaysBetweenDates, formatFrequency} = require("../../modules/dateHelper");
 const {createLargeSwipePanel} = require("../../modules/menuHelper");
 const {displayLevelUp} = require("../../modules/profileRenderer");
-const {authUser, getUser, saveWeekly} = require("../../modules/userAPIHelper");
+const {authUser, getUser} = require("../../modules/userAPIHelper");
 const Challenge = require("../../objects/challenge");
 const Skill = require("../../objects/skill");
 
@@ -12,7 +12,7 @@ const Skill = require("../../objects/skill");
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

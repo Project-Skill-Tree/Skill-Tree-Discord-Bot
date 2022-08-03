@@ -13,7 +13,7 @@ const {getBadgeIcon} = require("../../objects/badge");
  * Page 5: Items and Challenges
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Get pages
   const pages = await getPages(interaction.settings);

@@ -6,7 +6,7 @@ const { authUser, deleteUser } = require("../../modules/userAPIHelper");
  * PERMANENTLY DELETES USER INFORMATION FROM DB, added to comply with Discord's Guidelines to protect user privacy
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

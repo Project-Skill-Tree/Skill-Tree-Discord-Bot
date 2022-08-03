@@ -8,7 +8,7 @@ const {authUser, updateTimezone} = require("../../modules/userAPIHelper");
  * Timezone command, sets the user's local timezone offset
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

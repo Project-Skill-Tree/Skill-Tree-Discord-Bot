@@ -7,7 +7,7 @@ const {getUser, authUser} = require("../../modules/userAPIHelper");
  * @param interaction
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);

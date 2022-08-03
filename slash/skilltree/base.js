@@ -5,7 +5,7 @@ const {MessageEmbed} = require("discord.js");
  * Sets a user's "base location" where reminders, weekly reports and more are sent
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

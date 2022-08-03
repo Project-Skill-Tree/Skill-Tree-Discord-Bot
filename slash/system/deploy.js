@@ -1,5 +1,5 @@
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
   // We'll partition the slash commands based on the guildOnly boolean.
   // Separating them into the correct objects defined in the array below.
   const globalCmds = client.container.slashcmds.filter(c => !c.conf.guildOnly);

@@ -16,15 +16,17 @@ const {createLargeSwipePanel} = require("../../modules/menuHelper");
  * Page 6. Complete confirmation
  */
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);
 
+  console.log("AUTH");
   let settings = await getSettings(client, interaction, userID, interaction.user);
   if (userID) {
     settings = settings.filter(s => s.title !== "Set Experience Level");
   }
+  console.log("start");
   //Start settings with discordid specified
   settings[0].start(interaction, {discordid: interaction.user.id}, settings, interaction.user);
 };
@@ -68,8 +70,14 @@ async function getSettings(client, interaction, userExists) {
     baseName = "your DMs";
   } else {
     locationID = interaction.guildId;
-    const guild = await client.guilds.cache.get(interaction.guildId);
-    baseName = `"${guild.name}"`;
+    try {
+      const guild = await client.guilds.fetch(interaction.guildId);
+      baseName = `"${guild.name}"`;
+    } catch (e) {
+      console.log("FAIL");
+      locationID = interaction.user.id;
+      baseName = "your DMs";
+    }
   }
   return [
     //Setup start

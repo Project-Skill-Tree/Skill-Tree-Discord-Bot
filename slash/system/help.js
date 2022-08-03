@@ -10,7 +10,7 @@ const { toProperCase } = require("../../modules/functions.js");
 const {MessageActionRow, MessageButton} = require("discord.js");
 
 exports.run = async (client, interaction) => {
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   // Grab the container from the client to reduce line length.
   const {container} = client;

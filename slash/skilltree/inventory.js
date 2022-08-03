@@ -9,7 +9,7 @@ const {getUser, authUser} = require("../../modules/userAPIHelper");
  * Inventory command, every item the user has in a swipeable menu
  */
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id);

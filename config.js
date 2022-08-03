@@ -29,6 +29,7 @@ const config = {
     "adminRole": "Administrator",
     "systemNotice": "true", // This gives a notice when a user tries to run a command that they do not have permission to use.
     "botChannel" : "null",
+    "hidden": "true"
   },
 
   // PERMISSION LEVEL DEFINITIONS.
@@ -55,7 +56,12 @@ const config = {
       * If they don't then return false, which will prevent them from executing the command.
       */
       check: (message) => {
-        return false;
+        try {
+          const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole?.toLowerCase());
+          if (modRole && message.member.roles.cache.has(modRole.id)) return true;
+        } catch (e) {
+          return false;
+        }
       }
     },
 

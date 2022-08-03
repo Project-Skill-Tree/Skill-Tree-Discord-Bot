@@ -6,12 +6,12 @@ const {displayProfile} = require("../../modules/profileRenderer");
  *
  */
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
-  await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
   if (!userID) {
-    await interaction.editReply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    await interaction.editReply({content: "```Error: Please create an account with ~setup```"});
     return;
   }
 

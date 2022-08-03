@@ -27,7 +27,7 @@ exports.displayLevelUp = async function(user, interaction) {
   //Generate profile
   const profileImage = new MessageAttachment(await getLevelUpProfileImage(user), "profile.png");
 
-  return interaction.followUp({files: [profileImage], ephemeral: true});
+  return interaction.followUp({files: [profileImage], ephemeral: interaction.settings.hidden});
 };
 
 /**

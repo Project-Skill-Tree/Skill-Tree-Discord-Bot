@@ -3,13 +3,16 @@ const { getSettings, permlevel } = require("../modules/functions.js");
 const config = require("../config.js");
 
 module.exports = async (client, interaction) => {
-  
+
+  console.log("test");
+
   // If it's not a command, stop.
   if (!interaction.isCommand()) return;
 
   // Grab the settings for this server from Enmap.
   // If there is no guild, get default conf (DMs)
   const settings = interaction.settings = getSettings(interaction.guild);
+  settings.hidden = settings.hidden ?? true;
 
   // Get the user or member's permission level from the elevation
   const level = permlevel(interaction);
@@ -37,20 +40,19 @@ module.exports = async (client, interaction) => {
 
   // If everything checks out, run the command
   try {
-    await cmd.run(client, interaction);
     logger.log(`${config.permLevels.find(l => l.level === level).name} ${interaction.user.id} ran slash command ${interaction.commandName}`, "cmd");
-
+    await cmd.run(client, interaction);
   } catch (e) {
     console.error(e);
-    if (interaction.replied) 
-      interaction.followUp({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
+    if (interaction.replied)
+      await interaction.followUp({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
         .catch(e => console.error("An error occurred following up on an error", e));
     else 
     if (interaction.deferred)
-      interaction.editReply({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
+      await interaction.editReply({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
         .catch(e => console.error("An error occurred following up on an error", e));
     else 
-      interaction.reply({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
+      await interaction.reply({ content: `There was a problem with your request.\n\`\`\`${e.message}\`\`\``, ephemeral: true })
         .catch(e => console.error("An error occurred replying on an error", e));
   }
 };
