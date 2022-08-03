@@ -10,7 +10,7 @@ module.exports = async (client, interaction) => {
   // Grab the settings for this server from Enmap.
   // If there is no guild, get default conf (DMs)
   const settings = interaction.settings = getSettings(interaction.guild);
-  settings.hidden = settings.hidden ?? true;
+  settings.hidden = settings.hidden !== "false";
 
   // Get the user or member's permission level from the elevation
   const level = permlevel(interaction);
