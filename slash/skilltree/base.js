@@ -11,7 +11,7 @@ exports.run = async (client, interaction) => {
   const userID = await authUser(interaction.user.id);
   //Error if no account found
   if (!userID) {
-    await interaction.editReply("```Error: Please create an account with ~setup```");
+    await interaction.editReply("```Error: Please create an account with /setup```");
     return;
   }
   //Get user location
