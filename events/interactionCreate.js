@@ -4,8 +4,6 @@ const config = require("../config.js");
 
 module.exports = async (client, interaction) => {
 
-  console.log("test");
-
   // If it's not a command, stop.
   if (!interaction.isCommand()) return;
 

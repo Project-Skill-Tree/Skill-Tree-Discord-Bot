@@ -6,6 +6,8 @@ const { intents, partials, permLevels } = require("./config.js");
 const logger = require("./modules/logger.js");
 const {registerFont} = require("canvas");
 const Path = require("path");
+const settings = require("./modules/settings");
+const config = require("./config");
 
 registerFont("./assets/fonts/Akira.otf", { family: "Akira"});
 
@@ -40,6 +42,9 @@ client.container = {
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
 
 const init = async () => {
+
+  //Initialise settings
+  await settings.set("default", config.defaultSettings);
 
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
