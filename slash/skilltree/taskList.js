@@ -211,9 +211,9 @@ function addField(messageEmbed, string, title) {
       messageEmbed.addField(name, chars);
       chopped = "";
     } else {
-      const lastSplit = chars.lastIndexOf("\n");
-      const field = chars.slice(0, lastSplit);
-      chopped = chopped.slice(lastSplit + 1);
+      const lastSplit = Math.max(chars.lastIndexOf(":x:"), chars.lastIndexOf(":white_check_mark:"));
+      const field = chars.slice(0, lastSplit -1);
+      chopped = chopped.slice(lastSplit);
       messageEmbed.addField(name, field);
     }
     index += 1;
