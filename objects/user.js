@@ -24,7 +24,7 @@ class User {
    * @constructor
    */
   constructor(id, discordid, name, xp, xpHistory, completed, inprogress,
-    items, numDaysTracked, reminderChannel, timezone, baselocation, lastTracked) {
+    items, numDaysTracked, reminderChannel, timezone, baselocation, lastTracked, reminderSent) {
     this.id = id;
     this.discordid = discordid;
     this.name = name;
@@ -38,6 +38,7 @@ class User {
     this.timezone = timezone;
     this.baselocation = baselocation;
     this.lastTracked = lastTracked;
+    this.reminderSent = reminderSent;
   }
 
   /**
@@ -54,7 +55,7 @@ class User {
     return new User(user._id, user.discordid, user.username, user.xp, user.xpHistory,
       sc.concat(cc), sip.concat(cip), items,
       user.numDaysTracked, user.reminderChannel, user.timezone,
-      user.baselocation, new Date(user.lastTracked));
+      user.baselocation, new Date(user.lastTracked), user.reminderSent);
   }
 
   getPrevXP() {

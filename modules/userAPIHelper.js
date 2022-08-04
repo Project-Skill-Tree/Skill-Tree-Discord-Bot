@@ -236,3 +236,15 @@ exports.saveWeekly = function(userid) {
       }
     });
 };
+
+exports.setReminded = function(userid, value) {
+  return axios
+    .post(process.env.API_URL + "users/setReminded", {
+      userid: userid,
+      value: value,
+    }, {
+      headers: {
+        api_key: getAPIKey(),
+      }
+    });
+};

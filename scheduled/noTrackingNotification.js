@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { getUsers } = require('../modules/userAPIHelper');
+const { getUsers, setReminded } = require('../modules/userAPIHelper');
 const { getBaseLocation } = require('../modules/baseHelper.js');
 
 let slackingMessage = ", you have not tracked anything for two days. Get back to work!";
@@ -18,18 +18,25 @@ exports.run = (client) => {
       let currentTime = currentDate.getTime() / 1000 / 60 / 60;
       let lastTrackedTime = u.lastTracked.getTime() / 1000 / 60 / 60;
 
+      console.log(u);
+
       // If 48 hours has passed since the user last tracked
       if(currentTime - lastTrackedTime > 48) {
-        const channel = await getBaseLocation(client, u.discordid, u.baselocation);
+        // Check if user object has the property 'reminderSent' and check if it is false
+        if(!(u.reminderSent ?? false)) {
+          const channel = await getBaseLocation(client, u.discordid, u.baselocation);
 
-        if(!channel) {
-          const discorduser = await client.users.fetch(u.discordid);
+          await setReminded(u.id, true);
 
-          discorduser.send(discorduser.username + slackingMessage);
-          return;
+          if(!channel) {
+            const discorduser = await client.users.fetch(u.discordid);
+
+            discorduser.send(discorduser.username + slackingMessage);
+            return;
+          }
+
+          channel.send(`<@${u.discordid}>` + slackingMessage);
         }
-
-        channel.send(`<@${u.discordid}>` + slackingMessage);
       }
     })
   })
