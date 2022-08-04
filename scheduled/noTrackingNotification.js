@@ -13,7 +13,7 @@ exports.run = (client) => {
 
     const currentDate = new Date();
 
-    users.forEach(async u => {
+    users.filter(u => 'discordid' in u).forEach(async u => {
       // Convert epoch values (which are in milliseconds) to hours via `/ 1000 / 60 / 60`
       const currentTime = currentDate.getTime() / 1000 / 60 / 60;
       const lastTrackedTime = u.lastTracked.getTime() / 1000 / 60 / 60;
