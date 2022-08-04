@@ -8,7 +8,7 @@ const slackingMessage = ", you have not tracked anything for two days. Get back 
 exports.run = (client) => {
   cron.schedule("0 * * * *", async () => {
     console.log("Checking for users that haven't been tracking");
-
+    
     const users = await getUsers();
 
     const currentDate = new Date();
