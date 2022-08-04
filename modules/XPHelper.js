@@ -5,10 +5,10 @@ const Rank = require("../objects/rank");
 const ranks = [
   new Rank("Acolyte",-Number.MAX_VALUE,"rgb(52,152,219)", "character1.png"),
   new Rank("Spartan",10,"rgb(255, 100, 69)", "character2.png"),
-  new Rank("Disciple",20,"rgb(75, 252, 252)", "character3.png"),
-  new Rank("Warrior",40,"rgb(255,207,40)", "character4.png"),
-  new Rank("Adonis",60,"rgb(161, 105, 231)", "character5.png"),
-  new Rank("Maximus",80,"rgb(33,255,177)", "character6.png"),
+  new Rank("Disciple",30,"rgb(75, 252, 252)", "character3.png"),
+  new Rank("Warrior",60,"rgb(255,207,40)", "character4.png"),
+  new Rank("Adonis",100,"rgb(161, 105, 231)", "character5.png"),
+  new Rank("Maximus",140,"rgb(33,255,177)", "character6.png"),
 ];
 
 /**

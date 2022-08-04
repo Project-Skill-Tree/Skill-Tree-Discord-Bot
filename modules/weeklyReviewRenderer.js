@@ -17,10 +17,10 @@ const {getDaysBetweenDates} = require("./dateHelper");
  * @param tasks - tasks to display
  */
 
-exports.displayReview = async function(user, message , tasks) {
+exports.displayReview = async function(user, channel, tasks) {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
-  return message.reply({files: [reviewImage]});
+  return channel.send({content: `<@${user.discordid}> your weekly report has been published`, files: [reviewImage]});
 };
 
 /**
@@ -43,10 +43,10 @@ async function getWeeklyReview(user, tasks) {
   const background = await Canvas.loadImage("./assets/backgrounds/weekly_report.png");
   context.drawImage(background, 0, 0, background.width, background.height);
 
-  await drawHeaderFooter(canvas);
+  await drawHeaderFooter(canvas, user);
 
   await drawXP(canvas, user,20, 150, 360, 30);
-  await drawTasks(canvas, user, tasks,0,190,400,550);
+  await drawTasks(canvas, user, tasks,0,190,400);
 
   //return final buffer
   return canvas.toBuffer();
@@ -58,7 +58,7 @@ async function getWeeklyReview(user, tasks) {
  * @param canvas
  * @return {Promise<void>}
  */
-async function drawHeaderFooter(canvas) {
+async function drawHeaderFooter(canvas, user) {
   const context = canvas.getContext("2d");
   context.font = "30px \"Akira\"";
 
@@ -78,6 +78,12 @@ async function drawHeaderFooter(canvas) {
   context.shadowBlur = 20;
   context.fillRect(0,120,400,3);
 
+  context.font = "20px \"Akira\"";
+  const metric = context.measureText(user.username);
+  const width = Math.min(metric.width, 300);
+  context.fillText(user.username, 200 - width*0.5, 100, 300);
+
+  context.font = "30px \"Akira\"";
   context.shadowBlur = 20;
   context.fillRect(0,800 - 50,400,3);
   context.shadowBlur = 0;
@@ -180,7 +186,7 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
   const pad = 10;
 
   //Sort tasks in descending order of level and then XP
-  const taskList = tasks.sort((a, b) => {
+  let taskList = tasks.sort((a, b) => {
     //sort challenges by xp instead of level
     if (a.child.level === undefined || b.child.level === undefined) {
       return b.child.xp - a.child.xp;
@@ -190,7 +196,16 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
     } else { // if that fails: sort by xp
       return b.child.xp - a.child.xp;
     }
-  }).slice(0,6);
+  });
+
+  const map = {};
+  taskList.forEach(task => {
+    const k = task.child.getName();
+    if (!map[k] || task.data.length > map[k]?.data.length) {
+      map[k] = task;
+    }
+  });
+  taskList = taskList.filter(task => map[task.child.getName()] === task).slice(0,6);
 
   //Width of one task
   const tHeight = 90;

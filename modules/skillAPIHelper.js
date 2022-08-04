@@ -37,19 +37,15 @@ exports.getCurrentTasks = async function(userID) {
  * @param {number} limit - number of days ago for the last habit entry
  * @param callback
  */
-exports.getRecentTasks = function(userID, limit, callback) {
-  axios.get(process.env.API_URL + "tasks/recentTasks", {
+exports.getRecentTasks = async function(userID, limit) {
+  const res = await axios.get(process.env.API_URL + "tasks/recentTasks", {
     headers: {
       userid: userID,
       api_key: getAPIKey(),
       limit: limit
     }
-  }).then((res)=>{
-    const tasks = res.data.tasks.map(data => Task.create(data));
-    callback(tasks);
-  }).catch(res => {
-    console.log(res);
   });
+  return res.data.tasks.map(data => Task.create(data));
 };
 
 /**
@@ -69,67 +65,53 @@ exports.deleteTask = function(taskID) {
 /**
  * Get JSON object containing skills that the user has accepted from the database
  * @param userID - MongoDB userID
- * @param callback - return JSON data of skills in progress
  */
-exports.getInProgress = function(userID, callback) {
-  axios.get(process.env.API_URL + "users/getInProgress", {
+exports.getInProgress = async function(userID) {
+  const res = await axios.get(process.env.API_URL + "users/getInProgress", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
-  }).then((res)=>{
-    const skills = res.data.skills.map(val => Skill.create(val));
-    const challenges = res.data.challenges.map(val => Challenge.create(val));
-    callback(skills.concat(challenges));
-  }).catch(res => {
-    console.log(res);
   });
+  const skills = res.data.skills.map(val => Skill.create(val));
+  const challenges = res.data.challenges.map(val => Challenge.create(val));
+  return skills.concat(challenges);
 };
 
 /**
  * Get JSON object containing skills available to a given user from database
  * @param userID - MongoDB userID
- * @param callback - function to run, passes list of skills
  */
-exports.getAvailable = function(userID, callback) {
-  axios.get(process.env.API_URL + "users/getAvailable", {
+exports.getAvailable = async function(userID) {
+  const res = await axios.get(process.env.API_URL + "users/getAvailable", {
     headers: {
       userid: userID,
       api_key: getAPIKey()
     }
-  }).then(res => {
-    const skills = res.data.skills.map(val => Skill.create(val));
-    const challenges = res.data.challenges.map(val => Challenge.create(val));
-    callback(skills.concat(challenges));
-  }).catch(res => {
-    console.log(res);
-    console.log(`Error fetching skills: ${res.status}`);
   });
+  const skills = res.data.skills.map(val => Skill.create(val));
+  const challenges = res.data.challenges.map(val => Challenge.create(val));
+  return skills.concat(challenges);
 };
 
 /**
  * Get JSON object containing all skills and challenges found in the given list
  * @param list - List of MongoDB Object IDs
- * @param callback - return skill/challenge objects
  */
-exports.getAllInList = function(list, callback) {
-  axios.get(process.env.API_URL + "inList", {
+exports.getAllInList = async function(list) {
+  const res = await axios.get(process.env.API_URL + "inList", {
     headers: {
       api_key: getAPIKey(),
       list: list,
     }
-  }).then((res)=>{
-    const objs = res.data.list.map(val => {
-      switch (val.type) {
-        case "Skill":
-          return Skill.create(val);
-        case "Challenge":
-          return Challenge.create(val);
-      }
-    });
-    callback(objs);
-  }).catch(res => {
-    console.log(res);
+  });
+  return res.data.list.map(val => {
+    switch (val.type) {
+      case "Skill":
+        return Skill.create(val);
+      case "Challenge":
+        return Challenge.create(val);
+    }
   });
 };
 

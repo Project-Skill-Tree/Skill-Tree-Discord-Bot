@@ -11,23 +11,26 @@ const Skill = require("../../objects/skill");
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
  */
-exports.run = async (client, message) => {
-  //Validate user exists
-  authUser(message.author.id, message.channel, async (userID) => {
-    //Get tasks
-    const [tasks, timezoneOffset] = await getCurrentTasks(userID);
+exports.run = async (client, interaction) => {
+  await interaction.deferReply({ephemeral: interaction.settings.hidden});
 
-    if (tasks.length === 0) {
-      message.channel
-        .send("```No Current tasks, go to `~start` to start a skill```")
-        .then(msg => {
-          setTimeout(() => msg.delete(), 10000);
-        });
-    } else {
-      //Show tasks in embed
-      createTaskList(client, message, tasks, userID, timezoneOffset);
-    }
-  });
+  //Validate user exists
+  const userID = await authUser(interaction.user.id);
+
+  //Error if no account found
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
+
+  const [tasks, timezoneOffset] = await getCurrentTasks(userID);
+  if (tasks.length === 0) {
+    await interaction
+      .editReply("```No Current tasks, go to `~start` to start a skill```");
+  } else {
+    //Show tasks in embed
+    createTaskList(client, interaction, tasks, userID, timezoneOffset);
+  }
 };
 
 /**
@@ -35,13 +38,13 @@ exports.run = async (client, message) => {
  * Has yesterday/today button to toggle previous day
  * Has combobox to select which skill has been completed
  * @param client
- * @param message
+ * @param interaction
  * @param tasks
  * @param userID
  * @param timezoneOffset
  * @return {Promise<void>}
  */
-async function createTaskList(client, message, tasks, userID, timezoneOffset) {
+async function createTaskList(client, interaction, tasks, userID, timezoneOffset) {
   const UTC = new Date(Date.parse(new Date().toUTCString()));
   const dayCreated = new Date(UTC.getTime() + timezoneOffset*3600000);
   let day = "today";
@@ -62,24 +65,25 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
         .setLabel("TODAY")
         .setStyle("SECONDARY")
         .setDisabled(true));
-  const msg = await message.reply({ embeds: [embed], components: [dropDownBox,row] });
+  const msg = await interaction.editReply({ embeds: [embed], components: [dropDownBox,row] });
 
   const collector = msg.createMessageComponentCollector({time: 240000});
 
   collector.on("collect", async i => {
-    if (i.user.id !== message.author.id) {
-      await i.reply({content: "You can't edit someone else's task list!", ephemeral: true});
+    await i.deferUpdate();
+    if (i.user.id !== interaction.user.id) {
+      await i.editReply({content: "You can't edit someone else's task list!", embeds: [], components: [], ephemeral: true});
       return;
     }
     if (getDaysBetweenDates(dayCreated,
       new Date(new Date().getTime() + timezoneOffset * 3600000), timezoneOffset) !== 0) {
-      await i.reply({
+      await i.editReply({
         content: "This task list is outdated, run the command again to get today's tasks",
+        embeds: [], components: [],
         ephemeral: true
       });
       return;
     }
-    await i.deferUpdate();
 
     if (i.isButton()) {
       day = i.customId; //today or yesterday
@@ -106,19 +110,21 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       const skillTitle = i.values[0];
       const task = filteredTasks.find(task => task.child.getName() === skillTitle);
       if (!task) return;
+      //Toggle checked
       task.setChecked(!task.isChecked(date, timezoneOffset), date, timezoneOffset);
-
+      //Get levelup and unlocks
       const [levelUp, unlocked] = await updateTask(userID, task, day, task.isChecked(date, timezoneOffset));
 
       if (levelUp !== 0) {
-        getUser(userID, message.author.username, (user) => {
-          displayLevelUp(user, message.channel);
-        });
+        const user = await getUser(userID, interaction.user.username);
+        displayLevelUp(user, interaction);
+
         tasks.splice(tasks.indexOf(task),1);
         filteredTasks.splice(filteredTasks.indexOf(task), 1);
       }
       if (unlocked.length !== 0) {
-        createLargeSwipePanel(client, message, unlocked);
+        //display unlocked items in a swipeable panel
+        createLargeSwipePanel(client, interaction, unlocked);
       }
     }
 
@@ -130,7 +136,7 @@ async function createTaskList(client, message, tasks, userID, timezoneOffset) {
       components.push(dropDownBox);
     }
     components.push(row);
-    msg.edit({ embeds: [embed], components: components});
+    await i.editReply({embeds: [embed], components: components});
   });
 }
 
@@ -141,6 +147,7 @@ function createDropDownBox(tasks, date, timezoneOffset) {
         tasks.map(
           task => {
             let goal = task.child.goal;
+            //If no goal found, use list of goals
             if (!goal) {
               return {
                 label: task.child.getName(),
@@ -149,6 +156,7 @@ function createDropDownBox(tasks, date, timezoneOffset) {
                 emoji: task.isChecked(date, timezoneOffset) ? "✅" : "❌",
               };
             }
+            //Wrap goal if its over 100 characters
             if (goal.length > 100) {
               goal = task.child.goal.substring(0,97) + "...";
             }
@@ -244,9 +252,10 @@ exports.conf = {
   permLevel: "User"
 };
 
-exports.help = {
+exports.commandData = {
   name: "tasks",
-  category: "Skill Tree",
   description: "daily task list",
-  usage: "tasks"
+  options: [],
+  defaultPermission: true,
+  category: "Skill Tree",
 };

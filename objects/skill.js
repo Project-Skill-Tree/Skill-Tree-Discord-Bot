@@ -16,9 +16,14 @@ class Skill extends Swipeable {
    * @param {number} level - Skill level (3)
    * @param {string} goal - The success condition for the skill to be complete
    * @param goals
-   * @param {number} frequency - The frequency at which the task of the skill must be completed. Say you have to do x thing 3 times a week, 3 would be the frequency, and weekly would be the time interval.
-   * @param {string} interval - The time interval of the skill. If a skill was to be done x times weekly, weekly would be the interval. Valid values would be "day", "week", "month", "year", etc.
-   * @param {String} timelimit - The number of days for which you need to maintain the skill before acquiring it
+   * @param {number} frequency - The frequency at which the task of the skill
+   * must be completed. Say you have to do x thing 3 times a week,
+   * 3 would be the frequency, and weekly would be the time interval.
+   * @param {string} interval - The time interval of the skill. If a skill
+   * was to be done x times weekly, weekly would be the interval.
+   * Valid values would be "day", "week", "month", "year", etc.
+   * @param {String} timelimit - The number of days for which you need to
+   * maintain the skill before acquiring it
    * @param {number} xp - The amount of XP granted upon completion of the skill
    * @param requires - required skills
    * @param children - child skills
@@ -60,29 +65,14 @@ class Skill extends Swipeable {
   }
 
   /**
-   * Sends an embedded skill in the chat
-   * @param message - users message
-   * @param channel
-   */
-  async send(message, channel) {
-    //Create embedded messages
-    const data = await this.update(new MessageEmbed());
-
-    if (message !== null) {
-      return await message.reply({embeds: data[0], files: data[1]});
-    } else {
-      return await channel.send({embeds: data[0], files: data[1]});
-    }
-  }
-
-  /**
    * Updates properties of embed with values from this class
    * @param embed - embedded message to update
    * @returns data - [embed, files]
    */
-  async update(embed) {
+  async update() {
     const badgeFile = new MessageAttachment(await this.getIcon(), "badge.png");
 
+    const embed = new MessageEmbed();
     await embed.setColor("#d21cff");
     embed.setTitle(this.getName());
     embed.setThumbnail("attachment://badge.png");

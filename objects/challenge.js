@@ -43,33 +43,26 @@ class Challenge extends Swipeable {
   }
 
   /**
-   * Sends an embedded challenge to the chat
-   * @param message
-   * @param channel
-   */
-  async send(message, channel) {
-    const data = await this.update(new MessageEmbed());
-
-    if (message !== null) {
-      return await message.reply({embeds: data[0], files: data[1]});
-    } else {
-      return await channel.send({embeds: data[0], files: data[1]});
-    }
-  }
-
-  /**
    * Updates properties of embed with values from this class
-   * @param embed - embed to update
    * @return embed - updated embed
    */
-  async update(embed) {
+  async update() {
     //Add link if one exists
     const icon = new MessageAttachment(await this.getIcon(), "icon.png");
+    const embed = new MessageEmbed();
     await embed.setColor("#bd290b");
     embed.setTitle("```[CHALLENGE]```");
     embed.setThumbnail("attachment://icon.png");
     embed.setDescription(this.toString());
-    return [[embed], [icon]];
+    const embeds = [embed];
+    const files = [icon];
+    return [embeds, files];
+  }
+
+  toString() {
+    let link = "";
+    if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;
+    return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" + link + "\n```diff\n"+`+${this.xp}` +"XP```";
   }
 
   getName() {
@@ -78,12 +71,6 @@ class Challenge extends Swipeable {
 
   toLine() {
     return this.title;
-  }
-
-  toString() {
-    let link = "";
-    if (this.link) link = `\n**LINK**: [[LINK]](${this.link})`;
-    return "**GOAL:** \n`" + `${this.goals.join("\n")}` + "`" + link + "\n```diff\n"+`+${this.xp}` +"XP```";
   }
 
   async getIcon() {

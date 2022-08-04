@@ -68,6 +68,7 @@ exports.timezoneCodeToLocationData = function(location) {
     let offset = 0;
     if (UTCMatch[2]) {
       offset = parseInt(UTCMatch[2]);
+      //if :30 found => add 0.5
       if (UTCMatch[3]) {
         offset += 0.5;
       }

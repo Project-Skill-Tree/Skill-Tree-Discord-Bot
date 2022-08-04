@@ -6,6 +6,8 @@ const { intents, partials, permLevels } = require("./config.js");
 const logger = require("./modules/logger.js");
 const {registerFont} = require("canvas");
 const Path = require("path");
+const settings = require("./modules/settings");
+const config = require("./config");
 
 registerFont("./assets/fonts/Akira.otf", { family: "Akira"});
 
@@ -41,9 +43,16 @@ client.container = {
 
 const init = async () => {
 
+  //Initialise settings
+  await settings.set("default", config.defaultSettings);
+
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
-  const files = [];
+  //No need to load commands but leaving this here if we change that in
+  //the future
+
+  // NOTE: Enable again if wanting to experiment with text-based commands
+  /*const files = [];
   getFiles("./commands/", files);
   const commands = files.filter(file => file.endsWith(".js"));
   for (const file of commands) {
@@ -53,7 +62,8 @@ const init = async () => {
     props.conf.aliases.forEach(alias => {
       client.container.aliases.set(alias, props.help.name);
     });
-  }
+  }*/
+
 
   // Now we load any **slash** commands you may have in the ./slash directory.
   const slashFiles = [];
