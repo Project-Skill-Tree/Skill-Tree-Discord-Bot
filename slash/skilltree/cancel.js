@@ -19,7 +19,7 @@ exports.run = async (client, interaction) => {
   //Get ongoing skills
   const skills = await getInProgress(userID);
   if (skills.length === 0) {
-    await interaction.editReply("```You have no ongoing skills. Use ~start to see which skills are available to you```")
+    await interaction.editReply("```You have no ongoing skills. Use ~start to see which skills are available to you```");
     return;
   }
   //Create panel showing skills

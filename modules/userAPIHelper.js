@@ -123,7 +123,7 @@ exports.getUser = async function(userID, username) {
  * @param callback - method to pass user object to
  */
 exports.getUsers = async function() {
-  let response = await axios
+  const response = await axios
     .get(process.env.API_URL + "users/getAll/", {
       headers: {
         api_key: getAPIKey(),
