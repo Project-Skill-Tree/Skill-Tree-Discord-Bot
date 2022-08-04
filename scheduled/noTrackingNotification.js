@@ -18,8 +18,6 @@ exports.run = (client) => {
       let currentTime = currentDate.getTime() / 1000 / 60 / 60;
       let lastTrackedTime = u.lastTracked.getTime() / 1000 / 60 / 60;
 
-      console.log(u);
-
       // If 48 hours has passed since the user last tracked
       if(currentTime - lastTrackedTime > 48) {
         // Check if user object has the property 'reminderSent' and check if it is false
