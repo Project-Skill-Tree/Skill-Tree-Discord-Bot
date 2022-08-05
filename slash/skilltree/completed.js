@@ -13,24 +13,26 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID) {
-    await interaction.editReply("```Error: Please create an account with ~setup```");
-    return;
-  }
+  if (!userID)
+    return await interaction.editReplyError({
+      title: "Oops! You don't have an account yet!",
+      description: "Please create an account with `~setup` first, before using this command."
+    });
+    
   //Get completed skills
   const completed = await getCompleted(userID);
   showCompleted(client, interaction, userID, completed);
 };
 
 function showCompleted(client, interaction, userID, completed) {
-  if (completed.length === 0) {
-    const embed = new MessageEmbed()
-      .setTitle("COMPLETED 🎒")
-      .setColor("#1071E5")
-      .setDescription("```No skills completed```");
+  if (completed.length === 0)
+    return await interaction.editReply({
+      emoji: "🎒",
+      title: "Your completed skills:",
+      description: "Looks like you haven't completed any skills yet..."
+    });
 
-    return interaction.editReply({embeds: [embed]});
-  } else {
+  else {
     const list = splitToN(completed, 10);
     const listPages = [];
     for (let i = 0; i < list.length; i++) {

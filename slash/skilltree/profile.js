@@ -10,10 +10,11 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
 
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
-  if (!userID) {
-    await interaction.editReply({content: "```Error: Please create an account with ~setup```"});
-    return;
-  }
+  if (!userID)
+    return await interaction.editReplyError({
+      title: "Oops! You don't have an account yet!",
+      description: "Please create an account with `~setup` first, before using this command."
+    });
 
   const userProfile = await getUser(userID, interaction.user.username);
   await displayProfile(userProfile, interaction);

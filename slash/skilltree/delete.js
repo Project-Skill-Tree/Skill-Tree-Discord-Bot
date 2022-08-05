@@ -11,18 +11,12 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID) {
-    await interaction.editReply("```Error: There is no SkillTree account " +
-      "associated with your discord account```");
-    return;
-  }
+  if (!userID)
+    return await interaction.editReplyError({
+      title: "Oops! You don't have an account yet!",
+      description: "Please create an account with `~setup` first, before using this command."
+    });
 
-  const embed = new Discord.MessageEmbed()
-    .setColor("#ff0000")
-    .setTitle("Are You Sure?")
-    .setDescription("This action is **PERMANENT!** \n\n" +
-      "Data related to your account will be completely wiped from the database. " +
-      "You would have to complete the setup process again in order to continue using Skill Tree.");
   const row = new MessageActionRow()
     .addComponents(
       new MessageButton()
@@ -35,17 +29,28 @@ exports.run = async (client, interaction) => {
         .setStyle("SECONDARY"),
     );
 
-  const message = await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]});
+    const message = await interaction.editReplyWarn({
+      ephemeral: true,
+      title: "Are you sure you want to delete your account?",
+      description: "This action is **IRREVERSIBLE!**\n\nData related to your account will be completely wiped from the database, and you would have to complete the setup process again in order to continue using Skill Tree.\n\nClick on **Delete** to delete your account, and **Cancel** to cancel this prompt.",
+      components: [row]
+    });
+
   const filter = i => i.user.id === interaction.user.id;
   const collector = message.createMessageComponentCollector({filter, time: 15000});
   collector.on("collect", async i => {
     if (i.customId === "delete") {
       await deleteUser(userID);
-      await interaction.editReply({content: "Account successfully deleted.", embeds: [], components: []});
+      await interaction.editReply({
+        title: "Your account was successfully deleted!",
+        components: []
+      });
     }
-    if (i.customId === "cancel") {
-      await interaction.editReply({content: "Deletion cancelled.", embeds: [], components: []});
-    }
+    if (i.customId === "cancel")
+      await interaction.editReply({
+        content: "Account deletion cancelled!",
+        components: []
+      });
   });
 };
 
