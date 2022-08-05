@@ -65,7 +65,7 @@ class Resource {
 
     if (options.title === undefined) title = "";
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
       .setTitle(title)
       .setURL(cleanNull(options.url))
       .setDescription(cleanNull(options.description))
@@ -118,7 +118,7 @@ const errorE = "<a:cross:1002489785367150623>";
 const warnE = "<a:warn:1003291622940876960>"
 
 module.exports = {
-  color: {
+  colors: {
     successC: successC,
     errorC: errorC,
     warnC: warnC
