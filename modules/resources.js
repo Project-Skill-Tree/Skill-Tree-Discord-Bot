@@ -59,7 +59,7 @@ class Resource {
     let title = "";
 
     if ("emote" in options) title = `${options.emote}・`;
-    else if (this.emote !== undefined) title = `${this.emote}・`;
+    else if (options.emote !== undefined) title = `${this.emote}・`;
 
     title += cleanNull(options.title);
 
@@ -96,7 +96,7 @@ class Resource {
 
     const messageOptions = {
       content: options.content,
-      embeds: [embed],
+      embeds: options.embeds === [] ? [] : [embed],
       reply: options.reply,
       tts: cleanNull(options.tts, "boolean"),
       files: cleanNull(options.files, "array"),
@@ -111,17 +111,24 @@ class Resource {
 
 const successC = "#8C33FF";
 const errorC = "#F03350";
+const warnC = "#FFAE42";
 
-const successE = "<:success:983285649660596224>";
-const errorE = "<:error:983285167307235328>";
+const successE = "<a:tick:1005147428586008666>";
+const errorE = "<a:cross:1005147446634086541>";
+const warnE = "<a:warn:1005165284165955725>"
 
 module.exports = {
-  emotes: {
+  colors: {
     successC: successC,
     errorC: errorC,
+    warnC: warnC
+  },
+  emotes: {
     successE: successE,
     errorE: errorE,
+    warnE: warnE
   },
   success: new Resource({ color: successC, emote: successE }),
   error: new Resource({ color: errorC, emote: errorE }),
+  warn: new Resource({ color: warnC, emote: warnE })
 };
