@@ -1,6 +1,7 @@
-const {createLargeSwipePanel} = require("../../modules/menuHelper");
-const {getInProgress, cancel} = require("../../modules/skillAPIHelper");
-const {authUser} = require("../../modules/userAPIHelper");
+const { createLargeSwipePanel } = require("../../modules/menuHelper");
+const { getInProgress, cancel } = require("../../modules/skillAPIHelper");
+const { replies } = require("../../config.js");
+const { authUser } = require("../../modules/userAPIHelper");
 
 /**
  * Sends a swipeable list of all the user's available skills
@@ -11,10 +12,8 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID) {
-    await interaction.editReply("```Error: Please create an account with /setup```");
-    return;
-  }
+  if (!userID)
+    return await interaction.editReplyError(replies.noAccountError);
 
   //Get ongoing skills
   const skills = await getInProgress(userID);

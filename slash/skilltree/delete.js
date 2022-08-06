@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const { MessageActionRow, MessageButton } = require("discord.js");
 const { authUser, deleteUser } = require("../../modules/userAPIHelper");
+const { replies } = require("../../config.js");
 
 /**
  * PERMANENTLY DELETES USER INFORMATION FROM DB, added to comply with Discord's Guidelines to protect user privacy
@@ -12,10 +13,7 @@ exports.run = async (client, interaction) => {
   const userID = await authUser(interaction.user.id);
   //Error if no account found
   if (!userID)
-    return await interaction.editReplyError({
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `~setup` first, before using this command."
-    });
+    return await interaction.editReplyError(replies.noAccountError);
 
   const row = new MessageActionRow()
     .addComponents(

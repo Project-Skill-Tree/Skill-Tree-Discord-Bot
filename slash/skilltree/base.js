@@ -1,5 +1,6 @@
-const {authUser, setUserLocation} = require("../../modules/userAPIHelper");
-const {MessageEmbed} = require("discord.js");
+const { authUser, setUserLocation } = require("../../modules/userAPIHelper");
+const { replies } = require("../../config.js");
+const { MessageEmbed } = require("discord.js");
 
 /**
  * Sets a user's "base location" where reminders, weekly reports and more are sent
@@ -11,10 +12,7 @@ exports.run = async (client, interaction) => {
   const userID = await authUser(interaction.user.id);
   //Error if no account found
   if (!userID)
-    return await interaction.editReplyError({
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `~setup` first, before using this command."
-    });
+    return await interaction.editReplyError(replies.noAccountError);
 
   //Get user location
   let locationID;

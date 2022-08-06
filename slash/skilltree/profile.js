@@ -1,5 +1,6 @@
-const {getUser, authUser} = require("../../modules/userAPIHelper");
-const {displayProfile} = require("../../modules/profileRenderer");
+const { getUser, authUser } = require("../../modules/userAPIHelper");
+const { displayProfile } = require("../../modules/profileRenderer");
+const { replies } = require("../../config.js");
 
 /**
  * Profile command, authenticates user and displays their profile
@@ -11,10 +12,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
   if (!userID)
-    return await interaction.editReplyError({
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `~setup` first, before using this command."
-    });
+    return await interaction.editReplyError(replies.noAccountError);
 
   const userProfile = await getUser(userID, interaction.user.username);
   await displayProfile(userProfile, interaction);

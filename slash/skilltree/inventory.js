@@ -1,9 +1,10 @@
 
-const {MessageEmbed} = require("discord.js");
-const {splitToN} = require("../../modules/UIHelper");
-const {createLargeSwipePanel} = require("../../modules/menuHelper");
+const { MessageEmbed } = require("discord.js");
+const { splitToN } = require("../../modules/UIHelper");
+const { createLargeSwipePanel } = require("../../modules/menuHelper");
 const ListPage = require("../../objects/listPage");
-const {getUser, authUser} = require("../../modules/userAPIHelper");
+const { getUser, authUser } = require("../../modules/userAPIHelper");
+const { replies } = require("../../config.js");
 
 /**
  * Inventory command, every item the user has in a swipeable menu
@@ -15,10 +16,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   const userID = await authUser(interaction.user.id);
   //Error if no account found
   if (!userID)
-    return await interaction.editReplyError({
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `~setup` first, before using this command."
-    });
+    return await interaction.editReplyError(replies.noAccountError);
 
   const user = await getUser(userID, interaction.user.username);
   await displayInventory(client, user, interaction);

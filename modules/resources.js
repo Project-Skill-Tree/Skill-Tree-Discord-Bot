@@ -113,9 +113,9 @@ const successC = "#8C33FF";
 const errorC = "#F03350";
 const warnC = "#FFAE42";
 
-const successE = "<a:tick:1002489756233506857>";
-const errorE = "<a:cross:1002489785367150623>";
-const warnE = "<a:warn:1003291622940876960>"
+const successE = "<a:tick:1005147428586008666>";
+const errorE = "<a:cross:1005147446634086541>";
+const warnE = "<a:warn:1005165284165955725>"
 
 module.exports = {
   colors: {

@@ -1,8 +1,9 @@
-const {authUser, getCompleted, eraseCompleted} = require("../../modules/userAPIHelper");
-const {MessageEmbed} = require("discord.js");
-const {splitToN} = require("../../modules/UIHelper");
+const { authUser, getCompleted, eraseCompleted } = require("../../modules/userAPIHelper");
+const { MessageEmbed } = require("discord.js");
+const { splitToN } = require("../../modules/UIHelper");
 const ListPage = require("../../objects/listPage");
-const {createLargeMultiActionSwipePanel} = require("../../modules/menuHelper");
+const { createLargeMultiActionSwipePanel } = require("../../modules/menuHelper");
+const { replies } = require("../../config.js");
 
 /**
  * Sends a swipeable list of all the user's available skills
@@ -14,10 +15,7 @@ exports.run = async (client, interaction) => {
   const userID = await authUser(interaction.user.id);
   //Error if no account found
   if (!userID)
-    return await interaction.editReplyError({
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `~setup` first, before using this command."
-    });
+    return await interaction.editReplyError(replies.noAccountError);
     
   //Get completed skills
   const completed = await getCompleted(userID);
