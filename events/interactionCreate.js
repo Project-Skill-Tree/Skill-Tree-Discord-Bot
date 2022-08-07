@@ -11,6 +11,9 @@ module.exports = async (client, interaction) => {
   // If there is no guild, get default conf (DMs)
   const settings = interaction.settings = getSettings(interaction.guild);
   settings.hidden = settings.hidden !== "false";
+  if (!interaction.guild) {
+    settings.hidden = false;
+  }
 
   // Get the user or member's permission level from the elevation
   const level = permlevel(interaction);
