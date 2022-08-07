@@ -1,5 +1,4 @@
 
-const { MessageEmbed } = require("discord.js");
 const { splitToN } = require("../../modules/UIHelper");
 const { createLargeSwipePanel } = require("../../modules/menuHelper");
 const ListPage = require("../../objects/listPage");
@@ -29,19 +28,19 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
  * @param interaction
  * @return {Promise<*>}
  */
-function displayInventory(client, user, interaction) {
+async function displayInventory(client, user, interaction) {
   if (user.items.length === 0)
     return await interaction.editReply({
       emoji: "🎒",
       title: "Your inventory:",
       description: "Looks like your inventory is empty..."
     });
-  
+
   else {
     const items = splitToN(user.items, 10);
     const itemPages = [];
     for (let i = 0; i < items.length; i++) {
-      itemPages.push(new ListPage("INVENTORY 🎒",items[i]));
+      itemPages.push(new ListPage("INVENTORY 🎒", items[i]));
     }
     createLargeSwipePanel(client, interaction, itemPages);
   }
