@@ -1,9 +1,9 @@
 const { commandInteraction, MessagePayload } = require("discord.js");
-const resources = require("../utils/resources");
+const resources = require("../modules/resources");
 
 module.exports.run = () => {
-  commandInteraction.prototype.reply = async function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.reply = async function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
     this.ephemeral = options.ephemeral ?? false;
     
     if (!options.resources)  options = resources.success.embed(options);
@@ -26,8 +26,8 @@ module.exports.run = () => {
     return options.fetchReply ? this.fetchReply() : undefined;
   };
 
-  commandInteraction.prototype.replyError = async  function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.replyError = async  function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
     this.ephemeral = options.ephemeral ?? false;
     if (!options.resources) options = resources.error.embed(options);
     let messagePayload;
@@ -49,8 +49,8 @@ module.exports.run = () => {
     return options.fetchReply ? this.fetchReply() : undefined;
   };
 
-  commandInteraction.prototype.replyWarn = async  function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.replyWarn = async  function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
     this.ephemeral = options.ephemeral ?? false;
     if (!options.resources) options = resources.warn.embed(options);
     let messagePayload;
@@ -72,50 +72,50 @@ module.exports.run = () => {
     return options.fetchReply ? this.fetchReply() : undefined;
   };
 
-  commandInteraction.prototype.editReply = async function (options) {
-    if (!this.deferred && !this.replied) throw new Error('INTERACTION_NOT_REPLIED');
+  commandInteraction.prototype.editReply = async function(options) {
+    if (!this.deferred && !this.replied) throw new Error("INTERACTION_NOT_REPLIED");
     if (!options.resources) options = resources.success.embed(options);
-    const message = await this.webhook.editMessage('@original', options);
+    const message = await this.webhook.editMessage("@original", options);
     this.replied = true;
     return message;
   };
 
-  commandInteraction.prototype.editReplyError = async  function (options) {
-    if (!this.deferred && !this.replied) throw new Error('INTERACTION_NOT_REPLIED');
+  commandInteraction.prototype.editReplyError = async  function(options) {
+    if (!this.deferred && !this.replied) throw new Error("INTERACTION_NOT_REPLIED");
     if (!options.resources) options = resources.error.embed(options);
-    const message = await this.webhook.editMessage('@original', options);
+    const message = await this.webhook.editMessage("@original", options);
     this.replied = true;
     return message;
-  }
+  };
 
-  commandInteraction.prototype.editReplyWarn = async  function (options) {
-    if (!this.deferred && !this.replied) throw new Error('INTERACTION_NOT_REPLIED');
+  commandInteraction.prototype.editReplyWarn = async  function(options) {
+    if (!this.deferred && !this.replied) throw new Error("INTERACTION_NOT_REPLIED");
     if (!options.resources) options = resources.warn.embed(options);
-    const message = await this.webhook.editMessage('@original', options);
+    const message = await this.webhook.editMessage("@original", options);
     this.replied = true;
     return message;
-  }
+  };
 
-  commandInteraction.prototype.followUp = function (options) {
-    if (!this.deferred && !this.replied) return Promise.reject(new Error('INTERACTION_NOT_REPLIED'));
+  commandInteraction.prototype.followUp = function(options) {
+    if (!this.deferred && !this.replied) return Promise.reject(new Error("INTERACTION_NOT_REPLIED"));
     if (!options.resources) options = resources.success.embed(options);
     return this.webhook.send(options);
-  }
+  };
 
-  commandInteraction.prototype.followUpError = function (options) {
-    if (!this.deferred && !this.replied) return Promise.reject(new Error('INTERACTION_NOT_REPLIED'));
+  commandInteraction.prototype.followUpError = function(options) {
+    if (!this.deferred && !this.replied) return Promise.reject(new Error("INTERACTION_NOT_REPLIED"));
     if (!options.resources) options = resources.error.embed(options);
     return this.webhook.send(options);
-  }
+  };
 
-  commandInteraction.prototype.followUpWarn = function (options) {
-    if (!this.deferred && !this.replied) return Promise.reject(new Error('INTERACTION_NOT_REPLIED'));
+  commandInteraction.prototype.followUpWarn = function(options) {
+    if (!this.deferred && !this.replied) return Promise.reject(new Error("INTERACTION_NOT_REPLIED"));
     if (!options.resources) options = resources.warn.embed(options);
     return this.webhook.send(options);
-  }
+  };
 
-  commandInteraction.prototype.update = async function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.update = async function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
 
     if (!options.resources) options = resources.success.embed(options);
     let messagePayload;
@@ -135,10 +135,10 @@ module.exports.run = () => {
     this.replied = true;
 
     return options.fetchReply ? this.fetchReply() : undefined;
-  }
+  };
 
-  commandInteraction.prototype.updateError = async function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.updateError = async function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
 
     if (!options.resources) options = resources.error.embed(options);
     let messagePayload;
@@ -158,10 +158,10 @@ module.exports.run = () => {
     this.replied = true;
 
     return options.fetchReply ? this.fetchReply() : undefined;
-  }
+  };
 
-  commandInteraction.prototype.updateWarn = async function (options) {
-    if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
+  commandInteraction.prototype.updateWarn = async function(options) {
+    if (this.deferred || this.replied) throw new Error("INTERACTION_ALREADY_REPLIED");
 
     if (!options.resources) options = resources.warn.embed(options);
     let messagePayload;
@@ -181,5 +181,5 @@ module.exports.run = () => {
     this.replied = true;
 
     return options.fetchReply ? this.fetchReply() : undefined;
-  }
+  };
 };

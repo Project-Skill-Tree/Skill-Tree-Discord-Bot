@@ -1,5 +1,4 @@
 const { MessageEmbed } = require("discord.js");
-const Discord = require("discord.js");
 const { cleanNull } = require("./cleanNull.js");
 
 /** @module resources */
@@ -75,14 +74,14 @@ class Resource {
       .setTimestamp();
 
     embed.setAuthor({
-        name: cleanNull(options.authorName),
-        iconURL: cleanNull(options.authorIconURL),
-        url: cleanNull(options.authorURL),
+      name: cleanNull(options.authorName),
+      iconURL: cleanNull(options.authorIconURL),
+      url: cleanNull(options.authorURL),
     });
 
     embed.setFooter({
-        text: cleanNull(options.footerText),
-        iconURL: cleanNull(options.footerIconURL),
+      text: cleanNull(options.footerText),
+      iconURL: cleanNull(options.footerIconURL),
     });
 
     const fieldNames = cleanNull(options.fieldNames, "array");
@@ -115,7 +114,7 @@ const warnC = "#FFAE42";
 
 const successE = "<a:tick:1005147428586008666>";
 const errorE = "<a:cross:1005147446634086541>";
-const warnE = "<a:warn:1005165284165955725>"
+const warnE = "<a:warn:1005165284165955725>";
 
 module.exports = {
   colors: {
