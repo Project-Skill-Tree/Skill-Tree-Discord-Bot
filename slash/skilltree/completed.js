@@ -1,5 +1,4 @@
 const { authUser, getCompleted, eraseCompleted } = require("../../modules/userAPIHelper");
-const { MessageEmbed } = require("discord.js");
 const { splitToN } = require("../../modules/UIHelper");
 const ListPage = require("../../objects/listPage");
 const { createLargeMultiActionSwipePanel } = require("../../modules/menuHelper");
@@ -22,7 +21,7 @@ exports.run = async (client, interaction) => {
   showCompleted(client, interaction, userID, completed);
 };
 
-function showCompleted(client, interaction, userID, completed) {
+async function showCompleted(client, interaction, userID, completed) {
   if (completed.length === 0)
     return await interaction.editReply({
       emoji: "🎒",
@@ -34,7 +33,7 @@ function showCompleted(client, interaction, userID, completed) {
     const list = splitToN(completed, 10);
     const listPages = [];
     for (let i = 0; i < list.length; i++) {
-      listPages.push(new ListPage("COMPLETED",list[i]));
+      listPages.push(new ListPage("COMPLETED", list[i]));
     }
     createLargeMultiActionSwipePanel(client, interaction, listPages,
       listPages.map(page => {
