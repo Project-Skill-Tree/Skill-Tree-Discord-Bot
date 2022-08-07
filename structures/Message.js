@@ -1,7 +1,8 @@
 const { Message, MessagePayload } = require("discord.js");
 const resources = require("../modules/resources");
+
 module.exports.run = () => {
-  Message.prototype.reply = function (options) {
+  Message.prototype.reply = function(options) {
     if (!this.channel) return Promise.reject(new Error("CHANNEL_NOT_CACHED"));
     options.msg = this;
     options.member = this.member;
@@ -21,7 +22,7 @@ module.exports.run = () => {
     return this.channel.send(data);
   };
 
-  Message.prototype.replyError = function (options) {
+  Message.prototype.replyError = function(options) {
     if (!this.channel) return Promise.reject(new Error("CHANNEL_NOT_CACHED"));
     options.msg = this;
     options.member = this.member;
@@ -41,13 +42,13 @@ module.exports.run = () => {
     return this.channel.sendError(data);
   };
 
-  Message.prototype.edit = function (options) {
+  Message.prototype.edit = function(options) {
     options = resources.success.embed(options);
     if (!this.channel) return Promise.reject(new Error("CHANNEL_NOT_CACHED"));
     return this.channel.messages.edit(this, options);
   };
 
-  Message.prototype.editError = function (options) {
+  Message.prototype.editError = function(options) {
     options = resources.error.embed(options);
     if (!this.channel) return Promise.reject(new Error("CHANNEL_NOT_CACHED"));
     return this.channel.messages.edit(this, options);

@@ -2,7 +2,7 @@ const { TextChannel, MessagePayload } = require("discord.js");
 const resources = require("../modules/resources");
 
 module.exports.run = () => {
-  TextChannel.prototype.send = async function (options) {
+  TextChannel.prototype.send = async function(options) {
     const { GuildMember, User } = require("discord.js");
     if (!options.resources) options = resources.success.embed(options);
     if (this instanceof User || this instanceof GuildMember) {
@@ -27,7 +27,7 @@ module.exports.run = () => {
 
     return this.messages.cache.get(d.id) ?? this.messages._add(d);
   };
-  TextChannel.prototype.sendError = async function (options) {
+  TextChannel.prototype.sendError = async function(options) {
     const { GuildMember, User } = require("discord.js");
     if (!options.resources) options = resources.error.embed(options);
     if (this instanceof User || this instanceof GuildMember) {
