@@ -80,7 +80,7 @@ module.exports.run = () => {
     return message;
   };
 
-  CommandInteraction.prototype.editReplyError = async  function(options) {
+  CommandInteraction.prototype.editReplyError = async function(options) {
     if (!this.deferred && !this.replied) throw new Error("INTERACTION_NOT_REPLIED");
     if (!options.resources) options = resources.error.embed(options);
     const message = await this.webhook.editMessage("@original", options);
@@ -88,7 +88,7 @@ module.exports.run = () => {
     return message;
   };
 
-  CommandInteraction.prototype.editReplyWarn = async  function(options) {
+  CommandInteraction.prototype.editReplyWarn = async function(options) {
     if (!this.deferred && !this.replied) throw new Error("INTERACTION_NOT_REPLIED");
     if (!options.resources) options = resources.warn.embed(options);
     const message = await this.webhook.editMessage("@original", options);
