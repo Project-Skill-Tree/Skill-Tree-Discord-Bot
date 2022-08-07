@@ -15,7 +15,7 @@ exports.run = (client) => {
     //Get the timezone offset
     const offset = getCurrentOffset();
     //If not at sunday 6PM
-    if (!offset) return;
+    if (offset === null) return;
     console.log("PUBLISHING WEEKLY REPORTS");
     let users = await getUsersInTimezone(offset);
     //only get discord users
@@ -27,7 +27,7 @@ exports.run = (client) => {
       const user = users[i];
 
       //Exit if there was no data found within the last 7 days
-      if (getDaysBetweenDates(user.lastTracked, new Date()) > 7) continue;
+      if (getDaysBetweenDates(user.lastTracked, new Date(), 0) > 7) continue;
 
       //Get last 7 days worth of tasks
       const tasks = await getRecentTasks(user.id, 7);
