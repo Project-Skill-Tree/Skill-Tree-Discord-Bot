@@ -211,7 +211,12 @@ function addField(messageEmbed, string, title) {
       messageEmbed.addField(name, chars);
       chopped = "";
     } else {
-      const lastSplit = Math.min(chars.lastIndexOf(":x:"), chars.lastIndexOf(":white_check_mark:"));
+      const x_index = chars.lastIndexOf(":x:");
+      const check_index = chars.lastIndexOf(":white_check_mark:");
+      let lastSplit;
+      if (x_index === -1) lastSplit = check_index;
+      else if (check_index === -1) lastSplit = x_index;
+      else lastSplit = Math.min(x_index, check_index);
       const field = chars.slice(0, lastSplit - 1);
       chopped = chopped.slice(lastSplit);
       messageEmbed.addField(name, field);
