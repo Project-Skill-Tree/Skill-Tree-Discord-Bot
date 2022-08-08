@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const Discord = require("discord.js");
 const { cleanNull } = require("./cleanNull.js");
 
 /** @module resources */
@@ -58,7 +59,7 @@ class Resource {
     let title = "";
 
     if ("emote" in options) title = `${options.emote}・`;
-    else if (options.emote !== undefined) title = `${this.emote}・`;
+    else if (this.emote !== undefined) title = `${this.emote}・`;
 
     title += cleanNull(options.title);
 
@@ -74,14 +75,14 @@ class Resource {
       .setTimestamp();
 
     embed.setAuthor({
-      name: cleanNull(options.authorName),
-      iconURL: cleanNull(options.authorIconURL),
-      url: cleanNull(options.authorURL),
+        name: cleanNull(options.authorName),
+        iconURL: cleanNull(options.authorIconURL),
+        url: cleanNull(options.authorURL),
     });
 
     embed.setFooter({
-      text: cleanNull(options.footerText),
-      iconURL: cleanNull(options.footerIconURL),
+        text: cleanNull(options.footerText),
+        iconURL: cleanNull(options.footerIconURL),
     });
 
     const fieldNames = cleanNull(options.fieldNames, "array");
@@ -95,7 +96,7 @@ class Resource {
 
     const messageOptions = {
       content: options.content,
-      embeds: options.embeds === [] ? [] : [embed],
+      embeds: [embed],
       reply: options.reply,
       tts: cleanNull(options.tts, "boolean"),
       files: cleanNull(options.files, "array"),
@@ -110,24 +111,17 @@ class Resource {
 
 const successC = "#8C33FF";
 const errorC = "#F03350";
-const warnC = "#FFAE42";
 
-const successE = "<a:tick:1005147428586008666>";
-const errorE = "<a:cross:1005147446634086541>";
-const warnE = "<a:warn:1005165284165955725>";
+const successE = "<:success:983285649660596224>";
+const errorE = "<:error:983285167307235328>";
 
 module.exports = {
-  colors: {
+  emotes: {
     successC: successC,
     errorC: errorC,
-    warnC: warnC
-  },
-  emotes: {
     successE: successE,
     errorE: errorE,
-    warnE: warnE
   },
   success: new Resource({ color: successC, emote: successE }),
   error: new Resource({ color: errorC, emote: errorE }),
-  warn: new Resource({ color: warnC, emote: warnE })
 };

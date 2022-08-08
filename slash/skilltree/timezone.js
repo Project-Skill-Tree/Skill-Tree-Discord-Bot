@@ -1,9 +1,8 @@
-const { timezoneFromLocation } = require("../../modules/timezoneHelper");
-const { MessageEmbed } = require("discord.js");
-const { dateAsTime } = require("../../modules/dateHelper");
-const { createYesNoPanel } = require("../../modules/menuHelper");
-const { authUser, updateTimezone } = require("../../modules/userAPIHelper");
-const { replies } = require("../../config.js");
+const {timezoneFromLocation} = require("../../modules/timezoneHelper");
+const {MessageEmbed} = require("discord.js");
+const {dateAsTime} = require("../../modules/dateHelper");
+const {createYesNoPanel} = require("../../modules/menuHelper");
+const {authUser, updateTimezone} = require("../../modules/userAPIHelper");
 
 /**
  * Timezone command, sets the user's local timezone offset
@@ -14,8 +13,10 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID)
-    return await interaction.editReplyError(replies.noAccountError);
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
 
   //Get location info
   const timezone = interaction.options.get("timezone").value;

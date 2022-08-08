@@ -10,7 +10,6 @@ const { ShardingManager } = require("discord.js");
 require("./structures/TextChannel").run();
 require("./structures/Message").run();
 require("./structures/MessageComponentInteraction").run();
-require("./structures/CommandInteraction").run();
 
 const manager = new ShardingManager("./bot.js", { token: process.env.DISCORD_TOKEN});
 

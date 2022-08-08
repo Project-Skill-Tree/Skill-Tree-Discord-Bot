@@ -1,13 +1,12 @@
-const { MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton } = require("discord.js");
-const { romanise}  = require("../../modules/romanNumeralHelper");
-const { updateTask, getCurrentTasks } = require("../../modules/skillAPIHelper");
-const { dayToDate, getAbsDate, getDaysBetweenDates, formatFrequency } = require("../../modules/dateHelper");
-const { createLargeSwipePanel } = require("../../modules/menuHelper");
-const { displayLevelUp } = require("../../modules/profileRenderer");
-const { authUser, getUser } = require("../../modules/userAPIHelper");
+const {MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton} = require("discord.js");
+const {romanise} = require("../../modules/romanNumeralHelper");
+const {updateTask, getCurrentTasks} = require("../../modules/skillAPIHelper");
+const {dayToDate, getAbsDate, getDaysBetweenDates, formatFrequency} = require("../../modules/dateHelper");
+const {createLargeSwipePanel} = require("../../modules/menuHelper");
+const {displayLevelUp} = require("../../modules/profileRenderer");
+const {authUser, getUser} = require("../../modules/userAPIHelper");
 const Challenge = require("../../objects/challenge");
 const Skill = require("../../objects/skill");
-const { replies } = require("../../config.js");
 
 /**
  * Sends an embed containing all the tasks under two categories, DAILY and ONGOING
@@ -19,8 +18,10 @@ exports.run = async (client, interaction) => {
   const userID = await authUser(interaction.user.id);
 
   //Error if no account found
-  if (!userID)
-    return await interaction.editReplyError(replies.noAccountError);
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
 
   const [tasks, timezoneOffset] = await getCurrentTasks(userID);
   if (tasks.length === 0) {

@@ -1,8 +1,8 @@
-const { authUser, getCompleted, eraseCompleted } = require("../../modules/userAPIHelper");
-const { splitToN } = require("../../modules/UIHelper");
+const {authUser, getCompleted, eraseCompleted} = require("../../modules/userAPIHelper");
+const {MessageEmbed} = require("discord.js");
+const {splitToN} = require("../../modules/UIHelper");
 const ListPage = require("../../objects/listPage");
-const { createLargeMultiActionSwipePanel } = require("../../modules/menuHelper");
-const { replies } = require("../../config.js");
+const {createLargeMultiActionSwipePanel} = require("../../modules/menuHelper");
 
 /**
  * Sends a swipeable list of all the user's available skills
@@ -13,27 +13,28 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID)
-    return await interaction.editReplyError(replies.noAccountError);
-    
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
   //Get completed skills
   const completed = await getCompleted(userID);
   showCompleted(client, interaction, userID, completed);
 };
 
-async function showCompleted(client, interaction, userID, completed) {
-  if (completed.length === 0)
-    return await interaction.editReply({
-      emoji: "🎒",
-      title: "Your completed skills:",
-      description: "Looks like you haven't completed any skills yet..."
-    });
+function showCompleted(client, interaction, userID, completed) {
+  if (completed.length === 0) {
+    const embed = new MessageEmbed()
+      .setTitle("COMPLETED 🎒")
+      .setColor("#1071E5")
+      .setDescription("```No skills completed```");
 
-  else {
+    return interaction.editReply({embeds: [embed]});
+  } else {
     const list = splitToN(completed, 10);
     const listPages = [];
     for (let i = 0; i < list.length; i++) {
-      listPages.push(new ListPage("COMPLETED", list[i]));
+      listPages.push(new ListPage("COMPLETED",list[i]));
     }
     createLargeMultiActionSwipePanel(client, interaction, listPages,
       listPages.map(page => {
