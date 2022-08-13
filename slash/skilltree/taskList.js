@@ -123,8 +123,14 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
         filteredTasks.splice(filteredTasks.indexOf(task), 1);
       }
       if (unlocked.length !== 0) {
+        const unlockMsg = await interaction.followUp({content: "Loading Unlocks...", ephemeral: true});
         //display unlocked items in a swipeable panel
-        createLargeSwipePanel(client, interaction, unlocked);
+        createLargeSwipePanel(client, {
+          interaction: interaction,
+          channelType: true,
+          message: unlockMsg,
+          user: interaction.user,
+          options: {ephemeral: true, content: null}}, unlocked);
       }
     }
 
