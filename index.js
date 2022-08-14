@@ -7,12 +7,6 @@ const logger = require("./modules/logger.js");
 const { ShardingManager } = require("discord.js");
 const morgan = require('morgan')
 
-//Override prototype
-require("./structures/TextChannel").run();
-require("./structures/Message").run();
-require("./structures/MessageComponentInteraction").run();
-require("./structures/BaseCommandInteraction").run();
-
 const manager = new ShardingManager("./bot.js", { token: process.env.DISCORD_TOKEN});
 
 manager.on("shardCreate", shard => console.log(`Launched shard ${shard.id}`));

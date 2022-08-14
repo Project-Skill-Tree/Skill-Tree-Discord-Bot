@@ -1,9 +1,8 @@
-const { createLargeSwipePanel, createYesNoPanel } = require("../../modules/menuHelper");
-const { getAvailable, start, skip, revert } = require("../../modules/skillAPIHelper");
-const { authUser } = require("../../modules/userAPIHelper");
+const {createLargeSwipePanel, createYesNoPanel} = require("../../modules/menuHelper");
+const {getAvailable, start, skip, revert} = require("../../modules/skillAPIHelper");
+const {authUser} = require("../../modules/userAPIHelper");
 const Challenge = require("../../objects/challenge");
-const { MessageEmbed } = require("discord.js");
-const { replies } = require("../../config.js");
+const {MessageEmbed} = require("discord.js");
 
 /**
  * Sends a swipeable list of all the user's available skills
@@ -14,8 +13,10 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id);
   //Error if no account found
-  if (!userID)
-    return await interaction.editReplyError(replies.noAccountError);
+  if (!userID) {
+    await interaction.editReply("```Error: Please create an account with ~setup```");
+    return;
+  }
   startMenu(client, interaction, userID);
 };
 

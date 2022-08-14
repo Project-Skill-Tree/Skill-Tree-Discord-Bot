@@ -18,7 +18,8 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
     })
     .catch(console.error);
 
-  const stats = codeBlock("asciidoc", `• Mem Usage     :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
+  const stats = codeBlock("asciidoc", `= STATISTICS =
+  • Mem Usage     :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
   • Uptime        :: ${duration}
   • Users         :: ${totalMembers}
   • Servers       :: ${client.guilds.cache.size.toLocaleString()}
@@ -27,11 +28,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   • Discord.js    :: v${version}
   • Node          :: ${process.version}
   • Total Servers :: ${totalGuilds}`);
-
-  await interaction.reply({
-    title: "Bot Statistics",
-    description: stats
-  });
+  await interaction.reply(stats);
 };
 
 exports.commandData = {
