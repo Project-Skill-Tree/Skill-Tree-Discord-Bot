@@ -1,22 +1,15 @@
-FROM node:16.14.2-alpine
+FROM node:16.14.2-slim
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./ /usr/src/app/
 
-RUN apk add --update --no-cache \
-    make \
-    g++ \
-    jpeg-dev \
-    cairo-dev \
-    giflib-dev \
-    pango-dev \
-    libtool \
-    autoconf \
-    automake
-
 RUN yarn install --production
+RUN yarn cache clean
 ENV NODE_ENV production
-ENV PORT 80
-EXPOSE 80
+ENV HEALTH_PORT 80
+EXPOSE 80/tcp
+EXPOSE 8080/tcp
+
+HEALTHCHECK CMD curl --fail http://localhost:80/ || exit 1
 
 CMD ["yarn", "start"]
