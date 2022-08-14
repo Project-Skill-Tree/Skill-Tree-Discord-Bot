@@ -1,11 +1,18 @@
-FROM node:16.14.2-slim
+FROM node:16.14.2-alpine3.15
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./ /usr/src/app/
 
-RUN apt-get update || : && apt-get install -y \
-    python3 \
-    build-essential
+RUN apk add --update --no-cache \
+    make \
+    g++ \
+    jpeg-dev \
+    cairo-dev \
+    giflib-dev \
+    pango-dev \
+    libtool \
+    autoconf \
+    automake
 
 RUN yarn install --production
 RUN yarn cache clean
