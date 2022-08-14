@@ -127,17 +127,7 @@ const config = {
         return owner.id === process.env.OWNER;
       }
     }
-  ],
-
-  // Message objects to be re-used for similar bot replies
-
-  replies: {
-    noAccountError: {
-      ephemeral: true,
-      title: "Oops! You don't have an account yet!",
-      description: "Please create an account with `/setup` first, before using this command."
-    }
-  }
+  ]
 };
 
 module.exports = config;

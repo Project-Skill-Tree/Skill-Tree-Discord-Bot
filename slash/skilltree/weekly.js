@@ -1,7 +1,6 @@
-const { getRecentTasks } = require("../../modules/skillAPIHelper");
-const { displayReview } = require("../../modules/weeklyReviewRenderer");
-const { getUser, authUser } = require("../../modules/userAPIHelper");
-const { replies } = require("../../config.js");
+const {getRecentTasks} = require("../../modules/skillAPIHelper");
+const {displayReview} = require("../../modules/weeklyReviewRenderer");
+const {getUser, authUser} = require("../../modules/userAPIHelper");
 
 /**
  * @param client
@@ -12,9 +11,10 @@ exports.run = async (client, interaction) => {
 
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
-  
-  if (!userID)
-    return await interaction.editReplyError(replies.noAccountError);
+  if (!userID) {
+    await interaction.editReply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    return;
+  }
 
   const user = await getUser(userID, null);
   const discorduser = await client.users.fetch(user.discordid);
