@@ -1,6 +1,7 @@
 const { version } = require("discord.js");
 const { codeBlock } = require("@discordjs/builders");
 const { DurationFormatter } = require("@sapphire/time-utilities");
+const {getActiveUsers} = require("../../modules/userAPIHelper");
 const durationFormatter = new DurationFormatter();
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
@@ -17,11 +18,12 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
       totalMembers = results[1].reduce((acc, memberCount) => acc + memberCount, 0);
     })
     .catch(console.error);
-
+  const users = await getActiveUsers();
   const stats = codeBlock("asciidoc", `= STATISTICS =
   • Mem Usage     :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
   • Uptime        :: ${duration}
   • Users         :: ${totalMembers}
+  • Active Users  :: ${users}
   • Servers       :: ${client.guilds.cache.size.toLocaleString()}
   • Channels      :: ${client.channels.cache.size.toLocaleString()}
   • Last Ready    :: ${client.readyAt}

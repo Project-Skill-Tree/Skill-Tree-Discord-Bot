@@ -59,6 +59,20 @@ class Settings {
   has(guild) {
     return this.client.has(guild);
   }
+
+  delete(guild) {
+    axios.post(`${process.env.API_URL}config/deleteConfig`, { serverId: guild.serverId }, {
+      headers: {
+        api_key: process.env.API_KEY
+      }
+    })
+      .then(() => {
+        this.client.delete(guild);
+      })
+      .catch(err => {
+        console.log(err.response.data);
+      });
+  }
 }
 
 module.exports = new Settings();

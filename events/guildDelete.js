@@ -1,5 +1,5 @@
 const logger = require("../modules/logger.js");
-const { settings } = require("../modules/settings.js");
+const settings = require("../modules/settings.js");
 
 // This event executes when a new guild (server) is left.
 

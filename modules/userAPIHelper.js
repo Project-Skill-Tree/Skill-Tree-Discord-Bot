@@ -248,3 +248,13 @@ exports.setReminded = function(userid, value) {
       }
     });
 };
+
+exports.getActiveUsers = async function() {
+  const res = await axios
+    .get(process.env.API_URL + "users/getActiveUsers", {
+      headers: {
+        api_key: getAPIKey(),
+      }
+    });
+  return res.data.users;
+}
