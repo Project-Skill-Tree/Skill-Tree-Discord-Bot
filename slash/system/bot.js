@@ -6,8 +6,8 @@ const durationFormatter = new DurationFormatter();
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   const duration = durationFormatter.format(client.uptime);
   const promises = [
-    client.shard.fetchClientValues("guilds.cache.size"),
-    client.shard.broadcastEval(c => c.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0)),
+    await client.shard.fetchClientValues("guilds.cache.size"),
+    await client.shard.broadcastEval(c => c.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0)),
   ];
 
   let totalGuilds, totalMembers;

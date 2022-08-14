@@ -53,8 +53,8 @@ exports.createYesNoPanel = async function(interaction, embed, files=[]) {
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param interaction - Message from the user
- * @param {Swipeable[]} list - List of swipeable objects
- * @param {?{}=} actions - action {name: string, description: string, action: function} map
+ * @param list - List of swipeable objects
+ * @param actions - action name: string, description: string, action: function map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  * @param refresh - action to happen on update
  */
@@ -148,8 +148,8 @@ exports.createLargeSwipePanel = async function(client, interaction,
  * List is cyclic and cycles back to the start
  * @param {Client} client - Discord bot client
  * @param interaction
- * @param {Swipeable[]} list - List of swipeable objects
- * @param {?[{}]=} actions - action {name: string, description: string, action: function} map
+ * @param list
+ * @param actions - action name: string, description: string, action: function map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
 exports.createLargeMultiActionSwipePanel = async function(client, interaction,
@@ -158,7 +158,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
 
   let options = await update(interaction, list, currentPage, actions[currentPage]);
   let followUp = await interaction.editReply(options);
-  
+
   //Create listener for navigation events
   const filter = i => (i.customId === "prev"
     || i.customId === "next"
