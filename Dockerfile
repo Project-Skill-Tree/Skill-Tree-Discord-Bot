@@ -8,7 +8,6 @@ RUN yarn cache clean
 ENV NODE_ENV production
 ENV HEALTH_PORT 80
 EXPOSE 80/tcp
-EXPOSE 8080/tcp
 
 HEALTHCHECK CMD curl --fail http://localhost:80/ || exit 1
 
