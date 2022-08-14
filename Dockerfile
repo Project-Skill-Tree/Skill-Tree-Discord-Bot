@@ -3,6 +3,10 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./ /usr/src/app/
 
+RUN apt-get update || : && apt-get install -y \
+    python \
+    build-essential
+
 RUN yarn install --production
 RUN yarn cache clean
 ENV NODE_ENV production
