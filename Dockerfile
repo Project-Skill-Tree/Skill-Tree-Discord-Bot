@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY ./ /usr/src/app/
 
 RUN apt-get update || : && apt-get install -y \
-    python \
+    python3 \
     build-essential
 
 RUN yarn install --production
