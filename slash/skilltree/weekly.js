@@ -12,7 +12,7 @@ exports.run = async (client, interaction) => {
   //Validate user exists
   const userID = await authUser(interaction.user.id, interaction.channel);
   if (!userID) {
-    await interaction.editReply({content: "```Error: Please create an account with ~setup```", ephemeral: true});
+    await interaction.editReply({content: "```Error: Please create an account with /setup```", ephemeral: true});
     return;
   }
 
