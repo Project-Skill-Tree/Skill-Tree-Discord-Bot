@@ -16,7 +16,7 @@ RUN apk add --update --no-cache \
 
 RUN yarn install --production
 RUN yarn cache clean
-ENV NODE_ENV production
+ENV NODE_ENV development
 ENV HEALTH_PORT 80
 EXPOSE 80
 EXPOSE 443
