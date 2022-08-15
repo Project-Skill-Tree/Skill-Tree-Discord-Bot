@@ -5,6 +5,7 @@ const {getActiveUsers} = require("../../modules/userAPIHelper");
 const durationFormatter = new DurationFormatter();
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
+  await interaction.deferReply();
   const duration = durationFormatter.format(client.uptime);
   const promises = [
     await client.shard.fetchClientValues("guilds.cache.size"),
@@ -30,7 +31,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   • Discord.js    :: v${version}
   • Node          :: ${process.version}
   • Total Servers :: ${totalGuilds}`);
-  await interaction.reply(stats);
+  await interaction.editReply(stats);
 };
 
 exports.commandData = {

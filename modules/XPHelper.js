@@ -21,21 +21,6 @@ exports.calcXPToLevelUp = function(level) {
 };
 
 /**
- * Calculate the total XP of a player given their level and current XP
- * @param {number} level - Current level of the user
- * @param {number} xp - Current xp
- * @returns {number} - Total XP from level 0
- */
-exports.calcTotalXP = function(level, xp) {
-  let sum = 0;
-  for (let i = 0; i < level; i++) {
-    sum += this.calcXPToLevelUp(i);
-  }
-  sum += xp;
-  return sum;
-};
-
-/**
  * Return the rank object with all the rank data for a user of a given level
  * @param {number} level - Current level of the user
  * @return {Rank} Rank object for this level
@@ -84,15 +69,4 @@ exports.calcXPFromLevel = function(level) {
  */
 exports.calcLevelFromXP = function(xp) {
   return Math.floor(Math.log(1/2550*xp + 1) / Math.log(1.02));
-};
-
-/**
- * Calculate difference in level of two XPs
- * @param {number} oldXP
- * @param {number} newXP
- * @return {number} levelDifference
- */
-exports.levelDiff = function(oldXP, newXP) {
-  return Math.max(exports.calcLevelFromXP(newXP) -
-    exports.calcLevelFromXP(oldXP), 0);
 };
