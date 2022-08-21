@@ -42,7 +42,7 @@ exports.getRecentTasks = async function(userID, limit) {
     headers: {
       userid: userID,
       api_key: getAPIKey(),
-      limit: limit
+      timelimit: limit
     }
   });
   return res.data.tasks.map(data => Task.create(data));

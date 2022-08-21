@@ -247,6 +247,9 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
   }
   //draw tasks
   await taskList.map(async (task, index) => {
+    if (task.completed) {
+      task.data = task.data.slice(0,task.data.lastIndexOf(true)+1);
+    }
     //SKILL
     if (task.child instanceof Skill) {
       //Draw skill badge
@@ -270,6 +273,10 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
 
       for (let i = 0; i < 7; i++) {
         if (getDaysBetweenDates(dateIndex, task.startDate, user.timezone) > 0) context.fillStyle = "rgba(20, 20, 20, 1.0)";
+        else if (task.completed && getDaysBetweenDates(
+          new Date(task.startDate.getTime() + (task.data.length-1)*86400000),
+          dateIndex,
+          user.timezone) > 0 ) context.fillStyle = "rgba(20, 20, 20, 1.0)";
         else if (task.isChecked(dateIndex, user.timezone)) {
           context.fillStyle = "rgba(108, 199, 78,0.8)";
           numChecked += 1;
@@ -280,7 +287,9 @@ async function drawTasks(canvas, user, tasks, x, y, w) {
           y + pad + index*tHeight + tHeight*0.5 - size*0.5 + 2,
           size,
           size);
-        task.setChecked(task.isChecked(dateIndex, user.timezone), dateIndex, user.timezone);
+        if (!task.completed) {
+          task.setChecked(task.isChecked(dateIndex, user.timezone), dateIndex, user.timezone);
+        }
         dateIndex.setUTCDate(dateIndex.getUTCDate() - 1);
       }
 
