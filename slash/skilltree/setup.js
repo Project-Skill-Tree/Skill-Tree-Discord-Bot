@@ -205,6 +205,6 @@ exports.commandData = {
   name: "setup",
   description: "Sets up your Skill Tree account",
   options: [],
-  defaultPermission: false,
+  defaultPermission: true,
   category: "Skill Tree",
 };
