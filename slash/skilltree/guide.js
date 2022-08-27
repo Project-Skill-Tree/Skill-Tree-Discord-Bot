@@ -44,7 +44,7 @@ async function getPages() {
       "- If you accidently completed a skill, or want to start again. Use `/completed` to view "+
       "completed skills and erase their data. Removing their XP."),
     new Page("Setup", setupLogo,
-      "To use Skill Tree, you need to create an account with `/setup`" +
+      "To use Skill Tree, you need to create an account with `/setup` " +
       "this will automatically be cross compatible with the skill tree app. "+
       "You need to set a few options to use the skill tree: \n\n"+
       "**DIFFICULTY**: Sets difficulty level of your starting skills. You can "+
