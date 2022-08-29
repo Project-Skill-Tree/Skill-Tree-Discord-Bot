@@ -26,7 +26,7 @@ async function startMenu(client, interaction, userID) {
 
   if (available.length === 0) {
     await interaction
-      .editReply("```You have no available skills. Use ~tasks to see what skills you have started```");
+      .editReply("```You have no available skills. Use /tasks to see what skills you have started```");
     return;
   }
   //Create panel showing skills

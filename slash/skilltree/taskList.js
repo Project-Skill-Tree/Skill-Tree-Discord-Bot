@@ -26,7 +26,7 @@ exports.run = async (client, interaction) => {
   const [tasks, timezoneOffset] = await getCurrentTasks(userID);
   if (tasks.length === 0) {
     await interaction
-      .editReply("```No Current tasks, go to `~start` to start a skill```");
+      .editReply("```No current tasks. Use /start to start a new skill```");
   } else {
     //Show tasks in embed
     createTaskList(client, interaction, tasks, userID, timezoneOffset);
