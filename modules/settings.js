@@ -17,11 +17,15 @@ class Settings {
         api_key: process.env.API_KEY
       }
     }).then(res => {
-      res.data.data.forEach(config => {
-        const serverId = config.serverId;
-        delete config.serverId;
-        this.client.set(serverId, config);
-      });
+      if (!res.data.data) {
+        return;
+      } else {
+        res.data.data.forEach(config => {
+          const serverId = config.serverId;
+          delete config.serverId;
+          this.client.set(serverId, config);
+        });
+      }
     });
   }
 
