@@ -109,7 +109,7 @@ const init = async () => {
 // End top-level async/await function.
 };
 
-function getFiles(dir, files) {
+const getFiles = (dir, files) => {
   fs.readdirSync(dir).forEach(file => {
     const abs = Path.join(dir, file);
     if (fs.statSync(abs).isDirectory()) return getFiles(abs, files);

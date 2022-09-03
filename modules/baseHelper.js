@@ -1,6 +1,6 @@
 const {getSettings} = require("./functions");
 
-exports.getBaseLocation = async function(client, userid, baselocation) {
+exports.getBaseLocation = async (client, userid, baselocation) => {
   let guild;
   try {
     guild = await client.guilds.fetch(baselocation);

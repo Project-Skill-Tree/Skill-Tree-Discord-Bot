@@ -30,13 +30,13 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   • Mem Usage     :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
   • Uptime        :: ${duration}
   • Users         :: ${numberFormatter(totalMembers)}
-  • Active Users  :: ${numberFormatter(users)}
-  • Servers       :: ${numberFormatter(client.guilds.cache.size)}
+  • Registered Users  :: ${numberFormatter(users)}
+  • Servers       :: ${numberFormatter(totalGuilds)}
   • Channels      :: ${numberFormatter(client.channels.cache.size)}
   • Last Ready    :: ${client.readyAt}
   • Discord.js    :: v${version}
   • Node          :: ${process.version}`);
-  await interaction.editReply(stats);
+  await interaction.editReply(stats); //client.guilds.cache.size
 };
 
 exports.commandData = {

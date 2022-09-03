@@ -17,7 +17,7 @@ const {getDaysBetweenDates} = require("./dateHelper");
  * @param tasks - tasks to display
  */
 
-exports.displayReview = async function(user, channel, tasks) {
+exports.displayReview = async (user, channel, tasks) => {
   const reviewImage = new MessageAttachment(await getWeeklyReview(user, tasks), `${user.name}_review.png`);
 
   return channel.send({content: `<@${user.discordid}> your weekly report has been published`, files: [reviewImage]});
@@ -29,7 +29,7 @@ exports.displayReview = async function(user, channel, tasks) {
  * @param tasks - Tasks to display
  * @return {Promise<Buffer>} buffer -
  */
-async function getWeeklyReview(user, tasks) {
+const getWeeklyReview = async (user, tasks) => {
   const canvas = Canvas.createCanvas(400, 800);
   const context = canvas.getContext("2d");
 
@@ -58,7 +58,7 @@ async function getWeeklyReview(user, tasks) {
  * @param canvas
  * @return {Promise<void>}
  */
-async function drawHeaderFooter(canvas, user) {
+const drawHeaderFooter = async(canvas, user) => {
   const context = canvas.getContext("2d");
   context.font = "30px \"Akira\"";
 
@@ -114,7 +114,7 @@ async function drawHeaderFooter(canvas, user) {
  * @param h
  * @return {Promise<void>}
  */
-async function drawXP(canvas, user, x, y, w, h) {
+const drawXP = async (canvas, user, x, y, w, h) => {
   const context = canvas.getContext("2d");
   const level = XPHelper.calcLevelFromXP(user.xp);
   const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
@@ -181,7 +181,7 @@ async function drawXP(canvas, user, x, y, w, h) {
  * @param w
  * @return {Promise<void>}
  */
-async function drawTasks(canvas, user, tasks, x, y, w) {
+const drawTasks = async (canvas, user, tasks, x, y, w) => {
   const context = canvas.getContext("2d");
   const pad = 10;
 

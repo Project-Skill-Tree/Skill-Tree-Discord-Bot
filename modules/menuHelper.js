@@ -11,7 +11,7 @@ const {MessageSelectMenu} = require("discord.js");
  * @param embed - embed to query
  * @param files - optional files to include
  */
-exports.createYesNoPanel = async function(interaction, embed, files=[]) {
+exports.createYesNoPanel = async (interaction, embed, files=[]) => {
   //Add left/right messageButton to message
   const row = new MessageActionRow()
     .addComponents(
@@ -29,7 +29,7 @@ exports.createYesNoPanel = async function(interaction, embed, files=[]) {
   //Create listener for button events
   const filter = i => (i.customId === "yes" || i.customId === "no") && i.user.id === interaction.user.id;
   const collector = await followUp.createMessageComponentCollector({componentType : "BUTTON", filter, time: 240000});
-  return await new Promise( (resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     collector.on("collect", async i => {
       await i.deferUpdate();
       switch (i.customId) {
@@ -58,8 +58,8 @@ exports.createYesNoPanel = async function(interaction, embed, files=[]) {
  * item as parameter - return value is T/F based on whether this item will be removed or not
  * @param refresh - action to happen on update
  */
-exports.createLargeSwipePanel = async function(client, interaction,
-  list, actions = null, refresh=null) {
+exports.createLargeSwipePanel = async (client, interaction,
+  list, actions = null, refresh=null) => {
   let currentPage = 0;
   let options = await update(interaction, list, currentPage, actions);
   let message;
@@ -152,8 +152,8 @@ exports.createLargeSwipePanel = async function(client, interaction,
  * @param actions - action name: string, description: string, action: function map
  * item as parameter - return value is T/F based on whether this item will be removed or not
  */
-exports.createLargeMultiActionSwipePanel = async function(client, interaction,
-  list, actions = null) {
+exports.createLargeMultiActionSwipePanel = async (client, interaction,
+  list, actions = null) => {
   let currentPage = 0;
 
   let options = await update(interaction, list, currentPage, actions[currentPage]);
@@ -195,7 +195,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
 
 
   //Create action listener
-  if (actions == null) return;
+  if (actions === null) return;
 
   const actionFilter = i => i.user.id === interaction.user.id;
   const actionCollector = followUp.createMessageComponentCollector({actionFilter, time: 120000});
@@ -227,7 +227,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
 };
 
 
-async function update(interaction, list, currentPage, actions) {
+const update = async (interaction, list, currentPage, actions) => {
   //check for empty list
   if (list.length === 0) {
     const embed = new MessageEmbed();
@@ -257,7 +257,7 @@ async function update(interaction, list, currentPage, actions) {
   return {embeds: data[0], components: components, files: data[1], attachments: [], thumbnails: [], images: []};
 }
 
-function createRow(currentPage, length) {
+const createRow = (currentPage, length) => {
   return new MessageActionRow()
     .addComponents(
       new MessageButton()
@@ -284,7 +284,7 @@ function createRow(currentPage, length) {
     );
 }
 
-function createDropDownBox(actions) {
+const createDropDownBox = actions => {
   const actionList = actions.map(a => a.name).join("/");
   return new MessageActionRow().addComponents(
     new MessageSelectMenu().setCustomId("actions").setPlaceholder(actionList).addOptions(

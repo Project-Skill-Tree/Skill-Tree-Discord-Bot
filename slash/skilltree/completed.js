@@ -22,7 +22,7 @@ exports.run = async (client, interaction) => {
   showCompleted(client, interaction, userID, completed);
 };
 
-function showCompleted(client, interaction, userID, completed) {
+const showCompleted = (client, interaction, userID, completed) => {
   if (completed.length === 0) {
     const embed = new MessageEmbed()
       .setTitle("COMPLETED 🎒")
@@ -42,7 +42,7 @@ function showCompleted(client, interaction, userID, completed) {
           return {
             name: obj.getName(),
             description: "Erase data and revoke XP",
-            action: async (toErase) => {
+            action: async toErase => {
               await eraseCompleted(userID, toErase);
               return true;
             }

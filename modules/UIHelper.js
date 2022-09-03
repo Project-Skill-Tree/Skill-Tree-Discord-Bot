@@ -10,7 +10,7 @@ const Canvas = require("canvas");
  * @param {string=} color - Color of the glow effect to add (default: white)
  * @returns {Promise<Buffer>} - canvas buffer
  */
-exports.addGlow = async function(iconPath, size, color="white") {
+exports.addGlow = async (iconPath, size, color = "white") => {
   const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
   context.quality = "bilinear";
@@ -35,7 +35,7 @@ exports.addGlow = async function(iconPath, size, color="white") {
  * (scales to fit as much as possible whilst contained)
  * @returns {Promise<Buffer>} - canvas buffer
  */
-exports.imageToBuffer = async function(iconPath, size) {
+exports.imageToBuffer = async (iconPath, size) => {
   const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
 
@@ -65,8 +65,8 @@ exports.imageToBuffer = async function(iconPath, size) {
  * @param {Number} [radius.br = 0] Bottom right
  * @param {Number} [radius.bl = 0] Bottom left
  */
-exports.fillRoundRect = function(ctx, x, y,
-  width, height, radius) {
+exports.fillRoundRect = (ctx, x, y,
+  width, height, radius) => {
   if (typeof radius === "number") {
     radius = {tl: radius, tr: radius, br: radius, bl: radius};
   } else {
@@ -105,8 +105,8 @@ exports.fillRoundRect = function(ctx, x, y,
  * @param {Number} [radius.br = 0] Bottom right
  * @param {Number} [radius.bl = 0] Bottom left
  */
-exports.strokeRoundRect = function(ctx, x, y,
-  width, height, radius) {
+exports.strokeRoundRect = (ctx, x, y,
+  width, height, radius) => {
   if (typeof radius === "number") {
     radius = {tl: radius, tr: radius, br: radius, bl: radius};
   } else {
@@ -135,7 +135,7 @@ exports.strokeRoundRect = function(ctx, x, y,
  * @param colour - colour to draw as
  * @return {Canvas}
  */
-exports.tint = function(img, colour) {
+exports.tint = (img, colour) => {
   const w = img.width;
   const h = img.height;
   const canvas = Canvas.createCanvas(w, h);
@@ -156,9 +156,8 @@ exports.tint = function(img, colour) {
  * @param str
  * @return {string}
  */
-exports.codeBlock = function(str) {
-  return "```" + str + "```";
-};
+
+exports.codeBlock = str => "```" + str + "```"
 
 /**
  * Split array into chunks of size n
@@ -166,7 +165,7 @@ exports.codeBlock = function(str) {
  * @param {number} chunkSize
  * @return {Object[]}
  */
-exports.splitToN = function(arr, chunkSize) {
+exports.splitToN = (arr, chunkSize) => {
   const res = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
     const chunk = arr.slice(i, i + chunkSize);

@@ -16,16 +16,15 @@ const ranks = [
  * @param {number} level - Current level of the user
  * @returns {number} - XP required to level up
  */
-exports.calcXPToLevelUp = function(level) {
-  return Math.floor(50 * Math.pow(1.02, level));
-};
+
+exports.calcXPToLevelUp = level => Math.floor(50 * Math.pow(1.02, level));
 
 /**
  * Return the rank object with all the rank data for a user of a given level
  * @param {number} level - Current level of the user
  * @return {Rank} Rank object for this level
  */
-exports.getRank = function(level) {
+exports.getRank = level => {
   for (let i = ranks.length-1; i > 0; i--) {
     if (level >= ranks[i].minLevel) {
       return ranks[i];
@@ -39,27 +38,21 @@ exports.getRank = function(level) {
  * @param {number} level - Current level of the user
  * @return {string} - Colour of the given rank
  */
-exports.getColor = function(level) {
-  return exports.getRank(level).color;
-};
+exports.getColor = level => exports.getRank(level).color;
 
 /**
  * Get the character icon path for a given user level
  * @param {number} level - Current level of the user
  * @returns {String} - Character image paht for the given rank
  */
-exports.getCharacter = function(level) {
-  return exports.getRank(level).character;
-};
+exports.getCharacter = level => exports.getRank(level).character;
 
 /**
  * Calculate the totalXP given level
  * @param {number} level - level
  * @returns {number} - XP required to level up
  */
-exports.calcXPFromLevel = function(level) {
-  return Math.floor(-2550*(1 - Math.pow(1.02, level)));
-};
+exports.calcXPFromLevel = level => Math.floor(-2550*(1 - Math.pow(1.02, level)));
 
 
 /**
@@ -67,6 +60,4 @@ exports.calcXPFromLevel = function(level) {
  * @param {number} xp - total XP
  * @returns {number} - XP required to level up
  */
-exports.calcLevelFromXP = function(xp) {
-  return Math.floor(Math.log(1/2550*xp + 1) / Math.log(1.02));
-};
+exports.calcLevelFromXP = xp => Math.floor(Math.log(1/2550*xp + 1) / Math.log(1.02));

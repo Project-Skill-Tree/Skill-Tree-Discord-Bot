@@ -55,7 +55,7 @@ const config = {
       * If they do return true, which will allow them to execute the command in question.
       * If they don't then return false, which will prevent them from executing the command.
       */
-      check: (message) => {
+      check: message => {
         try {
           const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole?.toLowerCase());
           if (modRole && message.member.roles.cache.has(modRole.id)) return true;
@@ -67,7 +67,7 @@ const config = {
 
     { level: 3,
       name: "Administrator", 
-      check: (message) => {
+      check: message => {
         try {
           const adminRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase());
           return (adminRole && message.member.roles.cache.has(adminRole.id));
@@ -84,7 +84,7 @@ const config = {
       * Simple check, if the guild owner id matches the message author's ID, then it will return true.
       * Otherwise it will return false.
       */
-      check: (message) => {
+      check: message => {
         const serverOwner = message.author ?? message.user;
         return message.guild?.ownerId === serverOwner.id;
       }
@@ -98,7 +98,7 @@ const config = {
       name: "Bot Support",
       // The check is by reading if an ID is part of this array. Yes, this means you need to
       // change this and reboot the bot to add a support user. Make it better yourself!
-      check: (message) => {
+      check: message => {
         const botSupport = message.author ?? message.user;
         return config.support.includes(botSupport.id);
       }
@@ -107,7 +107,7 @@ const config = {
     // Bot Admin has some limited access like rebooting the bot or reloading commands.
     { level: 9,
       name: "Bot Admin",
-      check: (message) => {
+      check: message => {
         const botAdmin = message.author ?? message.user;
         return config.admins.includes(botAdmin.id);
       }
@@ -122,7 +122,7 @@ const config = {
     { level: 10,
       name: "Bot Owner", 
       // Another simple check, compares the message author id to a list of owners found in the bot application.
-      check: (message) => {
+      check: message => {
         const owner = message.author ?? message.user;
         return owner.id === process.env.OWNER;
       }

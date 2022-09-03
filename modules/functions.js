@@ -11,7 +11,7 @@ const settings = require("./settings.js");
   command including the VERY DANGEROUS `eval` and `exec` commands!
 
   */
-function permlevel(message) {
+const permlevel = message => {
   let permlvl = 0;
 
   const permOrder = config.permLevels.slice(0).sort((p, c) => p.level < c.level ? 1 : -1);
@@ -38,7 +38,7 @@ function permlevel(message) {
   
 // getSettings merges the client defaults with the guild settings. guild settings in
 // enmap should only have *unique* overrides that are different from defaults.
-function getSettings(guild) {
+const getSettings = guild => {
   settings.ensure("default", config.defaultSettings);
   if (!guild) return settings.get("default");
   const guildConf = settings.get(guild.id) || {};
@@ -51,9 +51,8 @@ function getSettings(guild) {
   
 // toProperCase(String) returns a proper-cased string such as: 
 // toProperCase("Mary had a little lamb") returns "Mary Had A Little Lamb"
-function toProperCase(string) {
-  return string.replace(/([^\W_]+[^\s-]*) */g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
+
+const toProperCase = string => string.replace(/([^\W_]+[^\s-]*) */g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
 // These 2 process methods will catch exceptions and give *more details* about the error and stack trace.
 process.on("uncaughtException", err => {
