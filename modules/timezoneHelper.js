@@ -17,14 +17,14 @@ exports.timezoneFromLocation = async function(location) {
   try {
     const foundLatLon = await axios
       .get(`${geocodeUrlBase}&address=${location}`)
-      .then((res) => {
+      .then(res => {
         try {
           return res.data.results[0].geometry.location;
         } catch (e) {
           return null;
         }
       })
-      .catch((e) => console.log(e));
+      .catch(e => console.log(e));
     if (!foundLatLon) {
       return null;
     }
@@ -32,8 +32,8 @@ exports.timezoneFromLocation = async function(location) {
       .get(
         `${timezoneUrlBase}&location=${foundLatLon.lat},${foundLatLon.lng}&timestamp=${Date.now() / 1000}`,
       )
-      .then((res) => res.data)
-      .catch((e) => console.log(e));
+      .then(res => res.data)
+      .catch(e => console.log(e));
     if (foundTimezone.status === "OK") {
       return {
         timezoneName: exports.standardizeTimezoneName(

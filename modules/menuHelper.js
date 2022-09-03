@@ -121,7 +121,7 @@ exports.createLargeSwipePanel = async function(client, interaction,
     await i.deferUpdate();
 
     //If action found
-    const action = actions.filter((v) => v.name === i.values[0])[0];
+    const action = actions.filter(v => v.name === i.values[0])[0];
     if (action) {
       const deleteItem = await action.action(list[currentPage]);
       //Delete item on action
@@ -204,7 +204,7 @@ exports.createLargeMultiActionSwipePanel = async function(client, interaction,
     await i.deferUpdate();
 
     //If action found
-    const action = actions[currentPage].filter((v) => v.name === i.values[0])[0];
+    const action = actions[currentPage].filter(v => v.name === i.values[0])[0];
     if (action) {
       const actionIndex = actions[currentPage].indexOf(action);
       const deleteItem = await action.action(list[currentPage].list[actionIndex]);

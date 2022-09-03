@@ -4,6 +4,12 @@ const { DurationFormatter } = require("@sapphire/time-utilities");
 const {getActiveUsers} = require("../../modules/userAPIHelper");
 const durationFormatter = new DurationFormatter();
 
+const numberFormatter = number => {
+  if (number > 999 && number < 1000000) return (number/1000).toFixed(1) + "k";
+  if (number > 1000000) return (number/1000000).toFixed(1) + "m";
+  return number;
+};
+
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   await interaction.deferReply();
   const duration = durationFormatter.format(client.uptime);
@@ -23,14 +29,13 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   const stats = codeBlock("asciidoc", `= STATISTICS =
   • Mem Usage     :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
   • Uptime        :: ${duration}
-  • Users         :: ${totalMembers}
-  • Active Users  :: ${users}
-  • Servers       :: ${client.guilds.cache.size.toLocaleString()}
-  • Channels      :: ${client.channels.cache.size.toLocaleString()}
+  • Users         :: ${numberFormatter(totalMembers)}
+  • Active Users  :: ${numberFormatter(users)}
+  • Servers       :: ${numberFormatter(client.guilds.cache.size)}
+  • Channels      :: ${numberFormatter(client.channels.cache.size)}
   • Last Ready    :: ${client.readyAt}
   • Discord.js    :: v${version}
-  • Node          :: ${process.version}
-  • Total Servers :: ${totalGuilds}`);
+  • Node          :: ${process.version}`);
   await interaction.editReply(stats);
 };
 
