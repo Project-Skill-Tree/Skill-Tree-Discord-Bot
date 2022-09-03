@@ -6,8 +6,8 @@ const durationFormatter = new DurationFormatter();
 
 const numberFormatter = number => {
   if (number > 999 && number < 1000000) return (number/1000).toFixed(1) + "k";
-  if (number > 1000000) return (number/1000000).toFixed(1)
-  if (number < 900) return number
+  if (number > 1000000) return (number/1000000).toFixed(1) + "m";
+  return number;
 };
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
