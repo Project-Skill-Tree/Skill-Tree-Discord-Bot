@@ -36,7 +36,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
   • Last Ready    :: ${client.readyAt}
   • Discord.js    :: v${version}
   • Node          :: ${process.version}`);
-  await interaction.editReply(stats); //client.guilds.cache.size
+  await interaction.editReply(stats);
 };
 
 exports.commandData = {
