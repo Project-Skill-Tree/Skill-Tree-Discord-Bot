@@ -51,7 +51,7 @@ exports.run = async (client, interaction) => {
  * @param locationInfo
  * @return {Promise<string|boolean|string>}
  */
-exports.locationConfirmation = async function(interaction, locationInfo) {
+exports.locationConfirmation = async (interaction, locationInfo) => {
 
   //Error message
   if (locationInfo === null) {

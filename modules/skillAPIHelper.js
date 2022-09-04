@@ -10,16 +10,14 @@ const Unlocked = require("../objects/unlocked");
 /**
  * Get API authentication key
  */
-function getAPIKey() {
-  return process.env.API_KEY;
-}
+const getAPIKey = () => process.env.API_KEY;
 
 /**
  * Get JSON object containing tasks that the user has accepted from the database
  * @param userID - MongoDB userID
  * @param callback - list of task objects
  */
-exports.getCurrentTasks = async function(userID) {
+exports.getCurrentTasks = async userID => {
   const res = await axios.get(process.env.API_URL + "tasks/currentTasks", {
     headers: {
       userid: userID,
@@ -37,7 +35,7 @@ exports.getCurrentTasks = async function(userID) {
  * @param {number} limit - number of days ago for the last habit entry
  * @param callback
  */
-exports.getRecentTasks = async function(userID, limit) {
+exports.getRecentTasks = async (userID, limit) => {
   const res = await axios.get(process.env.API_URL + "tasks/recentTasks", {
     headers: {
       userid: userID,
@@ -66,7 +64,7 @@ exports.deleteTask = function(taskID) {
  * Get JSON object containing skills that the user has accepted from the database
  * @param userID - MongoDB userID
  */
-exports.getInProgress = async function(userID) {
+exports.getInProgress = async userID => {
   const res = await axios.get(process.env.API_URL + "users/getInProgress", {
     headers: {
       userid: userID,
@@ -82,7 +80,7 @@ exports.getInProgress = async function(userID) {
  * Get JSON object containing skills available to a given user from database
  * @param userID - MongoDB userID
  */
-exports.getAvailable = async function(userID) {
+exports.getAvailable = async userID => {
   const res = await axios.get(process.env.API_URL + "users/getAvailable", {
     headers: {
       userid: userID,
@@ -98,7 +96,7 @@ exports.getAvailable = async function(userID) {
  * Get JSON object containing all skills and challenges found in the given list
  * @param list - List of MongoDB Object IDs
  */
-exports.getAllInList = async function(list) {
+exports.getAllInList = async list => {
   const res = await axios.get(process.env.API_URL + "inList", {
     headers: {
       api_key: getAPIKey(),
@@ -120,7 +118,7 @@ exports.getAllInList = async function(list) {
  * @param userID - userID
  * @param toStart - Object to start, either Skill or Challenge
  */
-exports.start = async function(userID, toStart) {
+exports.start = async (userID, toStart) => {
   const res = await axios
     .post(process.env.API_URL + "users/start", {
       userid: userID,
@@ -138,7 +136,7 @@ exports.start = async function(userID, toStart) {
  * @param userID - userID
  * @param toSkip - object to skip
  */
-exports.skip = async function(userID, toSkip) {
+exports.skip = async (userID, toSkip) => {
   const res = await axios
     .post(process.env.API_URL + "users/skip", {
       userid: userID,
@@ -159,7 +157,7 @@ exports.skip = async function(userID, toSkip) {
  * @param userID - userID
  * @param toRevert - object to revert
  */
-exports.revert = async function(userID, toRevert) {
+exports.revert = async (userID, toRevert) => {
   await axios
     .post(process.env.API_URL + "users/revert", {
       userid: userID,
@@ -176,7 +174,7 @@ exports.revert = async function(userID, toRevert) {
  * @param  userID
  * @param toCancel - object to cancel
  */
-exports.cancel = function(userID, toCancel) {
+exports.cancel = (userID, toCancel) => {
   axios
     .post(process.env.API_URL + "users/cancel", {
       userid: userID,
@@ -195,7 +193,7 @@ exports.cancel = function(userID, toCancel) {
  * @param day
  * @param checked - T/F if checked/unchecked
  */
-exports.updateTask = async function(userid, task, day, checked) {
+exports.updateTask = async (userid, task, day, checked) => {
   const res = await axios
     .post(process.env.API_URL + "tasks/updateTask", {
       userid: userid,

@@ -9,9 +9,9 @@ const {getDaysBetweenDates} = require("../modules/dateHelper");
  * Sends a weekly report every sunday at 6PM in the user's local timezone
  * @param client
  */
-exports.run = (client) => {
+exports.run = client => {
   //Schedule a repeating task every 30 minutes all day saturday, sunday, monday.
-  cron.schedule("*/30 0-23 * * 6,0,1", async function() {
+  cron.schedule("*/30 0-23 * * 6,0,1", async () => {
     //Get the timezone offset
     const offset = getCurrentOffset();
     //If not at sunday 6PM
@@ -55,7 +55,7 @@ exports.run = (client) => {
   });
 };
 
-function getCurrentOffset() {
+const getCurrentOffset = () => {
   // get time at GMT + 8
   const GMToffset = new Date().getTimezoneOffset();
   const GMTTime = new Date(new Date().getTime() + GMToffset * 60 * 1000);

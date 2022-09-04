@@ -27,7 +27,7 @@ exports.run = async (client, interaction) => {
     [{
       name: "CANCEL",
       description: "Cancel the skill",
-      action: (skill) => {
+      action: skill => {
         cancel(userID, skill);
         return true;
       }

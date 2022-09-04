@@ -22,7 +22,7 @@ exports.run = async (client, interaction) => {
   await createLargeSwipePanel(client, interaction, pages);
 };
 
-async function getPages() {
+const getPages = async () => {
   const skilltreeLogo = await imageToBuffer("skilltree/logo_filled.png", 300);
   const setupLogo = await imageToBuffer("icons/settings.png", 300);
   const badge = await getBadgeIcon("meditation.png", 7, 300);

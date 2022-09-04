@@ -8,16 +8,14 @@ const Item = require("../objects/item");
 /**
  * Get API authentication key
  */
-function getAPIKey() {
-  return process.env.API_KEY;
-}
+const getAPIKey = () => process.env.API_KEY;
 
 /**
  * Authorise the user, return their user ID if they exist in the database,
  * otherwise, return null
  * @param discordid - Discord ID
  */
-exports.authUser = async function(discordid) {
+exports.authUser = async discordid => {
   const res = await axios
     .get(process.env.API_URL + "users/loginDiscord/", {
       headers: {
@@ -36,7 +34,7 @@ exports.authUser = async function(discordid) {
  * @param timezone - timezone offset of the user
  * @param baselocation
  */
-exports.createUser = async function(discordid, character, difficulty, timezone, baselocation) {
+exports.createUser = async (discordid, character, difficulty, timezone, baselocation) => {
   const res = await axios
     .post(process.env.API_URL + "users/registerDiscord/", {
       discordid: discordid,
@@ -59,7 +57,7 @@ exports.createUser = async function(discordid, character, difficulty, timezone, 
  * @param timezone - timezone offset of the user
  * @param baselocation
  **/
-exports.updateUser = function(userID, character, timezone, baselocation) {
+exports.updateUser = (userID, character, timezone, baselocation) => {
   return axios
     .post(process.env.API_URL + "users/updateUser/", {
       userid: userID,
@@ -77,7 +75,7 @@ exports.updateUser = function(userID, character, timezone, baselocation) {
  * Updating a user in the database
  * @param userID
  **/
-exports.deleteUser = function(userID) {
+exports.deleteUser = userID => {
   return axios
     .post(process.env.API_URL + "users/deleteUser/", {
       userid: userID,
@@ -88,7 +86,7 @@ exports.deleteUser = function(userID) {
     });
 };
 
-exports.setUserLocation = async function(userID, base) {
+exports.setUserLocation = async (userID, base) => {
   return await axios
     .post(process.env.API_URL + "users/updateBaseLocation/", {
       id: userID,
@@ -106,7 +104,7 @@ exports.setUserLocation = async function(userID, base) {
  * @param username - discord username
  * @param callback - method to pass user object to
  */
-exports.getUser = async function(userID, username) {
+exports.getUser = async (userID, username) => {
   const res = await axios
     .get(process.env.API_URL + "users/profile/", {
       headers: {
@@ -122,7 +120,7 @@ exports.getUser = async function(userID, username) {
  * Get all users
  * @param callback - method to pass user object to
  */
-exports.getUsers = async function() {
+exports.getUsers = async () => {
   const response = await axios
     .get(process.env.API_URL + "users/getAll/", {
       headers: {
@@ -139,7 +137,7 @@ exports.getUsers = async function() {
  * Get list of users within a given timezone
  * @param timezone - timezone offset of the user
  */
-exports.getUsersInTimezone = async function(timezone) {
+exports.getUsersInTimezone = async timezone => {
   const res = await axios
     .get(process.env.API_URL + "users/getAllInTimezone/", {
       headers: {
@@ -155,7 +153,7 @@ exports.getUsersInTimezone = async function(timezone) {
  * @param userID
  * @param {number} timezoneoffset - hours difference to GMT (-14 to +12)
  */
-exports.updateTimezone = async function(userID, timezoneoffset) {
+exports.updateTimezone = async (userID, timezoneoffset) => {
   return await axios
     .post(process.env.API_URL + "users/updateTimezone", {
       id: userID,
@@ -172,7 +170,7 @@ exports.updateTimezone = async function(userID, timezoneoffset) {
  * @param userid - the discord ID of the user
  * @param xp - amount of xp to add
  */
-exports.addXP = function(userid, xp) {
+exports.addXP = (userid, xp) => {
   return axios
     .post(process.env.API_URL + "users/addXP", {
       xp: xp,
@@ -188,7 +186,7 @@ exports.addXP = function(userid, xp) {
  * @param userid - the discord ID of the user
  * @param xp - amount of xp to add
  */
-exports.updateXPHistory = function(userid, xp) {
+exports.updateXPHistory = (userid, xp) => {
   return axios
     .post(process.env.API_URL + "users/updateXPHistory", {
       id: userid,
@@ -200,7 +198,7 @@ exports.updateXPHistory = function(userid, xp) {
     });
 };
 
-exports.getCompleted = async function(userid) {
+exports.getCompleted = async userid => {
   const res = await axios
     .get(process.env.API_URL + "users/getCompleted", {
       headers: {
@@ -214,7 +212,7 @@ exports.getCompleted = async function(userid) {
 
 };
 
-exports.eraseCompleted = function(userid, toErase) {
+exports.eraseCompleted = (userid, toErase) => {
   return axios
     .post(process.env.API_URL + "users/eraseCompleted", {
       userid: userid,
@@ -226,7 +224,7 @@ exports.eraseCompleted = function(userid, toErase) {
     });
 };
 
-exports.saveWeekly = function(userid) {
+exports.saveWeekly = userid => {
   return axios
     .post(process.env.API_URL + "users/saveWeekly", {
       userid: userid,
@@ -237,7 +235,7 @@ exports.saveWeekly = function(userid) {
     });
 };
 
-exports.setReminded = function(userid, value) {
+exports.setReminded = (userid, value) => {
   return axios
     .post(process.env.API_URL + "users/setReminded", {
       userid: userid,
@@ -249,7 +247,7 @@ exports.setReminded = function(userid, value) {
     });
 };
 
-exports.getActiveUsers = async function() {
+exports.getActiveUsers = async () => {
   const res = await axios
     .get(process.env.API_URL + "users/getActiveUsers", {
       headers: {

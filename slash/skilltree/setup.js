@@ -30,7 +30,7 @@ exports.run = async (client, interaction) => {
   settings[0].start(interaction, {discordid: interaction.user.id}, settings, interaction.user);
 };
 
-async function setupUser(userID, userSettings) {
+const setupUser = async (userID, userSettings) => {
   if (userID) {
     await updateUser(userID,
       userSettings.character,
@@ -47,7 +47,7 @@ async function setupUser(userID, userSettings) {
   }
 }
 
-async function displayProjectInfo(interaction) {
+const displayProjectInfo = async interaction =>{
   //information about the project
   const infoEmbed = new MessageEmbed()
     .setTitle("Information")
@@ -61,7 +61,7 @@ async function displayProjectInfo(interaction) {
     <#953955545012920370> : You can download the PDF version of the skill tree (and maybe print it out!) here. \n`);
   await interaction.editReply({embeds: [infoEmbed]});
 }
-async function getSettings(client, interaction, userExists) {
+const getSettings = async (client, interaction, userExists) => {
   let locationID;
   let baseName;
   if (interaction.member == null) {

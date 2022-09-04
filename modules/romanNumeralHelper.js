@@ -6,7 +6,7 @@
  * @param {number} num - Number to convert
  * @return {?string} - Roman numeral
  */
-exports.romanise = function(num) {
+exports.romanise = num => {
   if (isNaN(num))
     return null;
   const digits = String(+num).split(""),

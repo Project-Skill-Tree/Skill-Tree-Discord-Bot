@@ -29,7 +29,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
  * @param interaction
  * @return {Promise<*>}
  */
-function displayInventory(client, user, interaction) {
+const displayInventory = (client, user, interaction) => {
   if (user.items.length === 0) {
     const embed = new MessageEmbed()
       .setTitle("INVENTORY 🎒")

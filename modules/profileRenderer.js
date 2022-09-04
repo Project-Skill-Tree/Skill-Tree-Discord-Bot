@@ -12,7 +12,7 @@ const Skill = require("../objects/skill");
  * @param user - User object
  * @param channel - the channel to send the message to
  */
-exports.displayProfile = async function(user, interaction) {
+exports.displayProfile = async (user, interaction) => {
   //Generate profile
   const profileImage = new MessageAttachment(await exports.getProfileImage(user), "profile.png");
   return interaction.editReply({files: [profileImage]});
@@ -23,10 +23,9 @@ exports.displayProfile = async function(user, interaction) {
  * @param user - User object
  * @param interaction
  */
-exports.displayLevelUp = async function(user, interaction) {
+exports.displayLevelUp = async (user, interaction) => {
   //Generate profile
   const profileImage = new MessageAttachment(await getLevelUpProfileImage(user), "profile.png");
-
   return interaction.followUp({files: [profileImage], ephemeral: interaction.settings.hidden});
 };
 
@@ -35,7 +34,7 @@ exports.displayLevelUp = async function(user, interaction) {
  * @param user - Skill tree user object
  * @return {Promise<Buffer>} buffer -
  */
-exports.getProfileImage = async function(user) {
+exports.getProfileImage = async user => {
   const canvas = Canvas.createCanvas(600, 200);
   const context = canvas.getContext("2d");
 
@@ -76,7 +75,7 @@ exports.getProfileImage = async function(user) {
  * @param user - Skill tree user object
  * @return {Promise<Buffer>} buffer -
  */
-async function getLevelUpProfileImage(user) {
+const getLevelUpProfileImage = async user => {
   const canvas = Canvas.createCanvas(600, 200);
   const context = canvas.getContext("2d");
 
@@ -124,7 +123,7 @@ async function getLevelUpProfileImage(user) {
  * @param profileHeight - height of the drawing
  * @return {Promise<void>}
  */
-async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) {
+const drawProfile = async (canvas, user, profileX, profileWidth, profileHeight) => {
   const context = canvas.getContext("2d");
 
   context.fillStyle = "rgba(0, 0, 0, 0.6)";
@@ -168,7 +167,7 @@ async function drawProfile(canvas, user, profileX, profileWidth, profileHeight) 
  * @param h - height of XP bar
  * @return {Promise<void>}
  */
-async function drawXP(canvas, user, x, y, w, h) {
+const drawXP = (canvas, user, x, y, w, h) => {
   const context = canvas.getContext("2d");
   const level = XPHelper.calcLevelFromXP(user.xp);
   const excessXP = user.xp - XPHelper.calcXPFromLevel(level);
@@ -210,16 +209,14 @@ async function drawXP(canvas, user, x, y, w, h) {
  * @param user
  * @return {Promise<void>}
  */
-async function drawProfileInfo(canvas, user) {
+const drawProfileInfo = async (canvas, user) => {
   const context = canvas.getContext("2d");
   //Draw badge background
   context.fillStyle = "rgba(255, 187, 0, 0.3)";
   context.fillRect(516, 0, 64+20, 200);
 
   //Sort badges in descending XP order
-  const sortedSkills = user.completed.filter(obj => obj instanceof Skill).sort((a, b) => {
-    return (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp;
-  });
+  const sortedSkills = user.completed.filter(obj => obj instanceof Skill).sort((a, b) => (b.level !== a.level) ? (b.level - a.level) : b.xp - a.xp);
 
   //draw badges
   for (let i = 0; i < 3; i++) {

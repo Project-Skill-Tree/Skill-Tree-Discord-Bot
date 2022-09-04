@@ -11,7 +11,7 @@ const {tint} = require("../modules/UIHelper");
  * @param {?number} level - Level of the badge as a number
  * @return {Promise<Buffer>} - returns ImageBuffer of the badge
  */
-exports.getBadgeIcon = async function(iconPath, level, size) {
+exports.getBadgeIcon = async (iconPath, level, size) => {
   const canvas = Canvas.createCanvas(size, size);
   const context = canvas.getContext("2d");
   context.quality = "good";
@@ -31,7 +31,7 @@ exports.getBadgeIcon = async function(iconPath, level, size) {
  * @param {?number} level - badge level
  * @return {Promise<void>}
  */
-exports.drawBadge = async function(canvas, x, y, size, iconPath, level) {
+exports.drawBadge = async (canvas, x, y, size, iconPath, level) => {
   const context = canvas.getContext("2d");
   context.shadowColor = "white";
 

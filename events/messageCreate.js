@@ -26,7 +26,8 @@ module.exports = async (client, message) => {
   // code, would render it useless.
   const prefixMention = new RegExp(`^<@!?${client.user.id}> ?$`);
   if (message.content.match(prefixMention)) {
-    return message.reply(`My prefix on this guild is \`${settings.prefix}\``);
+    //return message.reply(`My prefix on this guild is \`${settings.prefix}\``);
+    return message.reply("Type /guide for more information.")
   }
 
   // It's also good practice to ignore any and all messages that do not start

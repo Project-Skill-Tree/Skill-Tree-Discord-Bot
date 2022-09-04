@@ -6,7 +6,7 @@
  * @param {string} interval - time interval for skills, e.g. day, week, month, year
  * @return {string}
  */
-exports.formatFrequency = function(frequency, interval) {
+exports.formatFrequency = (frequency, interval) => {
   let timesString;
   if (frequency > 1) {
     switch (interval) {
@@ -34,11 +34,9 @@ exports.formatFrequency = function(frequency, interval) {
       case "day":
         timesString = "DAILY";
         break;
-      
       case "week":
         timesString = "WEEKLY";
         break;
-
       case "month":
         timesString = "MONTHLY";
         break;
@@ -46,7 +44,6 @@ exports.formatFrequency = function(frequency, interval) {
       case "year":
         timesString = "YEARLY";
         break;
-
       case "N/A":
         timesString = "N/A";
         break;
@@ -63,7 +60,7 @@ exports.formatFrequency = function(frequency, interval) {
  * @param timezoneOffset
  * @return {Date} - date object
  */
-exports.dayToDate = function(day, timezoneOffset=null) {
+exports.dayToDate = (day, timezoneOffset = null) => {
   let date = new Date(Date.parse(new Date().toUTCString()));
   if (timezoneOffset != null) {
     date = new Date(date.getTime() + timezoneOffset*3600000);
@@ -89,7 +86,7 @@ exports.getAbsDate = function(d0) {
   const msPerDay = 8.64e7;
   const x0 = new Date(d0);
   x0.setHours(12,0,0);
-  return Math.round( x0 / msPerDay );
+  return Math.round(x0 / msPerDay);
 };
 
 /**
@@ -108,7 +105,7 @@ exports.getAbsDate = function(d0) {
 
    Assumes d0 <= d1
 */
-exports.getDaysBetweenDates = function(d0, d1, tz) {
+exports.getDaysBetweenDates = (d0, d1, tz) => {
 
   const msPerDay = 8.64e7;
 
@@ -125,18 +122,18 @@ exports.getDaysBetweenDates = function(d0, d1, tz) {
   return Math.round( (x1 - x0) / msPerDay );
 };
 
-exports.dateAsTime = function(date) {
+exports.dateAsTime = date => {
   let hours = date.getHours();
   let minutes = date.getMinutes();
   const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0"+minutes : minutes;
-  return hours + ":" + minutes + ampm;
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${hours}:${minutes}${ampm}`;
 };
 
 
-exports.intervalToInt = function(interval) {
+exports.intervalToInt = interval => {
   switch (interval) {
     case "day":
       return 1;

@@ -44,7 +44,7 @@ exports.run = async (client, interaction) => {
  * @param timezoneOffset
  * @return {Promise<void>}
  */
-async function createTaskList(client, interaction, tasks, userID, timezoneOffset) {
+const createTaskList = async (client, interaction, tasks, userID, timezoneOffset) => {
   const UTC = new Date(Date.parse(new Date().toUTCString()));
   const dayCreated = new Date(UTC.getTime() + timezoneOffset*3600000);
   let day = "today";
@@ -146,7 +146,7 @@ async function createTaskList(client, interaction, tasks, userID, timezoneOffset
   });
 }
 
-function createDropDownBox(tasks, date, timezoneOffset) {
+const createDropDownBox = (tasks, date, timezoneOffset) => {
   if (tasks.length !== 0) {
     return new MessageActionRow().addComponents(
       new MessageSelectMenu().setCustomId("tasks-selection-box").setPlaceholder("Check/uncheck a task").addOptions(
@@ -181,7 +181,7 @@ function createDropDownBox(tasks, date, timezoneOffset) {
 }
 
 // Helper function for building an embed in order to reduce repetition in the code.
-function buildEmbed(tasks, date, tz) {
+const buildEmbed = (tasks, date, tz) => {
   const month = date.toLocaleString("default", { month: "long" });
 
   const dateString = `${month} ${date.getDate()}, ${date.getUTCFullYear()}`;
@@ -205,13 +205,13 @@ function buildEmbed(tasks, date, tz) {
   return messageEmbed;
 }
 
-function addField(messageEmbed, string, title) {
+const addField = (messageEmbed, string, title) => {
   //Chop tasks to fit field
   let chopped = string;
   let index = 0;
   while (chopped.length !== 0) {
     const chars = chopped.slice(0, 1024);
-    const name = index === 0 ? title : title + " (cont)";
+    const name = index === 0 ? title : `${title} (cont)`;
 
     if (chars.length < 1024) {
       messageEmbed.addField(name, chars);
@@ -219,14 +219,14 @@ function addField(messageEmbed, string, title) {
     } else {
       const lastSplit = chars.lastIndexOf("\n");
       const field = chars.slice(0, lastSplit);
-      chopped = chopped.slice(lastSplit + 1);
+      chopped = chopped.slice(lastSplit++);
       messageEmbed.addField(name, field);
     }
-    index += 1;
+    index++;
   }
 }
 
-function formatTask(task, date, tz) {
+const formatTask = (task, date, tz) => {
   if (task.child instanceof Challenge) {
     const checkedEmoji = task.isChecked(date, tz) ? ":white_check_mark:": ":x:";
     return `${checkedEmoji} | **${task.child.title} (${task.percentChecked(date, tz)})**: \n${task.child.goal}`;

@@ -20,7 +20,7 @@ exports.run = async (client, interaction) => {
   startMenu(client, interaction, userID);
 };
 
-async function startMenu(client, interaction, userID) {
+const startMenu = async (client, interaction, userID) => {
   //Get available skills
   const available = await getAvailable(userID);
 
@@ -34,7 +34,7 @@ async function startMenu(client, interaction, userID) {
     [{
       name: "START",
       description: "Start a skill and add it to your current skills",
-      action: async (toStart) => {
+      action: async toStart => {
         const res = await start(userID, toStart);
         if (res === 201) {
           await interaction
@@ -52,7 +52,7 @@ async function startMenu(client, interaction, userID) {
     }, {
       name: "SKIP",
       description: "Skip the skill and unlock all its children",
-      action: async (toSkip) => {
+      action: async toSkip => {
         //Cannot skip challenges
         if (toSkip instanceof Challenge) {
           await interaction
