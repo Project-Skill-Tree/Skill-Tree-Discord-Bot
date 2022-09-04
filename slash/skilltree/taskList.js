@@ -217,7 +217,7 @@ const addField = (messageEmbed, string, title) => {
       messageEmbed.addField(name, chars);
       chopped = "";
     } else {
-      const lastSplit = chars.lastIndexOf("\n");
+      let lastSplit = chars.lastIndexOf("\n");
       const field = chars.slice(0, lastSplit);
       chopped = chopped.slice(lastSplit++);
       messageEmbed.addField(name, field);
