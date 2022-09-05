@@ -77,6 +77,30 @@ class Settings {
         console.log(err.response.data);
       });
   }
+
+  async setAutoPromotion(guild, role, threshold) {
+    await axios.post(`${process.env.API_URL}config/setAutoPromotion`, {
+      serverId: guild.serverId,
+      role: role,
+      threshold: threshold
+    }, {
+      headers: {
+        api_key: process.env.API_KEY
+      }
+    })
+      .then(() => {});
+  }
+
+  async cancelAutoPromotion(guild) {
+    await axios.post(`${process.env.API_URL}config/cancelAutoPromotion`, {
+      serverId: guild.serverId,
+    }, {
+      headers: {
+        api_key: process.env.API_KEY
+      }
+    })
+      .then(() => {});
+  }
 }
 
 module.exports = new Settings();
