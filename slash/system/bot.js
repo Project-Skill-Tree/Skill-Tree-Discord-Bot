@@ -1,13 +1,13 @@
 const { version } = require("discord.js");
 const { codeBlock } = require("@discordjs/builders");
 const { DurationFormatter } = require("@sapphire/time-utilities");
-const {getActiveUsers} = require("../../modules/userAPIHelper");
+const { getActiveUsers } = require("../../modules/userAPIHelper");
 const durationFormatter = new DurationFormatter();
 
 const numberFormatter = number => {
-  if (number > 999 && number < 1000000) return (number/1000).toFixed(1) + "k";
-  if (number > 1000000) return (number/1000000).toFixed(1) + "m";
-  return number;
+  return Intl.NumberFormat('en', {
+    notation: 'compact'
+  }).format(number);
 };
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
