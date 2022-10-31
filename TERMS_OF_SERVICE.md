@@ -10,7 +10,6 @@ Skill Tree is not affiliated with Discord.
 
 The purpose of the Bot is to allow users to track habits and improve their lives through a video-game style system.
 
-
 By using the Bot, you may need to interact with other Bot users. You are solely responsible for any such interaction and agree to do so in a manner that is legal, respectable, and consistent with these TOU. Skill Tree is not responsible for the conduct of any other user who may interact with you, regardless of whether or not it is done through the Skill Tree's own Discord server.
 
 ##License
@@ -31,12 +30,11 @@ Skill Tree reserves the right to modify these TOU at any time without prior noti
 
 ##Intellectual and Other Property
 
-Certain elements of Skill Tree, including but not limited to, graphics, color selections, organization and layout, are copyright protected under United Kingdom and international copyright laws and treaty provisions. Any Skill Tree Content protected by intellectual property laws may not be copied, republished, posted, modified, edited, transmitted, distributed, used to create derivative works of, or reverse engineered without permission, except that you may print out one copy of each Site page solely for noncommercial personal or educational use. No right, title, or interest in any Skill Tree Content is transferred to you as a result of you accessing, downloading, or printing such content from the Site or Bot. Any use of Skill Tree Content must display the appropriate copyright, trademark, and other proprietary notices.
+Any Skill Tree Content protected by intellectual property laws may not be copied, republished, posted, modified, edited, transmitted, distributed, used to create derivative works of, or reverse engineered without permission, except that you may print out one copy of each Site page solely for noncommercial personal or educational use. No right, title, or interest in any Skill Tree Content is transferred to you as a result of you accessing, downloading, or printing such content from the Site or Bot. Any use of Skill Tree Content must display the appropriate copyright, trademark, and other proprietary notices.
 
 You acknowledge that you have no right, title, or interest in or to Skill Tree and/or Skill Tree Content.
 
 Skill Tree and the Skill Tree logo are marks of Skill Tree. Other marks, names, and logos on the Site and Bot are the property of their respective owners.
-
 There may be other content located on the Site not owned by Skill Tree, and you should respect those property rights as well. All rights not expressly granted herein are reserved to Skill Tree.
 
 ##Links to Third Party Sites and other site Interactions
