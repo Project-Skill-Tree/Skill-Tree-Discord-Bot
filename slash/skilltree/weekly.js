@@ -21,7 +21,7 @@ exports.run = async (client, interaction) => {
   user.username = discorduser.username;
   const tasks = await getRecentTasks(userID, 7);
   //Display weekly analytics
-  displayReview(user, interaction, tasks);
+  displayReview(user, interaction.channel, tasks);
 };
 
 exports.conf = {
