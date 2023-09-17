@@ -7,9 +7,14 @@ const logger = require("./modules/logger.js");
 const { ShardingManager } = require("discord.js");
 const morgan = require('morgan')
 
-const manager = new ShardingManager("./bot.js", { token: process.env.DISCORD_TOKEN});
+const manager = new ShardingManager("./bot.js", { token: process.env.DISCORD_TOKEN, respawn: true });
 
-manager.on("shardCreate", shard => console.log(`Launched shard ${shard.id}`));
+manager.on("shardCreate", async shard => {
+  console.log(`Launched shard ${shard.id}`);
+  shard.on("error", error => {
+    console.log(error);
+  })
+});
 
 manager.spawn().then(r => console.log(`Spawned shard! Current Size: ${r.size}`));
 
@@ -37,7 +42,7 @@ router.get("/health", (req, res) => {
 
   try {
     res.status(200).send(data);
-    logger.debug(`${req.method} ${req.url} ${req.status === null ? req.status: ""}`)
+    logger.debug(`${req.method} ${req.url} ${req.status === null ? req.status : ""}`)
   } catch (e) {
     data.message = e;
     res.status(503).send(data);
