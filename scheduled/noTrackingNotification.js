@@ -6,7 +6,7 @@ const slackingMessage = ", you have not tracked anything for two days. Get back 
 
 // Check if users have been slacking
 exports.run = (client) => {
-  cron.schedule("0 * * * *", async () => {
+  /*cron.schedule("0 * * * *", async () => {
     console.log("Checking for users that haven't been tracking");
     
     const users = await getUsers();
@@ -24,7 +24,7 @@ exports.run = (client) => {
         if (!(u.reminderSent ?? false)) {
           const channel = await getBaseLocation(client, u.discordid, u.baselocation);
 
-          await setReminded(u.id, true);
+          //await setReminded(u.id, true);
 
           if (!channel) {
             const discorduser = await client.users.fetch(u.discordid);
@@ -37,5 +37,5 @@ exports.run = (client) => {
         }
       }
     });
-  });
+  });*/
 };
