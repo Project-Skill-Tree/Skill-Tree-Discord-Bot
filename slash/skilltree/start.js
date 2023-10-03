@@ -17,7 +17,7 @@ exports.run = async (client, interaction) => {
     await interaction.editReply("```Error: Please create an account with /setup```");
     return;
   }
-  startMenu(client, interaction, userID);
+  await startMenu(client, interaction, userID);
 };
 
 const startMenu = async (client, interaction, userID) => {

@@ -29,7 +29,7 @@ exports.run = async (client, interaction) => {
       .editReply("```No current tasks. Use /start to start a new skill```");
   } else {
     //Show tasks in embed
-    createTaskList(client, interaction, tasks, userID, timezoneOffset);
+    await createTaskList(client, interaction, tasks, userID, timezoneOffset);
   }
 };
 

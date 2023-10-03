@@ -19,10 +19,10 @@ exports.run = async (client, interaction) => {
   }
   //Get completed skills
   const completed = await getCompleted(userID);
-  showCompleted(client, interaction, userID, completed);
+  await showCompleted(client, interaction, userID, completed);
 };
 
-const showCompleted = (client, interaction, userID, completed) => {
+const showCompleted = async (client, interaction, userID, completed) => {
   if (completed.length === 0) {
     const embed = new MessageEmbed()
       .setTitle("COMPLETED 🎒")
@@ -36,7 +36,7 @@ const showCompleted = (client, interaction, userID, completed) => {
     for (let i = 0; i < list.length; i++) {
       listPages.push(new ListPage("COMPLETED",list[i]));
     }
-    createLargeMultiActionSwipePanel(client, interaction, listPages,
+    await createLargeMultiActionSwipePanel(client, interaction, listPages,
       listPages.map(page => {
         return page.list.map(obj => {
           return {
