@@ -43,7 +43,8 @@ module.exports = async (client, interaction) => {
   try {
     logger.log(`${config.permLevels.find(l => l.level === level).name} ${interaction.user.id} ran slash command ${interaction.commandName}`, "cmd");
     await cmd.run(client, interaction);
-    await interaction.followUp({content:"The Skilltree app is now available on " +
+    await interaction.followUp({
+      content: "The Skilltree app is now available on " +
         "[IOS](<https://apps.apple.com/us/app/skilltree/id6459107901>) " +
         "and [ANDROID](<https://play.google.com/store/apps/details?id=com.projectskilltree.skilltree>)! " +
         "Make sure to go to the [sign up](https://media.discordapp.net/attachments/939508059758288939/1158868104185659412/image.png?ex=651dcf86&is=651c7e06&hm=f05c122d9048f26cf39bae7edf206f83ed6add580829eaad37da232e0b948824&=&width=421&height=670) " +
@@ -51,7 +52,8 @@ module.exports = async (client, interaction) => {
         "(don't worry, it'll automatically sync your data when you sign in), and click 'transfer data' to transfer your bot progress. " +
         "\n\nYou won't be able to use the bot again after migrating your account, but don't worry, the app is 100x better anyway. " +
         "We'll also shut down the bot in a few weeks, but any existing discord bot accounts " +
-        "will still be available to migrate indefinitely ",ephemeral: true});
+        "will still be available to migrate indefinitely ", ephemeral: true
+    });
   } catch (e) {
     console.error(e);
     if (interaction.replied)

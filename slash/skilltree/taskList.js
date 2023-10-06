@@ -203,28 +203,30 @@ const buildEmbed = (tasks, date, tz) => {
   addField(messageEmbed, otherTaskStrings, "OTHER");
   addField(messageEmbed, challengeTaskStrings, "CHALLENGES");
   return messageEmbed;
-}
+};
 
 const addField = (messageEmbed, string, title) => {
   //Chop tasks to fit field
   let chopped = string;
   let index = 0;
+  let fields = [];
   while (chopped.length !== 0) {
     const chars = chopped.slice(0, 1024);
     const name = index === 0 ? title : `${title} (cont)`;
 
     if (chars.length < 1024) {
-      messageEmbed.addField(name, chars);
+      fields.push({name, value: chars});
       chopped = "";
     } else {
       let lastSplit = chars.lastIndexOf("\n");
       const field = chars.slice(0, lastSplit);
       chopped = chopped.slice(lastSplit++);
-      messageEmbed.addField(name, field);
+      fields.push({name, value: field});
     }
     index++;
   }
-}
+  messageEmbed.addFields(fields);
+};
 
 const formatTask = (task, date, tz) => {
   if (task.child instanceof Challenge) {
